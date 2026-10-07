@@ -1,0 +1,8 @@
+# Local verification artifacts; keep check sources.
+Verification~/*.dll
+Verification~/*.exe
+Verification~/*.rsp
+Verification~/*.log
+Verification~/UnitySmokeProject/
+Verification~/UiBuild/
+Verification~/FontSmokeProject/
