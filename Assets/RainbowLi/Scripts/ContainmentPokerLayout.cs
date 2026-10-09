@@ -52,7 +52,7 @@ namespace RainbowLi
             bool battle = game.Phase == GamePhase.Planning || game.Phase == GamePhase.Resolving;
             ChunkyPanel(new Rect(17, 98, 264, 166), battle && game.Boss ? new Color(0.43f, 0.2f, 0.38f) : hudGrey);
             ShadowLabel(new Rect(25, 108, 248, 32), battle ? game.EnemyName : "收容任务", pokerLabel);
-            ShadowLabel(new Rect(25, 146, 248, 25), battle ? "敌人生命" : "完成普通收容后挑战核心", pokerSmall);
+            ShadowLabel(new Rect(25, 146, 248, 25), battle ? "敌人生命 / 护盾 " + game.EnemyShield : "完成普通收容后挑战核心", pokerSmall);
             PixelDigits(new Rect(36, 177, 230, 42), battle ? game.EnemyHealth.ToString() : "2", 5, coral);
             if (battle) PokerHealthBar(new Rect(29, 230, 240, 24), game.EnemyHealth, game.EnemyMaxHealth, hudRed);
             ChunkyPanel(new Rect(17, 282, 264, 57), new Color(0.12f, 0.16f, 0.15f));
@@ -129,7 +129,7 @@ namespace RainbowLi
                 ChunkyPanel(new Rect(854, 52, 184, 143), new Color(0.15f, 0.3f, 0.36f));
                 ShadowLabel(new Rect(859, 65, 174, 24), "场地牌序", pokerSmall);
                 ShadowLabel(new Rect(859, 101, 174, 35), arena.Pattern, pokerLabel);
-                ShadowLabel(new Rect(859, 142, 174, 43), arena.Description, pokerSmall);
+                ShadowLabel(new Rect(859, 142, 174, 43), arena.Description + "\n最后一张的所属方触发", pokerSmall);
                 ChunkyPanel(new Rect(1073, 52, 304, 143), hudGrey);
                 ShadowLabel(new Rect(1080, 63, 290, 27), "敌方意图", pokerLabel);
                 ShadowLabel(new Rect(1080, 101, 290, 43), string.Join(" / ", game.Timeline.Where(a => a.Enemy).Select(a => EffectText(a.Effect, a.Value)).ToArray()), pokerSmall);

@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05d61edf08835a68ab35c6420f31c6cd, type: 3}
+  m_Name: DefaultEnemy
+  m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.EnemyDefinition
+  maxHealth: 36
+  bossHealth: 110
+  healthGrowth: 12
+  attack: 5
+  shield: 6
+  bossAttack: 9
+  actionCount: 2
+  bossActionCount: 3
+  shieldSlot: 1
+  shieldEveryRounds: 2
+  actionNumbers: 
+  sequence: {fileID: 11400000, guid: 2fb20cce62759c341b4d517e25ff54f7, type: 2}
+  skills:
+  - Name: 冲击
+    Number: 4
+    Effect: 0
+    Modifier: 0
+    Weight: 10
+    Special: 0
+    Condition: 0
+    Threshold: 3
+  - Name: 屏障
+    Number: 5
+    Effect: 1
+    Modifier: 1
+    Weight: 10
+    Special: 0
+    Condition: 0
+    Threshold: 3
+  - Name: 重击
+    Number: 6
+    Effect: 0
+    Modifier: 4
+    Weight: 5
+    Special: 1
+    SpecialWeightRatio: 0.5
+    Condition: 0
+    Threshold: 3
+  conditionalSequences:
+  - condition: 1
+    threshold: 50
+    sequence: {fileID: 11400000, guid: 76ec61b2432f516da9d8f841d2d1c33b, type: 2}
+  cardTable: {fileID: 11400000, guid: e648ffe61a1c592e9d3ba7911f1d7e4a, type: 2}

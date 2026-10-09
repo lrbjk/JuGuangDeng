@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f333db71a9a65153a87a943684377781, type: 3}
+  m_Name: DefaultPlayer
+  m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.PlayerDefinition
+  maxHealth: 70
+  attack: 5
+  handLimit: 9
+  randomStartingDeck: 1
+  repeatWeightMultiplier: 0.5
+  handSize: 6
+  maxActions: 4
+  startingCoins: 0
+  startingDeck:
+  - {fileID: 11400000, guid: ba42c242bb59c254da931d70a88ddb69, type: 2}
+  - {fileID: 11400000, guid: 9714a94fcfa22b64abfb139f5189a779, type: 2}
+  - {fileID: 11400000, guid: d62e445ff39000e4b8e42310bd66f725, type: 2}
+  - {fileID: 11400000, guid: 876303493fe7e5842a2345661e272e26, type: 2}
+  - {fileID: 11400000, guid: 28468d05a62093b4fa0477192c525ae4, type: 2}
+  - {fileID: 11400000, guid: b9c03a03a8a251c448d5041d38e0b75a, type: 2}
+  - {fileID: 11400000, guid: 97c9073e3a57e644c8496168ecf12521, type: 2}
+  - {fileID: 11400000, guid: 922e09e0656ad4146a6ee1c75022fc2a, type: 2}
+  - {fileID: 11400000, guid: 570c52e0cc3f1f4438f533d43ce3c6b2, type: 2}
+  - {fileID: 11400000, guid: fecda2a55d7dfbe469453e59d8c6080d, type: 2}
+  - {fileID: 11400000, guid: d577dc2529db50548bcdc8713ec05c09, type: 2}
+  - {fileID: 11400000, guid: d935d290f1169d743bbb67f01e1596dd, type: 2}
+  - {fileID: 11400000, guid: b2f56b334b153c947ab2d3f9c879390b, type: 2}
+  - {fileID: 11400000, guid: a36f1260cc828f7498459e066d762a72, type: 2}
+  - {fileID: 11400000, guid: 2e0e4e409c82eb5469daca0dbd7534b4, type: 2}
+  - {fileID: 11400000, guid: f347d1ac70ff18647ac374676e30fd4b, type: 2}
+  - {fileID: 11400000, guid: 0558b911d4088bd4aae1824c17b913fd, type: 2}
+  - {fileID: 11400000, guid: 69d2b33dffe5fa840a98a47648cca6d4, type: 2}
+  sequences:
+  - {fileID: 11400000, guid: 445e852bceccedd4c9d95882df586360, type: 2}
+  - {fileID: 11400000, guid: 119c0859e61547742862496368c3f378, type: 2}
+  - {fileID: 11400000, guid: bb57d92bef281424fbd8700f136ef964, type: 2}
+  cardTable: {fileID: 11400000, guid: 249b73b61a965f4b925cb85d3277c23a, type: 2}

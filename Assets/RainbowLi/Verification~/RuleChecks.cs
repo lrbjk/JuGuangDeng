@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using RainbowLi;
 
@@ -114,6 +114,76 @@ public static class RuleChecks
         g = Battle(); g.EnemyHealth = 1; Arrange(g, Card(1, CardEffect.Strike));
         predicted = g.Forecast();
         Check(predicted.Victory && g.Victories == 0 && g.Coins == 0 && g.Deck.All(c => !c.Engraved), "forecast victory does not award or engrave live cards");
+
+        foreach (bool enemyFinish in new[] { false, true })
+        foreach (RuleEffect effect in new[] { RuleEffect.Shield, RuleEffect.Damage, RuleEffect.Power, RuleEffect.Insert })
+        {
+            g = Battle(); g.PlayerRules.Clear();
+            var arena = g.ArenaRules[0]; arena.Numbers = new[] { 1, 2, 3 }; arena.Effect = effect; arena.Value = 8;
+            g.Timeline.Clear(); g.Hand.Clear();
+            for (int n = 1; n <= 3; n++)
+            {
+                bool enemy = enemyFinish ? n != 1 : n != 3;
+                var c = enemy ? null : Card(n);
+                if (c != null) g.Hand.Add(c);
+                g.Timeline.Add(new BattleAction { Enemy = enemy, Number = n, Card = c, Effect = CardEffect.Guard, Value = 0 });
+            }
+            var preview = g.Forecast();
+            g.Confirm(); g.Step(); g.Step(); g.Step();
+            int shieldBefore = g.Shield, enemyShieldBefore = g.EnemyShield, hpBefore = g.Health, enemyHpBefore = g.EnemyHealth;
+            g.Step();
+            Check(g.LastResolvedAction.Enemy == enemyFinish, "arena belongs to final card for " + effect);
+            if (effect == RuleEffect.Shield)
+                Check(enemyFinish ? g.EnemyShield == enemyShieldBefore + 8 && g.Shield == shieldBefore : g.Shield == shieldBefore + 8 && g.EnemyShield == enemyShieldBefore, "arena shield recipient");
+            if (effect == RuleEffect.Damage)
+                Check(enemyFinish ? g.Health == hpBefore - Math.Max(0, 8 - shieldBefore) && g.EnemyHealth == enemyHpBefore : g.EnemyHealth == enemyHpBefore - 8 && g.Health == hpBefore, "arena damage target");
+            if (effect == RuleEffect.Power)
+                Check(enemyFinish ? g.EnemyPower == 8 && g.Power == 0 : g.Power == 8 && g.EnemyPower == 0, "power isolated by side");
+            if (effect == RuleEffect.Insert)
+            {
+                g.Step();
+                Check(g.LastResolvedAction.IsNumberOnly && g.LastResolvedAction.Enemy == enemyFinish, "inserted number inherits trigger owner");
+            }
+            Check(g.Health == preview.Health && g.Shield == preview.Shield && g.EnemyHealth == preview.EnemyHealth && g.EnemyShield == preview.EnemyShield, "arena forecast matches actual");
+        }
+        g = Battle(); g.PlayerRules.Clear();
+        g.Timeline.Clear(); var strike = Card(4, CardEffect.Strike); g.Hand.Clear(); g.Hand.Add(strike);
+        g.Timeline.Add(new BattleAction { Enemy = true, Number = 6, Effect = CardEffect.Guard, Value = 10 });
+        g.Timeline.Add(new BattleAction { Card = strike, Number = 4, Effect = CardEffect.Strike });
+        g.Confirm(); g.Step(); Check(g.EnemyShield == 10, "enemy guard adds shield");
+        g.Step(); Check(g.EnemyShield == 3 && g.EnemyHealth == g.EnemyMaxHealth, "enemy shield absorbs player attack");
+
+        var authored = new GameSetup { PlayerHealth = 90, EnemyHealth = 50, HandSize = 4 };
+        var authoredCard = new Card { Number = 1, Effect = CardEffect.Strike, BaseBonus = 8, UpgradeBonus = 4, EngravingDamage = 11 };
+        authored.InitialDeck.AddRange(Enumerable.Range(0,18).Select(_ => authoredCard));
+        authored.PlayerRules.Add(ContainmentGame.Rule("authored",new[]{1,1,1},RuleEffect.Shield,7));
+        g = new ContainmentGame(42, authored);
+        Check(g.Health==90&&g.HealthLimit==90&&g.Deck.Count==18,"authored health and starter deck");
+        Check(g.Deck[0].Value==9&&g.Deck[0].UpgradeBonus==4&&g.Deck[0].EngravingDamage==11,"authored card and engraving values");
+        g.Deck[0].Upgrade++;
+        Check(authoredCard.Upgrade==0&&g.Deck[1].Upgrade==0,"runtime card instances isolated");
+        g.PlayerRules[0].Numbers[0]=6;
+        Check(authored.PlayerRules[0].Numbers[0]==1,"authored sequences isolated");
+        g.StartBattle();Check(g.EnemyMaxHealth==50&&g.Hand.Count==4,"authored battle and hand size");
+        g.EnemyShield=3;Arrange(g,g.Hand[0]);var authoredForecast=g.Forecast();g.Confirm();
+        for(int n=0;n<3&&g.Phase==GamePhase.Resolving;n++)g.Step();
+        Check(g.Health==authoredForecast.Health&&g.EnemyHealth==authoredForecast.EnemyHealth,"configured forecast preserves authored card values");
+
+        g=Battle();
+        Check(object.ReferenceEquals(g.Deck,g.Player.Deck)&&object.ReferenceEquals(g.Hand,g.Player.Hand),"player owns deck and hand");
+        Check(object.ReferenceEquals(g.PlayerRules,g.Player.Rules)&&object.ReferenceEquals(g.EnemyRule,g.Enemy.Rule),"actor sequence ownership");
+        g.Player.Shield=10;g.Enemy.Shield=4;g.Player.ReceiveDamage(13);
+        Check(g.Player.Health==67&&g.Player.Shield==0&&g.Enemy.Shield==4,"player damage independent of enemy");
+        g.Enemy.ReceiveDamage(7);
+        Check(g.Enemy.Health==g.Enemy.MaxHealth-3&&g.Enemy.Shield==0&&g.Player.Health==67,"enemy damage independent of player");
+        g.Player.Power=8;g.Enemy.Power=3;g.Player.ResetRound();
+        Check(g.Power==0&&g.EnemyPower==3,"reset one actor does not reset the other");
+        var enemyProfile=new GameSetup{EnemyAttack=8,EnemyGuard=11,GuardSlot=0,GuardInterval=1,EnemyNumbers=new[]{5,6}};
+        g=new ContainmentGame(42,enemyProfile);g.StartBattle();
+        Check(g.Timeline[0].Enemy&&g.Timeline[0].Effect==CardEffect.Guard&&g.Timeline[0].Value==11&&g.Timeline[0].Number==5,"enemy action profile guard");
+        Check(g.Timeline[1].Effect==CardEffect.Strike&&g.Timeline[1].Value==8&&g.Timeline[1].Number==6,"enemy action profile strike");
+        var playerProfile=new GameSetup{PlayerActions=1,StartingCoins=23};g=new ContainmentGame(42,playerProfile);g.StartBattle();
+        Check(g.Coins==23&&g.PlayerActionLimit==1&&g.AddCard(g.Hand[0])&&!g.AddCard(g.Hand[1]),"player authored resources and action limit");
 
         Console.WriteLine("PASS: " + checks + " gameplay assertions");
     }

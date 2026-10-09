@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
+  m_Name: CardEffect_20
+  m_EditorClassIdentifier: 
+  effectId: "卡效_20"
+  displayName: "烧伤X"
+  effect: 19
+  lifetime: 2
+  polarity: 1
+  description: "回合开始时，受到X点伤害。（X为效果层数，结算后立即减少一层。）向下取整"
+  usesCardNumber: 0
+  includeInStartingDeck: 1
+  minValue: 1
+  maxValue: 4
+  weight: 10
+  sourceSheet: Sheet1
+  sourceRow: 21
+  sourceRange: "1-4"

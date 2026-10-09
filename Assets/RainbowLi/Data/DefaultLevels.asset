@@ -1,0 +1,134 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e902f9438c565294b9258efc3cd1ade0, type: 3}
+  m_Name: DefaultLevels
+  m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.LevelDefinition
+  floors: 8
+  lanes: 3
+  randomizeEachRun: 1
+  seed: 0
+  authoredNodes:
+  - id: 0
+    floor: 0
+    lane: 0
+    kind: 0
+    next: 0300000004000000
+  - id: 1
+    floor: 0
+    lane: 1
+    kind: 0
+    next: 0400000005000000
+  - id: 2
+    floor: 0
+    lane: 2
+    kind: 0
+    next: 0500000004000000
+  - id: 3
+    floor: 1
+    lane: 0
+    kind: 2
+    next: 0600000007000000
+  - id: 4
+    floor: 1
+    lane: 1
+    kind: 3
+    next: 0700000008000000
+  - id: 5
+    floor: 1
+    lane: 2
+    kind: 4
+    next: 0800000007000000
+  - id: 6
+    floor: 2
+    lane: 0
+    kind: 0
+    next: 090000000a000000
+  - id: 7
+    floor: 2
+    lane: 1
+    kind: 0
+    next: 0a0000000b000000
+  - id: 8
+    floor: 2
+    lane: 2
+    kind: 3
+    next: 0b0000000a000000
+  - id: 9
+    floor: 3
+    lane: 0
+    kind: 0
+    next: 0c0000000d000000
+  - id: 10
+    floor: 3
+    lane: 1
+    kind: 0
+    next: 0d0000000e000000
+  - id: 11
+    floor: 3
+    lane: 2
+    kind: 1
+    next: 0e0000000d000000
+  - id: 12
+    floor: 4
+    lane: 0
+    kind: 3
+    next: 0f00000010000000
+  - id: 13
+    floor: 4
+    lane: 1
+    kind: 1
+    next: 100000000f000000
+  - id: 14
+    floor: 4
+    lane: 2
+    kind: 0
+    next: 1100000010000000
+  - id: 15
+    floor: 5
+    lane: 0
+    kind: 0
+    next: 1200000013000000
+  - id: 16
+    floor: 5
+    lane: 1
+    kind: 2
+    next: 1300000012000000
+  - id: 17
+    floor: 5
+    lane: 2
+    kind: 1
+    next: 1400000013000000
+  - id: 18
+    floor: 6
+    lane: 0
+    kind: 2
+    next: 16000000
+  - id: 19
+    floor: 6
+    lane: 1
+    kind: 2
+    next: 16000000
+  - id: 20
+    floor: 6
+    lane: 2
+    kind: 2
+    next: 16000000
+  - id: 22
+    floor: 7
+    lane: 1
+    kind: 5
+    next: 
+  eventGold: 18
+  eventHealing: 16
+  eliteHealthMultiplier: 1.5
+  eliteAttackBonus: 3
+  eliteGold: 40

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
+  m_Name: CardEffect_16
+  m_EditorClassIdentifier: 
+  effectId: "卡效_16"
+  displayName: "限制伤害X"
+  effect: 15
+  lifetime: 2
+  polarity: 0
+  description: "每次只会受到X点伤害。"
+  usesCardNumber: 0
+  includeInStartingDeck: 1
+  minValue: 9
+  maxValue: 15
+  weight: 10
+  sourceSheet: Sheet1
+  sourceRow: 17
+  sourceRange: "9-15"

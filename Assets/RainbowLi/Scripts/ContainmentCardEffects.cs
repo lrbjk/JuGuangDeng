@@ -27,12 +27,17 @@ namespace RainbowLi
         {
             public BattleAction Action;
             public Vector2 From, Target;
-            public int Slot, Damage, Blocked;
+            public int Slot, Damage, Blocked, Combo;
+            public float Gain;
             public bool ToEnemy;
             public float Started, Strength, Duration;
         }
         private readonly List<AttackImpact> attacks = new List<AttackImpact>();
         private AudioClip[] attackSounds;
+        private int effectCombo;
+        private bool comboEnemy;
+        private float comboStarted = -10;
+        private Vector2 comboOrigin;
         private readonly Dictionary<Card, CardMotion> motions = new Dictionary<Card, CardMotion>();
         private readonly List<FlyingCard> flights = new List<FlyingCard>();
         private readonly List<FloatingText> floatingTexts = new List<FloatingText>();
@@ -96,7 +101,7 @@ namespace RainbowLi
             if (attackSounds != null) foreach (var clip in attackSounds) if (clip != null) Destroy(clip);
         }
         private void ResetCardEffects()
-        { motions.Clear(); flights.Clear(); floatingTexts.Clear(); impactSlot = -1; impactStarted = -10; }
+        { motions.Clear(); flights.Clear(); floatingTexts.Clear(); effectCombo = 0; comboStarted = -10; impactSlot = -1; impactStarted = -10; }
         private void BeginCardDeal()
         { ResetCardEffects(); dealStarted = Time.unscaledTime; }
         private void UpdateCardEffects()
@@ -255,6 +260,14 @@ namespace RainbowLi
         {
             if (action == null) return;
             impactStarted = Time.unscaledTime; impactIsRule = action.Rule != null;
+            if (!action.IsNumberOnly)
+            {
+                effectCombo = effectCombo > 0 && comboEnemy == action.Enemy && Time.unscaledTime - comboStarted <= 1.25f
+                    ? Mathf.Min(effectCombo + 1, 99) : 1;
+                comboEnemy = action.Enemy; comboStarted = Time.unscaledTime;
+                int source = game.Timeline.IndexOf(action);
+                comboOrigin = source >= 0 ? PokerActionRect(source).center : new Vector2(810, 195);
+            }
             PlayCardSound(2, impactIsRule ? 1.25f : 0.95f);
             int slot = game.Timeline.IndexOf(action); if (slot >= 0) impactSlot = slot;
             if (playerDelta > 0) FloatNumber(Signed(playerDelta), new Vector2(110, 408), teal);
@@ -268,6 +281,8 @@ namespace RainbowLi
         // Smooth monotonic response: heavy hits stay bounded during long rule chains.
         private static float AttackStrength(int damage)
         { return (float)(1 - System.Math.Exp(-System.Math.Max(0, damage) / 18.0)); }
+        private static float ComboGain(int count)
+        { return (float)(1 + 1.8 * (1 - System.Math.Exp(-System.Math.Max(0, count - 1) / 3.5))); }
         private void StartAttackImpact(BattleAction action, bool toEnemy, int damage, int blocked)
         {
             int slot = game.Timeline.IndexOf(action);
@@ -278,10 +293,11 @@ namespace RainbowLi
             var attack = new AttackImpact { Action = action, Slot = slot, Damage = damage, Blocked = blocked, ToEnemy = toEnemy,
                 From = slot >= 0 ? PokerActionRect(slot).center : new Vector2(810, 195),
                 Target = new Vector2(149, toEnemy ? 220 : 426), Started = Time.unscaledTime,
-                Strength = strength, Duration = Mathf.Lerp(0.65f, 1.05f, strength) };
+                Combo = effectCombo, Gain = ComboGain(effectCombo),
+                Strength = strength, Duration = Mathf.Lerp(0.65f, 1.05f, strength) + Mathf.Min(effectCombo - 1, 6) * 0.045f };
             if (attacks.Count >= 24) attacks.RemoveAt(0);
             attacks.Add(attack);
-            PlayAttackSound(strength);
+            PlayAttackSound(Mathf.Clamp01(strength + (attack.Gain - 1) * 0.22f));
         }
         private Vector2 AttackShake()
         {
@@ -290,10 +306,10 @@ namespace RainbowLi
             {
                 float age = Time.unscaledTime - attack.Started - 0.14f;
                 if (age < 0 || age > 0.45f) continue;
-                float amplitude = Mathf.Lerp(1.5f, 11, attack.Strength) * Mathf.Exp(-age * 9);
+                float amplitude = Mathf.Lerp(1.5f, 11, attack.Strength) * attack.Gain * Mathf.Exp(-age * 9);
                 shake += new Vector2(Mathf.Sin(age * 93), Mathf.Sin(age * 71 + 1.8f)) * amplitude;
             }
-            return Vector2.ClampMagnitude(shake, 14);
+            return Vector2.ClampMagnitude(shake, 28);
         }
         private float AttackFlash(bool enemy)
         {
@@ -309,6 +325,7 @@ namespace RainbowLi
         private void DrawAttackEffects()
         {
             if (Event.current.type != EventType.Repaint) return;
+            DrawComboEffects();
             foreach (var attack in attacks)
             {
                 float age = Time.unscaledTime - attack.Started;
@@ -318,14 +335,14 @@ namespace RainbowLi
                     float travel = Mathf.Clamp01(age / 0.14f);
                     Vector2 head = Vector2.Lerp(attack.From, attack.Target, travel);
                     Vector2 tail = Vector2.Lerp(attack.From, attack.Target, Mathf.Max(0, travel - 0.28f));
-                    DrawAttackLine(tail, head, Mathf.Lerp(3, 12, attack.Strength), tint);
+                    DrawAttackLine(tail, head, Mathf.Lerp(3, 12, attack.Strength) * attack.Gain, tint);
                     DrawAttackLine(tail, head, 2, Color.white);
                 }
                 float impactAge = age - 0.14f;
                 if (impactAge < 0) continue;
                 float progress = Mathf.Clamp01(impactAge / (attack.Duration - 0.14f));
                 float fade = (1 - progress) * (1 - progress);
-                float radius = Mathf.Lerp(24, 100, attack.Strength) * (0.25f + progress);
+                float radius = Mathf.Lerp(24, 100, attack.Strength) * attack.Gain * (0.25f + progress);
                 Color ring = new Color(tint.r, tint.g, tint.b, fade);
                 for (int i = 0; i < 16; i++)
                 {
@@ -333,23 +350,49 @@ namespace RainbowLi
                     Vector2 point = attack.Target + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
                     Fill(new Rect(point.x - 2, point.y - 2, 4 + attack.Strength * 4, 4 + attack.Strength * 4), ring);
                 }
-                int particles = 8 + Mathf.RoundToInt(attack.Strength * 36);
+                int particles = Mathf.Min(90, Mathf.RoundToInt((8 + attack.Strength * 36) * attack.Gain));
                 for (int i = 0; i < particles; i++)
                 {
                     float angle = i * 2.39996f;
-                    float speed = Mathf.Lerp(45, 210, attack.Strength) * (0.55f + (i % 7) / 10f);
+                    float speed = Mathf.Lerp(45, 210, attack.Strength) * Mathf.Sqrt(attack.Gain) * (0.55f + (i % 7) / 10f);
                     Vector2 point = attack.Target + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * speed * impactAge;
                     point.y += 85 * impactAge * impactAge;
-                    float size = (2 + attack.Strength * 6) * (1 - progress * 0.6f);
+                    float size = (2 + attack.Strength * 6) * Mathf.Sqrt(attack.Gain) * (1 - progress * 0.6f);
                     Fill(new Rect(point.x, point.y, size, size), i % 3 == 0 ? new Color(1, 0.85f, 0.48f, fade) : ring);
                 }
-                float slash = Mathf.Lerp(25, 75, attack.Strength) * (1 - progress * 0.4f);
+                float slash = Mathf.Lerp(25, 75, attack.Strength) * attack.Gain * (1 - progress * 0.4f);
                 DrawAttackLine(attack.Target + new Vector2(-slash, slash * 0.65f), attack.Target + new Vector2(slash, -slash * 0.65f), 2 + attack.Strength * 6, ring);
-                var numberStyle = new GUIStyle(pokerHeading) { fontSize = Mathf.RoundToInt(Mathf.Lerp(24, 48, attack.Strength)), fontStyle = FontStyle.Bold };
+                if (attack.Combo >= 3)
+                    DrawAttackLine(attack.Target + new Vector2(-slash, -slash * 0.65f), attack.Target + new Vector2(slash, slash * 0.65f), 3 + attack.Strength * 7, ring);
+                if (attack.Combo >= 5)
+                    Border(new Rect(17 - progress * 10, attack.ToEnemy ? 98 : 355, 264 + progress * 20, attack.ToEnemy ? 166 : 120), new Color(gold.r, gold.g, gold.b, fade), 3 + attack.Strength * 3);
+                var numberStyle = new GUIStyle(pokerHeading) { fontSize = Mathf.RoundToInt(Mathf.Lerp(24, 48, attack.Strength) * Mathf.Sqrt(attack.Gain)), fontStyle = FontStyle.Bold };
                 Color old = GUI.color; GUI.color = new Color(tint.r, tint.g, tint.b, 1 - progress);
-                ShadowLabel(new Rect(24, attack.Target.y - 66 - progress * 40, 250, 60),
+                ShadowLabel(new Rect(4, attack.Target.y - 80 - progress * 60, 290, 80),
                     attack.Damage == attack.Blocked ? "格挡 " + attack.Blocked : "伤害 " + (attack.Damage - attack.Blocked), numberStyle);
                 GUI.color = old;
+            }
+        }
+        private void DrawComboEffects()
+        {
+            float age = Time.unscaledTime - comboStarted;
+            if (effectCombo < 2 || age > 1.1f) return;
+            float gain = ComboGain(effectCombo), fade = Mathf.Clamp01((1.1f - age) / 0.5f);
+            float pulse = Mathf.Sin(Mathf.Clamp01(age / 0.28f) * Mathf.PI);
+            Color old = GUI.color;
+            GUI.color = new Color(1, 1, 1, fade);
+            var style = new GUIStyle(pokerHeading) { fontSize = Mathf.RoundToInt(30 + (gain - 1) * 18 + pulse * 12) };
+            ShadowLabel(new Rect(695, 245 - pulse * 10, 640, 80),
+                (comboEnemy ? "敌方" : "你的") + "效果连锁 ×" + effectCombo + (effectCombo >= 5 ? "  爆发！" : ""), style);
+            GUI.color = old;
+            float radius = (25 + age * 115) * gain;
+            // Non-damage effects also contribute: shield, power and inserted rule effects build the burst.
+            for (int i = 0; i < 24; i++)
+            {
+                float angle = i * Mathf.PI / 12 + age * 1.5f;
+                Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+                Color tint = new Color(gold.r, gold.g, gold.b, fade * Mathf.Exp(-age * 2.8f));
+                DrawAttackLine(comboOrigin + direction * radius * 0.7f, comboOrigin + direction * radius, 2 + gain * 2, tint);
             }
         }
         private void DrawAttackLine(Vector2 from, Vector2 to, float width, Color color)
