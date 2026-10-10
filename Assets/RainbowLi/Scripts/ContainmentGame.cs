@@ -71,7 +71,7 @@ namespace RainbowLi
             PlayerRules.Add(power);
             if (setup != null)
             {
-                if (!setup.RandomStartingDeck && setup.InitialDeck.Count > 0) { Deck.Clear(); Deck.AddRange(setup.InitialDeck.Select(c=>{var clone=CloneCard(c);clone.AttackBase=BaseAttack;return clone;})); }
+                if (!setup.RandomStartingDeck && setup.InitialDeck.Count > 0) { Deck.Clear(); Deck.AddRange(setup.InitialDeck.Select(c=>{var clone=c.CopyAsNewInstance();clone.AttackBase=BaseAttack;return clone;})); }
                 if (setup.PlayerRules.Count > 0) { PlayerRules.Clear(); PlayerRules.AddRange(setup.PlayerRules.Select(CloneRule)); }
             }
             foreach(var rule in PlayerRules){AddAvailableEffect(new SequenceEffect {Effect=rule.Effect,Value=rule.Value,InsertsTwo=rule.InsertsTwo,Requirement=rule.Requirement});if(rule.AdditionalEffect!=null)AddAvailableEffect(rule.AdditionalEffect);}
@@ -87,22 +87,7 @@ namespace RainbowLi
         public BattleForecast Forecast()
         {
             if (Phase != GamePhase.Planning) return null;
-            var copy = new ContainmentGame(42, setup)
-            {
-                Phase = GamePhase.Resolving, Health = Health, Shield = Shield,
-                EnemyHealth = EnemyHealth, EnemyMaxHealth = EnemyMaxHealth, EnemyShield = EnemyShield,
-                Coins = Coins, Victories = Victories, Round = Round, Power = Power, EnemyPower = EnemyPower,
-                ArenaIndex = ArenaIndex, ArenaTriggerCount = ArenaTriggerCount, Boss = Boss, EliteGold=EliteGold
-            };
-            copy.Player.Statuses.CopyFrom(Player.Statuses);copy.Enemy.Statuses.CopyFrom(Enemy.Statuses);copy.battleRandomState=battleRandomState;
-            copy.Enemy.Elite=Enemy.Elite;copy.EliteAttackBonus=EliteAttackBonus;copy.Enemy.CopyActivationFrom(Enemy);
-            copy.Deck.Clear(); copy.Deck.AddRange(Deck.Select(CloneCard));
-            copy.PlayerRules.Clear(); copy.PlayerRules.AddRange(PlayerRules.Select(CloneRule));
-            copy.ArenaRules.Clear(); copy.ArenaRules.AddRange(ArenaRules.Select(CloneRule));
-            copy.EnemyRule = CloneRule(EnemyRule);copy.Enemy.ConditionalRules.AddRange(Enemy.ConditionalRules.Select(c=>new ConditionalSequence {Condition=c.Condition,Threshold=c.Threshold,Rule=CloneRule(c.Rule)}));
-            foreach (var action in Timeline)
-                copy.pending.Add(new BattleAction { Card = action.Card == null ? null : CloneCard(action.Card),
-                    Enemy = action.Enemy, Number = action.Number, Value = action.Value, Effect = action.Effect, EffectSpec=action.EffectSpec?.Copy(), SkillName=action.SkillName, Special=action.Special });
+            var copy = CreateBattleSnapshot();
             // Stop before BeginRound so the forecast describes this round only.
             while (copy.Phase == GamePhase.Resolving && copy.pending.Count > 0) copy.Step();
             if(copy.Phase==GamePhase.Resolving){copy.QueueEndTicks();while(copy.Phase==GamePhase.Resolving&&copy.pending.Count>0)copy.Step();}
@@ -114,8 +99,41 @@ namespace RainbowLi
                 if (rule != null) result.RuleHits[rule.Name] = rule.Triggers;
             return result;
         }
-        private static Card CloneCard(Card card) => new Card
-        { Spec=card.Spec==null?null:card.Spec.Copy(),EffectAmount=card.EffectAmount,AttackBase=card.AttackBase, Number = card.Number, Effect = card.Effect, Upgrade = card.Upgrade, Engraved = card.Engraved, BaseBonus = card.BaseBonus, UpgradeBonus = card.UpgradeBonus, EngravingDamage = card.EngravingDamage };
+
+        internal ContainmentGame CreateBattleSnapshot()
+        {
+            if(Phase!=GamePhase.Planning)throw new InvalidOperationException("只有安排阶段可以创建战斗预览快照");
+            var copy = new ContainmentGame(42, setup)
+            {
+                Phase = GamePhase.Resolving, Health = Health, Shield = Shield,
+                EnemyHealth = EnemyHealth, EnemyMaxHealth = EnemyMaxHealth, EnemyShield = EnemyShield,
+                Coins = Coins, Victories = Victories, Round = Round, Power = Power, EnemyPower = EnemyPower,
+                ArenaIndex = ArenaIndex, ArenaTriggerCount = ArenaTriggerCount, Boss = Boss, EliteGold=EliteGold
+            };
+            copy.Player.Statuses.CopyFrom(Player.Statuses);copy.Enemy.Statuses.CopyFrom(Enemy.Statuses);copy.battleRandomState=battleRandomState;
+            copy.Enemy.Elite=Enemy.Elite;copy.EliteAttackBonus=EliteAttackBonus;copy.Enemy.CopyActivationFrom(Enemy);
+            // Preserve aliases: a card in the deck, hand and action queue must be
+            // the same snapshot object, while remaining isolated from live state.
+            var cards = new Dictionary<Card, Card>();
+            Card SnapshotCard(Card card) {
+                if(card==null)return null;
+                if(!cards.TryGetValue(card,out var snapshot)){snapshot=card.CopyForSnapshot();cards.Add(card,snapshot);}
+                return snapshot;
+            }
+            copy.Deck.Clear(); copy.Deck.AddRange(Deck.Select(SnapshotCard));
+            copy.Hand.Clear(); copy.Hand.AddRange(Hand.Select(SnapshotCard));
+            copy.drawPile.Clear(); copy.drawPile.AddRange(drawPile.Select(SnapshotCard));
+            copy.discard.Clear(); copy.discard.AddRange(discard.Select(SnapshotCard));
+            copy.PlayerRules.Clear(); copy.PlayerRules.AddRange(PlayerRules.Select(CloneRule));
+            copy.ArenaRules.Clear(); copy.ArenaRules.AddRange(ArenaRules.Select(CloneRule));
+            copy.EnemyRule = CloneRule(EnemyRule);copy.Enemy.ConditionalRules.AddRange(Enemy.ConditionalRules.Select(c=>new ConditionalSequence {Condition=c.Condition,Threshold=c.Threshold,Rule=CloneRule(c.Rule)}));
+            foreach (var action in Timeline) {
+                var snapshot=new BattleAction { Card = SnapshotCard(action.Card),
+                    Enemy = action.Enemy, Number = action.Number, Value = action.Value, Effect = action.Effect, EffectSpec=action.EffectSpec?.Copy(), SkillName=action.SkillName, Special=action.Special };
+                copy.Timeline.Add(snapshot);copy.pending.Add(snapshot);
+            }
+            return copy;
+        }
         private static SequenceRule CloneRule(SequenceRule rule) => rule == null ? null : new SequenceRule
         { Name = rule.Name, Numbers = (int[])rule.Numbers.Clone(), Effect = rule.Effect,
             Value = rule.Value, InsertsTwo = rule.InsertsTwo, Triggers = rule.Triggers, Requirement=rule.Requirement, AdditionalEffect=rule.AdditionalEffect==null?null:new SequenceEffect {Effect=rule.AdditionalEffect.Effect,Value=rule.AdditionalEffect.Value,InsertsTwo=rule.AdditionalEffect.InsertsTwo,Requirement=rule.AdditionalEffect.Requirement} };

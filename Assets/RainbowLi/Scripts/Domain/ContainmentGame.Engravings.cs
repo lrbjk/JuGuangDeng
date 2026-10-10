@@ -10,10 +10,10 @@ namespace RainbowLi
             Message = engrave ? "铭刻完成，每张牌最多一次。" : "卡牌效果 +2。"; return true;
         }
 
-        private void ApplyEngraving(Card card, bool matched)
+        private void ApplyEngraving(Card card, bool matched,bool enemy)
         {
             if (!matched || card == null || !card.Engraved) return;
-            Damage(true, card.EngravingDamage);
+            SettleDamage(enemy,!enemy,card.EngravingDamage,card.EngravingCode??"LegacyEngraving",BattleEventSource.Engraving);
             Log("铭刻触发：额外伤害 " + card.EngravingDamage);
         }
     }

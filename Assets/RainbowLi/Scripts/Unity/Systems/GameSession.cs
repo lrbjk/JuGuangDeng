@@ -1,10 +1,14 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 namespace RainbowLi.UnityGame {
 public struct ResolutionEvent {
  public BattleAction Action;
  public bool PlayerParried,EnemyParried;
  public int PlayerDamage, EnemyDamage, PlayerBlocked, EnemyBlocked, Slot, Round;
+ public int PlayerHealing,EnemyHealing;
+ public IReadOnlyList<BattleEvent> Events;
 }
 [DisallowMultipleComponent]
 public sealed class GameSession : MonoBehaviour {
@@ -16,16 +20,30 @@ public sealed class GameSession : MonoBehaviour {
  public ContainmentGame Game {get; private set;}
  public event Action Changed;
  public event Action<ResolutionEvent> Resolved;
+ public event Action<BattleEvent> Settled;
+ private ContainmentGame publishedGame;
+ private long publishedEventId;
  private void Awake() { NewGame(); }
  public void NewGame() { var setup=definition==null?new GameSetup():definition.CreateSetup();player?.Apply(setup);enemy?.Apply(setup);cardSystem?.Apply(setup);player?.definition?.cardTable?.Apply(setup);Game=new ContainmentGame(seed,setup); Notify(); }
- public void Notify() { Changed?.Invoke(); }
+ public void Notify() {
+  var game=Game;
+  if(publishedGame!=game){publishedGame=game;publishedEventId=0;}
+  var events=game==null?Array.Empty<BattleEvent>():game.LastSettlementEvents.Where(e=>e.Id>publishedEventId).ToArray();
+  if(events.Length>0)publishedEventId=events[events.Length-1].Id;
+  Changed?.Invoke();
+  foreach(var entry in events){if(Game!=game)break;Settled?.Invoke(entry);}
+ }
  public bool ResolveOne() {
-  var g=Game; int hp=g.Health,ehp=g.EnemyHealth,s=g.Shield,es=g.EnemyShield,round=g.Round;
-  int pp=g.Player.Statuses[CardEffect.Parry],ep=g.Enemy.Statuses[CardEffect.Parry];
-  bool resolved=g.Step(); Notify();
-  if(resolved) Resolved?.Invoke(new ResolutionEvent { Action=g.LastResolvedAction, Slot=g.LastResolvedAction==null?-1:g.Timeline.IndexOf(g.LastResolvedAction.SourceAction??g.LastResolvedAction),Round=round,
-   PlayerParried=g.Player.Statuses[CardEffect.Parry]<pp,EnemyParried=g.Enemy.Statuses[CardEffect.Parry]<ep,
-   PlayerDamage=Mathf.Max(0,hp-g.Health), EnemyDamage=Mathf.Max(0,ehp-g.EnemyHealth),PlayerBlocked=Mathf.Max(0,s-g.Shield),EnemyBlocked=Mathf.Max(0,es-g.EnemyShield) });
+  var g=Game; int round=g.Round;
+  bool resolved=g.Step(); var events=g.LastSettlementEvents.ToArray(); var action=g.LastResolvedAction;
+  int slot=action==null?-1:g.Timeline.IndexOf(action.SourceAction??action); Notify();
+  if(resolved&&Game==g) Resolved?.Invoke(new ResolutionEvent { Action=action, Slot=slot,Round=round,
+   PlayerParried=events.Any(e=>e.Kind==BattleEventKind.Parry&&e.TargetSide==BattleSide.Player),EnemyParried=events.Any(e=>e.Kind==BattleEventKind.Parry&&e.TargetSide==BattleSide.Enemy),
+   PlayerDamage=Total(events,BattleSide.Player,false),EnemyDamage=Total(events,BattleSide.Enemy,false),
+   PlayerHealing=Total(events,BattleSide.Player,true),EnemyHealing=Total(events,BattleSide.Enemy,true),
+   PlayerBlocked=CombatResolver.Clamp(events.Where(e=>e.Kind==BattleEventKind.Damage&&e.TargetSide==BattleSide.Player).Sum(e=>(long)e.Blocked)),
+   EnemyBlocked=CombatResolver.Clamp(events.Where(e=>e.Kind==BattleEventKind.Damage&&e.TargetSide==BattleSide.Enemy).Sum(e=>(long)e.Blocked)),Events=Array.AsReadOnly(events) });
   return resolved;
  }
+ private static int Total(BattleEvent[] events,BattleSide side,bool healing)=>CombatResolver.Clamp(events.Where(e=>e.TargetSide==side&&(healing?e.Kind==BattleEventKind.Healing:e.Kind==BattleEventKind.Damage||e.Kind==BattleEventKind.HealthLoss)).Sum(e=>(long)e.Amount));
 }}

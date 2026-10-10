@@ -13,10 +13,10 @@ namespace RainbowLi
         private void ApplyRule(BattleAction action)
         {
             var rule = action.Rule;
-            if (rule.Effect == RuleEffect.Damage) Damage(!action.Enemy, rule.Value);
-            else if (rule.Effect == RuleEffect.Shield) { Actor(action.Enemy).GainShield(rule.Value); }
-            else if (rule.Effect == RuleEffect.Power) { if (action.Enemy) EnemyPower += rule.Value; else Power += rule.Value; }
-            if (rule.Effect == RuleEffect.Insert || rule.InsertsTwo)
+            if (rule.Effect == RuleEffect.Damage) SettleDamage(action.Enemy,!action.Enemy,rule.Value,rule.Name,BattleEventSource.Sequence);
+            else if (rule.Effect == RuleEffect.Shield) SettleShield(action.Enemy,action.Enemy,rule.Value,rule.Name,BattleEventSource.Sequence);
+            else if (rule.Effect == RuleEffect.Power) SettlePower(action.Enemy,rule.Value,rule.Name,BattleEventSource.Sequence);
+            if (Health>0&&EnemyHealth>0&&(rule.Effect == RuleEffect.Insert || rule.InsertsTwo))
                 pending.Insert(0, new BattleAction { IsNumberOnly = true, Enemy = action.Enemy, Number = rule.InsertsTwo ? 2 : rule.Value });
         }
 
@@ -38,8 +38,8 @@ namespace RainbowLi
             int start = NumberStream.Count - 3;
             for (int i = 0; i < 3; i++) if (NumberStream[start + i] != rule.Numbers[i]) return;
             bool primary=rule.Accepts(rule.Requirement);var extra=rule.AdditionalEffect;bool secondary=extra!=null&&rule.Accepts(extra.Requirement);if(!primary&&!secondary)return;
-            int repetitions=Math.Min(99-rule.Triggers,1+Actor(enemy).Statuses[CardEffect.Chant]);rule.Triggers+=repetitions;for(int repeat=0;repeat<repetitions;repeat++){if(primary)matches.Add(new BattleAction { Rule = rule, Enemy = enemy });
-            if(secondary)matches.Add(new BattleAction {Rule=new SequenceRule {Name=rule.Name+" / 效果2",Numbers=(int[])rule.Numbers.Clone(),Effect=extra.Effect,Value=extra.Value,InsertsTwo=extra.InsertsTwo},Enemy=enemy});}
+            int repetitions=Math.Min(99-rule.Triggers,1+Actor(enemy).Statuses[CardEffect.Chant]);int firstTrigger=rule.Triggers+1;rule.Triggers+=repetitions;for(int repeat=0;repeat<repetitions;repeat++){if(primary)matches.Add(new BattleAction { Rule = rule, Enemy = enemy,SequenceTrigger=firstTrigger+repeat });
+            if(secondary)matches.Add(new BattleAction {Rule=new SequenceRule {Name=rule.Name+" / 效果2",Numbers=(int[])rule.Numbers.Clone(),Effect=extra.Effect,Value=extra.Value,InsertsTwo=extra.InsertsTwo},Enemy=enemy,SequenceTrigger=firstTrigger+repeat});}
             Log("牌序触发 [" + rule.Name + "] " + rule.Pattern + (enemy ? " · 敌人触发" : " · 玩家触发") + " · " + rule.Triggers + "/99");
             if (arena && ++ArenaTriggerCount >= 2) rotateArena = true;
         }

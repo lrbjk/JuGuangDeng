@@ -36,14 +36,14 @@ namespace RainbowLi
             if (setup != null && setup.CardPool.Count > 0)
             {
                 var candidates = setup.CardPool.Where(c => number == 0 || c.Number == number).ToList();
-                if (candidates.Count > 0) {var c=CloneCard(candidates[random.Next(candidates.Count)]);c.AttackBase=BaseAttack;return c;}
+                if (candidates.Count > 0) {var c=candidates[random.Next(candidates.Count)].CopyAsNewInstance();c.AttackBase=BaseAttack;return c;}
             }
             return new Card { AttackBase=BaseAttack, Number = number == 0 ? random.Next(1, 7) : number, Effect = (CardEffect)random.Next(0, 3) };
         }
 
         private int WeightedChoice(double[] weights){double total=weights.Sum(),pick=random.NextDouble()*total;for(int i=0;i<weights.Length;i++){pick-=weights[i];if(pick<0)return i;}return weights.Length-1;}
 
-        private Card GenerateStartingCard(int number,CardEffect effect){var c=setup==null?null:setup.CardPool.FirstOrDefault(t=>t.Number==number&&t.Effect==effect);if(c==null&&setup!=null)c=setup.CardPool.FirstOrDefault(t=>t.Effect==effect);var result=c==null?new Card {Number=number,Effect=effect}:CloneCard(c);result.Number=number;result.AttackBase=BaseAttack;return result;}
+        private Card GenerateStartingCard(int number,CardEffect effect){var c=setup==null?null:setup.CardPool.FirstOrDefault(t=>t.Number==number&&t.Effect==effect);if(c==null&&setup!=null)c=setup.CardPool.FirstOrDefault(t=>t.Effect==effect);var result=c==null?new Card {Number=number,Effect=effect}:c.CopyAsNewInstance();result.Number=number;result.AttackBase=BaseAttack;return result;}
 
         private void Shuffle(List<Card> cards)
         {

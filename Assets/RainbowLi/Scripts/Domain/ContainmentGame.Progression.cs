@@ -6,7 +6,7 @@ namespace RainbowLi
     public sealed partial class ContainmentGame
     {
         public void OpenRouteEvent(){if(Phase==GamePhase.Map){Phase=GamePhase.Event;Message="选择一个事件奖励";}}
-        public void ResolveRouteEvent(bool heal,int amount){if(Phase!=GamePhase.Event)return;if(heal)Player.Heal(amount);else Coins+=Math.Max(0,amount);Phase=GamePhase.Map;Message="事件已完成，选择下一层路线。";}
+        public void ResolveRouteEvent(bool heal,int amount){if(Phase!=GamePhase.Event)return;BeginSettlement(BattleEventTiming.Service);if(heal)SettleHealing(false,false,amount,"RouteHealing",BattleEventSource.Service);else Coins+=Math.Max(0,amount);Phase=GamePhase.Map;Message="事件已完成，选择下一层路线。";}
 
         private void FinishBattle()
         {
@@ -40,7 +40,7 @@ namespace RainbowLi
         public void RestHeal()
         {
             if (Phase != GamePhase.Rest || ServiceUsed) return;
-            Health = Math.Min(HealthLimit, Health + 24); ServiceUsed = true; RestAvailable = false; Message = "恢复 24 生命。";
+            BeginSettlement(BattleEventTiming.Service);SettleHealing(false,false,24,"RestHealing",BattleEventSource.Service); ServiceUsed = true; RestAvailable = false; Message = "恢复 24 生命。";
         }
 
         public void RestGenerate()

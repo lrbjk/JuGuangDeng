@@ -10,18 +10,40 @@ namespace RainbowLi
     [Serializable]
     public sealed class Card
     {
+        // Identity belongs to the physical card, not its configuration or deck slot.
+        public string InstanceId { get; private set; } = Guid.NewGuid().ToString("N");
+        public string EngravingCode;
+        public int PermanentGrowth, BattleCharge;
+        // Nonempty ordered effects take precedence over the legacy single effect.
+        public List<CardEffectInstance> Effects = new List<CardEffectInstance>();
         public int Number;
         public CardEffect Effect;
         public int Upgrade;
         public bool Engraved;
         public int AttackBase;
         public CardEffectSpec Spec; public int EffectAmount;
-        public bool CanUpgrade=>UpgradeBonus>0;
-        public string RulesText=>Spec==null?Description:Spec.Text.Replace("X",(Spec.UsesNumber?Number:Value).ToString())+(Upgrade>0?" · 升级后数值 "+Value:"");
+        public bool CanUpgrade=>HasOrderedEffects?Effects.Any(e=>e.UpgradeBonus>0):UpgradeBonus>0;
+        public bool HasOrderedEffects=>Effects!=null&&Effects.Count>0;
+        public string RulesText=>HasOrderedEffects?Description:Spec==null?Description:Spec.Text.Replace("X",(Spec.UsesNumber?Number:Value).ToString())+(Upgrade>0?" · 升级后数值 "+Value:"");
         public int BaseBonus = 3, UpgradeBonus = 2, EngravingDamage = 5;
-        public int Value => Spec==null?Math.Max(0,AttackBase + Number + BaseBonus + Upgrade * UpgradeBonus):Math.Max(Effect==CardEffect.InverseStrike?1:0,(Spec.UsesNumber?(Effect==CardEffect.IncreasedStrike?1+Number:Effect==CardEffect.InverseStrike?7-Number:Number):EffectAmount)+Upgrade*UpgradeBonus);
-        public string Name => Spec!=null?Spec.Name.Replace("X",""):Effect == CardEffect.Strike ? "冲击" : Effect == CardEffect.Guard ? "屏障" : "修复";
-        public string Description => Name + " " + Value + (Spec==null||Spec.Lifetime==EffectLifetime.Direct?"":Spec.Lifetime==EffectLifetime.Temporary?" · 本回合":" · 持续") + (Engraved ? " · 铭刻：牌序收尾时追加伤害" : "");
+        public int Value => HasOrderedEffects?Effects[0].ResolveValue(Number,Upgrade):Spec==null?Math.Max(0,AttackBase + Number + BaseBonus + Upgrade * UpgradeBonus):Math.Max(Effect==CardEffect.InverseStrike?1:0,(Spec.UsesNumber?(Effect==CardEffect.IncreasedStrike?1+Number:Effect==CardEffect.InverseStrike?7-Number:Number):EffectAmount)+Upgrade*UpgradeBonus);
+        public string Name => HasOrderedEffects?Effects[0].Spec.Name:Spec!=null?Spec.Name.Replace("X",""):Effect == CardEffect.Strike ? "冲击" : Effect == CardEffect.Guard ? "屏障" : "修复";
+        public string Description => (HasOrderedEffects?string.Join(" / ",Effects.Select(e=>CombatStatuses.Name(e.Spec.Effect)+" "+e.ResolveValue(Number,Upgrade))):Name + " " + Value + (Spec==null||Spec.Lifetime==EffectLifetime.Direct?"":Spec.Lifetime==EffectLifetime.Temporary?" · 本回合":" · 持续")) + (Engraved ? " · 铭刻：牌序收尾时追加伤害" : "");
+
+        public void ResetBattleState() { BattleCharge = 0; }
+        // Snapshots retain identity and all state; a new physical copy has a new ID
+        // and starts without encounter-local charge. Neither shares effect objects.
+        public Card CopyForSnapshot() => Copy(true);
+        public Card CopyAsNewInstance() => Copy(false);
+        private Card Copy(bool snapshot)
+        {
+            var copy = (Card)MemberwiseClone();
+            copy.InstanceId = snapshot ? InstanceId : Guid.NewGuid().ToString("N");
+            copy.Spec = Spec?.Copy();
+            copy.Effects = Effects==null?new List<CardEffectInstance>():Effects.Select(e=>e.Copy()).ToList();
+            if(!snapshot)copy.ResetBattleState();
+            return copy;
+        }
     }
 
     public enum PatternRequirement { Any, Straight, Triple }
@@ -60,6 +82,7 @@ namespace RainbowLi
         public string SkillName; public bool Special;
         public CardEffectSpec EffectSpec;
         public bool IsRepeat,IsStatusTick,EndTick;
+        public int SequenceTrigger;
         public BattleAction SourceAction;
         public string Label => IsStatusTick?(Enemy?"敌方":"玩家")+" / 回合结束中毒结算":Rule != null ? Rule.Name + (Enemy ? "（敌人触发）" : "（玩家触发）") + "：" + Rule.Description :
             IsNumberOnly ? "插入数字 " + Number : Enemy ? (Special?"特殊 / ":"")+(string.IsNullOrEmpty(SkillName)?"实体":SkillName)+" " + Number + " · " + CombatStatuses.Name(Effect)+" " + Value :

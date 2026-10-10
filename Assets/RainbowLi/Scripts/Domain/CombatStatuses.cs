@@ -5,13 +5,15 @@ namespace RainbowLi {
  public sealed class CombatStatuses {
   private readonly Dictionary<CardEffect,EffectLifetime> lifetimes=new Dictionary<CardEffect,EffectLifetime>();
   private readonly Dictionary<CardEffect,int> values=new Dictionary<CardEffect,int>();
-  public int this[CardEffect effect] {get=>values.TryGetValue(effect,out int value)?value:0;set{if(value<=0)values.Remove(effect);else values[effect]=value;}}
+  public int this[CardEffect effect] {get=>values.TryGetValue(effect,out int value)?value:0;set{if(value<=0){values.Remove(effect);lifetimes.Remove(effect);}else values[effect]=value;}}
+  public KeyValuePair<CardEffect,int>[] Snapshot()=>values.OrderBy(v=>(int)v.Key).ToArray();
+  public EffectLifetime? LifetimeOf(CardEffect effect)=>lifetimes.TryGetValue(effect,out var lifetime)?lifetime:(EffectLifetime?)null;
   public bool Any=>values.Count>0;
   public string Summary=>string.Join(" · ",values.OrderBy(v=>(int)v.Key).Select(v=>Name(v.Key)+v.Value));
   public string Brief=>string.Join(" · ",values.OrderBy(v=>(int)v.Key).Take(6).Select(v=>Name(v.Key)+v.Value))+(values.Count>6?" …":"");
-  public void Add(CardEffect effect,int amount,EffectLifetime? lifetime=null){if(amount<=0)return;lifetimes[effect]=lifetime??(Temporary.Contains(effect)?EffectLifetime.Temporary:EffectLifetime.Persistent);this[effect]=effect==CardEffect.Reciprocity||effect==CardEffect.Disorder?1:effect==CardEffect.DamageCap&&this[effect]>0?Math.Min(this[effect],amount):this[effect]+amount;}
+  public void Add(CardEffect effect,int amount,EffectLifetime? lifetime=null){if(amount<=0)return;lifetimes[effect]=lifetime??(Temporary.Contains(effect)?EffectLifetime.Temporary:EffectLifetime.Persistent);this[effect]=effect==CardEffect.Reciprocity||effect==CardEffect.Disorder?1:effect==CardEffect.DamageCap&&this[effect]>0?Math.Min(this[effect],amount):CombatResolver.Clamp((long)this[effect]+amount);}
   public void Clear(){values.Clear();lifetimes.Clear();}
-  public void CopyFrom(CombatStatuses source){Clear();foreach(var entry in source.values)values.Add(entry.Key,entry.Value);foreach(var entry in source.lifetimes)lifetimes.Add(entry.Key,entry.Value);}
+  public void CopyFrom(CombatStatuses source){if(ReferenceEquals(this,source))return;Clear();foreach(var entry in source.values)values.Add(entry.Key,entry.Value);foreach(var entry in source.lifetimes)lifetimes.Add(entry.Key,entry.Value);}
   public void EndRound(){foreach(var e in new[]{CardEffect.Weaken,CardEffect.Fortify,CardEffect.IronWall})this[e]--;foreach(var e in Temporary)if(!lifetimes.TryGetValue(e,out var kind)||kind!=EffectLifetime.Persistent)this[e]=0;foreach(var e in lifetimes.Where(p=>p.Value!=EffectLifetime.Persistent).Select(p=>p.Key).ToArray())this[e]=0;}
   private static readonly CardEffect[] Temporary={CardEffect.Strength,CardEffect.Vulnerable,CardEffect.RandomNumbers,CardEffect.Chant,CardEffect.Reciprocity,CardEffect.Ignite,CardEffect.Envenom,CardEffect.Disorder,CardEffect.Mutation,CardEffect.AddNumber,CardEffect.SubtractNumber};
   public static bool IsDirect(CardEffect effect)=>effect==CardEffect.Strike||effect==CardEffect.Guard||effect==CardEffect.Mend||effect==CardEffect.IncreasedStrike||effect==CardEffect.InverseStrike;

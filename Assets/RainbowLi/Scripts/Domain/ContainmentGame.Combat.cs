@@ -8,9 +8,11 @@ namespace RainbowLi
         public void StartBattle(bool boss = false, bool elite=false, bool routeBoss=false)
         {
             if (Phase != GamePhase.Map || boss && !routeBoss && Victories < 2) return;
-            Boss = boss;Player.Statuses.Clear();battleRandomState=(uint)random.Next(1,int.MaxValue);
+            BeginSettlement(BattleEventTiming.EncounterStart);Round=0;
+            foreach(var card in Deck)card.ResetBattleState();
+            Boss = boss;ClearStatuses(false);ClearStatuses(true);battleRandomState=(uint)random.Next(1,int.MaxValue);
             EnemyMaxHealth = setup == null ? (boss ? 110 : 36 + Victories * 12) : (boss ? setup.BossHealth : setup.EnemyHealth + Victories * setup.EnemyHealthGrowth);
-            Enemy.StartEncounter(EnemyMaxHealth,boss,elite);
+            ResetRoundState(true);Enemy.StartEncounter(EnemyMaxHealth,boss,elite);
             if(setup!=null)Enemy.ConditionalRules.AddRange(setup.EnemyConditionalRules.Select(c=>new ConditionalSequence {Condition=c.Condition,Threshold=c.Threshold,Rule=CloneRule(c.Rule)}));
             Round = 0; ArenaIndex = 0; ArenaTriggerCount = 0; rotateArena = false;
             ArenaRules.Clear();
@@ -23,12 +25,13 @@ namespace RainbowLi
             drawPile.Clear(); discard.Clear(); Hand.Clear(); pending.Clear();
             drawPile.AddRange(Deck); Shuffle(drawPile);
             History.Clear(); Log("收容开始：" + EnemyName);
-            BeginRound();
+            Phase=GamePhase.Resolving;BeginRound();
         }
 
         private void BeginRound()
         {
-            Round++; Player.ResetRound(); Enemy.ResetRound();endTicksQueued=false;processedActions=0;
+            settlingAction=null;settlingEffectIndex=-1;settlingTiming=BattleEventTiming.RoundStart;
+            Round++; ResetRoundState(false); ResetRoundState(true);endTicksQueued=false;processedActions=0;
             StartStatusEffects(Player,false);if(CheckBattleEnd())return;StartStatusEffects(Enemy,true);if(CheckBattleEnd())return;
             if (rotateArena) { ArenaIndex = (ArenaIndex + 1) % 3; rotateArena = false; ArenaTriggerCount = 0; }
             foreach (var rule in PlayerRules.Concat(ArenaRules)) rule.Triggers = 0;
@@ -53,11 +56,13 @@ namespace RainbowLi
         public bool Step()
         {
             if(Phase!=GamePhase.Resolving)return false;
+            BeginSettlement(BattleEventTiming.Action);
             if(pending.Count==0){
                 if(QueueEndTicks())return Step();
-                Player.Statuses.EndRound();Enemy.Statuses.EndRound();discard.AddRange(Hand);Hand.Clear();BeginRound();return false;
+                settlingTiming=BattleEventTiming.RoundEnd;EndStatuses(false);EndStatuses(true);discard.AddRange(Hand);Hand.Clear();BeginRound();return false;
             }
             var action=pending[0];pending.RemoveAt(0);LastResolvedAction=action;LastAction=action.Label;Log(LastAction);
+            settlingAction=action;
             if(!action.IsStatusTick&&++processedActions>4096){pending.Clear();Message="本回合连锁达到 4096 次，结束剩余连锁。";Log(Message);return false;}
             if(action.IsStatusTick){ApplyStatusTick(action);ActivateEnemyConditions();CheckBattleEnd();return true;}
             bool behavior=!action.IsNumberOnly;
@@ -73,9 +78,5 @@ namespace RainbowLi
 
         private void ActivateEnemyConditions(){if(Health<=0||EnemyHealth<=0)return;foreach(var special in Enemy.ActivateSpecials(Round,setup)){pending.Add(special);Timeline.Add(special);Log("条件达成，特殊技能加入本回合："+special.Label);}}
 
-        private void Damage(bool toEnemy, int value)
-        {
-            Actor(toEnemy).ReceiveDamage(Actor(!toEnemy).OutgoingDamage(value));
-        }
     }
 }
