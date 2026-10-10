@@ -29,7 +29,7 @@ namespace RainbowLi.EditorTools {
   void Action(System.Action action){try{action();message="完成。";}catch(Exception e){message=e.Message;}Repaint();}
   protected void OnGUI(){
    EditorGUILayout.LabelField(Enemy?"敌人卡牌配表":"玩家卡牌配表",EditorStyles.boldLabel);
-   EditorGUILayout.HelpBox("前七列与《卡牌效果.xlsx》一致；第五列保存效果描述。启用决定是否进入效果池。"+(Enemy?"敌人使用数字列；特殊技能按条件首次额外触发。":"玩家随机起始牌保留三组 1–6 的数字规则。")+" 修改后保存，重新开始游戏生效。",MessageType.Info);
+   EditorGUILayout.HelpBox("前七列与《卡牌效果.xlsx》一致；第五列保存效果描述。启用决定是否进入效果池。"+(Enemy?"敌人使用数字列；特殊技能按条件首次额外触发。":"玩家随机起始牌保留三组 1–6 的数字规则。")+" 正负面列用于分类；作用对象由程序效果标识决定：伤害/减益给对手，防御/恢复/增益给自身。修改后保存，重新开始游戏生效。",MessageType.Info);
    EditorGUILayout.BeginHorizontal();var type=Enemy?typeof(EnemyCardTable):typeof(PlayerCardTable);var next=(CardTableDefinition)EditorGUILayout.ObjectField("配表资产",table,type,false);if(next!=table)SetTable(next);
    if(GUILayout.Button("新建配表",GUILayout.Width(85)))Action(CreateTable);EditorGUILayout.EndHorizontal();
    actor=EditorGUILayout.ObjectField(Enemy?"敌人配置":"玩家配置",actor,Enemy?typeof(EnemyDefinition):typeof(PlayerDefinition),false);

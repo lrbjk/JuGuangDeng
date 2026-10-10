@@ -16,6 +16,8 @@ public sealed class GameView : MonoBehaviour {
  public SequenceView[] ruleViews;
  public RectTransform deckContent;
  public DeckRowView deckRowPrefab;
+ public BattleHudView battleHud;
+ public CardMotionController cardMotion;
  private bool initialized;
  public bool IsReady => initialized;
  private void OnEnable(){session.Changed+=Refresh;}
@@ -37,9 +39,10 @@ public sealed class GameView : MonoBehaviour {
   }
  }
  public void Refresh(){
-  if(!initialized||session.Game==null)return; var g=session.Game;EnsureCapacity(g);
+  if(!initialized||session.Game==null)return; var g=session.Game;EnsureCapacity(g);if(cardMotion!=null)cardMotion.PrepareRefresh(g);
   bool planning=g.Phase==GamePhase.Planning, fighting=planning||g.Phase==GamePhase.Resolving, shop=g.Phase==GamePhase.Shop;
-  mapPanel.SetActive(g.Phase==GamePhase.Map);battlePanel.SetActive(fighting);rewardPanel.SetActive(g.Phase==GamePhase.Reward);servicePanel.SetActive(shop||g.Phase==GamePhase.Rest);endPanel.SetActive(g.Phase==GamePhase.Won||g.Phase==GamePhase.Lost);
+  bool holdBattle=cardMotion!=null&&cardMotion.KeepBattleVisible;
+  mapPanel.SetActive(g.Phase==GamePhase.Map);battlePanel.SetActive(fighting||holdBattle);rewardPanel.SetActive(g.Phase==GamePhase.Reward&&!holdBattle);servicePanel.SetActive(shop||g.Phase==GamePhase.Rest);endPanel.SetActive((g.Phase==GamePhase.Won||g.Phase==GamePhase.Lost)&&!holdBattle);
   playerHealth.maxValue=g.HealthLimit;playerHealth.value=g.Health;enemyHealth.maxValue=Mathf.Max(1,g.EnemyMaxHealth);enemyHealth.value=g.EnemyHealth;
   playerStats.text="玩家 / 攻击 "+g.BaseAttack+"\n生命 "+g.Health+" / "+g.HealthLimit+"   护盾 "+g.Shield+"   增伤 "+g.Power;
   enemyStats.text=fighting?g.EnemyName+"\n生命 "+g.EnemyHealth+" / "+g.EnemyMaxHealth+"   护盾 "+g.EnemyShield+"   增伤 "+g.EnemyPower:"完成收容 "+g.Victories+" 次";
@@ -73,5 +76,7 @@ public sealed class GameView : MonoBehaviour {
    for(int i=0;i<g.Deck.Count;i++){var row=Instantiate(deckRowPrefab,deckContent);row.Bind(g.Deck[i],i,session,engravings,progression);}
   }
   endTitle.text=g.Phase==GamePhase.Won?"核心实体 / 收容完成":"装置离线 / 收容失败";endSummary.text="完成收容 "+g.Victories+" 次 · 最终牌组 "+g.Deck.Count+" 张\n点击左侧新的一局重新开始。";
+  if(battleHud!=null)battleHud.Refresh(g);
+  if(cardMotion!=null)cardMotion.Observe(g);
  }
 }}

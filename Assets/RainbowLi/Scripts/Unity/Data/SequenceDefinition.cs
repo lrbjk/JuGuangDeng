@@ -9,7 +9,15 @@ public sealed class SequenceDefinition : ScriptableObject {
  public bool insertTwo;
  public PatternRequirement requirement;
  public bool secondEffectEnabled;public SequenceEffect secondEffect=new SequenceEffect();
- public SequenceRule CreateRule() => new SequenceRule { Name=displayName, Numbers=(int[])numbers.Clone(), Effect=effect, Value=value, InsertsTwo=insertTwo,Requirement=requirement,AdditionalEffect=!secondEffectEnabled?null:new SequenceEffect {Effect=secondEffect.Effect,Value=secondEffect.Value,InsertsTwo=secondEffect.InsertsTwo,Requirement=secondEffect.Requirement} };
+ public SequenceEffectTable effectTable;
+ public string primaryEffectId,secondaryEffectId;
+ [Tooltip("0 使用配表范围下限")][Min(0)] public int primaryX,secondaryX;
+ public SequenceRule CreateRule(){
+  var primary=Resolve(primaryEffectId,primaryX,new SequenceEffect {Effect=effect,Value=value,InsertsTwo=insertTwo,Requirement=requirement});
+  var secondary=!secondEffectEnabled?null:Resolve(secondaryEffectId,secondaryX,secondEffect);
+  return new SequenceRule {Name=displayName,Numbers=(int[])numbers.Clone(),Effect=primary.Effect,Value=primary.Value,InsertsTwo=primary.InsertsTwo,Requirement=primary.Requirement,AdditionalEffect=secondary==null?null:new SequenceEffect {Effect=secondary.Effect,Value=secondary.Value,InsertsTwo=secondary.InsertsTwo,Requirement=secondary.Requirement}};
+ }
+ private SequenceEffect Resolve(string id,int x,SequenceEffect fallback){if(effectTable==null||string.IsNullOrWhiteSpace(id))return fallback;var row=effectTable.Find(id);row.TryRange(out int min,out _);return effectTable.CreateEffect(id,x==0?min:x,fallback==null?PatternRequirement.Any:fallback.Requirement);}
  private void OnValidate() {
   if(numbers == null || numbers.Length != 3) numbers = new[]{1,2,3};
   for(int i=0;i<3;i++) numbers[i]=Mathf.Clamp(numbers[i],0,6);

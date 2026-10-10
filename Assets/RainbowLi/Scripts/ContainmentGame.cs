@@ -48,6 +48,8 @@ namespace RainbowLi
         public int PlayerActionLimit => setup==null?MaxPlayerActions:setup.PlayerActions;
         private readonly List<Card> drawPile = new List<Card>();
         private readonly List<Card> discard = new List<Card>();
+        public IReadOnlyList<Card> DrawPileCards => drawPile;
+        public IReadOnlyList<Card> DiscardCards => discard;
         private readonly List<BattleAction> pending = new List<BattleAction>();
         private bool rotateArena;
         private uint battleRandomState;

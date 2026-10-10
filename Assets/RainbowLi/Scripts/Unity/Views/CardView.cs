@@ -12,6 +12,7 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
  public Image[] pips;
  public Sprite[] suits;
  public Button button;
+ public CardEffect BoundEffect {get;private set;}
  public Color playerFace=new Color(.98f,.95f,.85f),enemyFace=new Color(.96f,.84f,.78f);
  [Range(0,30)] public float hoverLift=14, selectedLift=20;
  private UnityAction callback;
@@ -25,6 +26,7 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
   if(callback!=null)button.onClick.RemoveListener(callback);
   callback=()=>clicked?.Invoke(); button.onClick.AddListener(callback);button.interactable=enabled;
   selected=active; face.color=enemy?enemyFace:playerFace;
+  BoundEffect=effect;
   topRank.text=bottomRank.text=number.ToString();caption.text=description;
   int suit=enemy?3:effect==CardEffect.Strike||effect==CardEffect.IncreasedStrike||effect==CardEffect.InverseStrike?0:effect==CardEffect.Guard||effect==CardEffect.IronWall||effect==CardEffect.Fortify||effect==CardEffect.Parry||effect==CardEffect.Barrier||effect==CardEffect.DamageCap?1:effect==CardEffect.Mend||effect==CardEffect.Regeneration?2:3;
   Color color=suit==1?new Color(.1f,.22f,.28f):new Color(.68f,.12f,.14f);
@@ -52,4 +54,9 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
  private void OnDisable(){if(movement!=null)StopCoroutine(movement);movement=null;if(rect!=null)rect.anchoredPosition=home;}
  public void SetLayout(Vector2 position,float scale){if(movement!=null)StopCoroutine(movement);movement=null;rect=(RectTransform)transform;home=position;rect.anchoredPosition=position;rect.localScale=Vector3.one*scale;}
  public void SetPreview(int number,CardEffect effect,string label){ Bind(number,effect,label,false,false,false,false,null); }
+ public void SetPresentationOnly(){
+  if(movement!=null)StopCoroutine(movement);movement=null;button.interactable=false;
+  foreach(var graphic in GetComponentsInChildren<Graphic>(true))graphic.raycastTarget=false;
+  enabled=false;
+ }
 }}

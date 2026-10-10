@@ -5,6 +5,7 @@ namespace RainbowLi.UnityGame {
 public sealed class BattleEffects : MonoBehaviour {
  public GameSession session;
  public GameView gameView;
+ public CardMotionController cardMotion;
  public RectTransform overlay,shakeRoot,playerTarget,enemyTarget,ruleOrigin;
  public CardView[] actionViews;
  public Image particlePrefab;
@@ -17,7 +18,7 @@ public sealed class BattleEffects : MonoBehaviour {
  [Range(1,20)] public int maxConcurrentBursts=10;
  [Min(0.1f)] public float chainWindow=1.25f;
  [Range(1,4)] public float maxComboGain=2.8f;
- private sealed class Burst {public float started,strength,gain;public bool targetEnemy,aura;public Vector2 from,target;public RectTransform beam;public Text number;public readonly List<Image> particles=new List<Image>();}
+ private sealed class Burst {public float started,strength,gain;public bool targetEnemy,aura,arrived;public Vector2 from,target;public RectTransform beam;public Text number;public readonly List<Image> particles=new List<Image>();}
  private readonly List<Burst> bursts=new List<Burst>();
  private int combo,lastRound;
  private bool lastEnemy;
@@ -32,7 +33,8 @@ public sealed class BattleEffects : MonoBehaviour {
  private void CheckReset(){if(observedGame!=session.Game){observedGame=session.Game;Clear();}}
  private void Clear(){foreach(var b in bursts)DestroyBurst(b);bursts.Clear();combo=0;lastEffect=-10;if(shakeRoot!=null)shakeRoot.localPosition=restPosition;if(comboLabel!=null)comboLabel.text="";if(playerFill!=null)playerFill.color=playerColor;if(enemyFill!=null)enemyFill.color=enemyColor;}
  private Vector2 Point(RectTransform rect){return overlay.InverseTransformPoint(rect.TransformPoint(rect.rect.center));}
- private void OnResolution(ResolutionEvent e){
+ private void OnResolution(ResolutionEvent e){if(cardMotion==null||!cardMotion.isActiveAndEnabled||!cardMotion.enableMotion)PlayResolution(e);}
+ public void PlayResolution(ResolutionEvent e,bool arrived=false){
   if(gameView!=null)actionViews=gameView.actions;
   if(e.Action==null)return;
   if(!e.Action.IsNumberOnly){combo=lastRound==e.Round&&lastEnemy==e.Action.Enemy&&Time.unscaledTime-lastEffect<=chainWindow?Mathf.Min(99,combo+1):1;lastRound=e.Round;lastEnemy=e.Action.Enemy;lastEffect=Time.unscaledTime;}
@@ -41,18 +43,19 @@ public sealed class BattleEffects : MonoBehaviour {
   int raw=e.Action.Rule!=null?e.Action.Rule.Value:e.Action.Card!=null?e.Action.Card.Value:e.Action.Value;
   int nominal=e.Action.IsStatusTick?raw:(e.Action.Enemy?session.Game.Enemy: (CombatantState)session.Game.Player).OutgoingDamage(raw+(e.Action.Enemy?session.Game.EnemyPower:session.Game.Power));
   Vector2 from=e.Slot>=0&&e.Slot<actionViews.Length?Point((RectTransform)actionViews[e.Slot].transform):Point(ruleOrigin);
-  if(e.EnemyDamage+e.EnemyBlocked>0||e.EnemyParried)SpawnBurst(from,Point(enemyTarget),e.EnemyParried?nominal:e.EnemyDamage+e.EnemyBlocked,e.EnemyDamage,false,true);
-  if(e.PlayerDamage+e.PlayerBlocked>0||e.PlayerParried)SpawnBurst(from,Point(playerTarget),e.PlayerParried?nominal:e.PlayerDamage+e.PlayerBlocked,e.PlayerDamage,false,false);
-  if(damage==0&&!e.PlayerParried&&!e.EnemyParried){if(combo>=2)SpawnBurst(Point(ruleOrigin),Point(ruleOrigin),0,0,true,false);return;}
+  if(e.EnemyDamage+e.EnemyBlocked>0||e.EnemyParried)SpawnBurst(e.Action.Enemy?Point(enemyTarget):from,Point(enemyTarget),e.EnemyParried?nominal:e.EnemyDamage+e.EnemyBlocked,e.EnemyDamage,false,true,arrived,DamageCaption(e,true));
+  if(e.PlayerDamage+e.PlayerBlocked>0||e.PlayerParried)SpawnBurst(!e.Action.Enemy?Point(playerTarget):from,Point(playerTarget),e.PlayerParried?nominal:e.PlayerDamage+e.PlayerBlocked,e.PlayerDamage,false,false,arrived,DamageCaption(e,false));
+  if(damage==0&&!e.PlayerParried&&!e.EnemyParried){if(combo>=2)SpawnBurst(Point(ruleOrigin),Point(ruleOrigin),0,0,true,false,arrived);return;}
   bool attack=e.Action.Rule!=null?e.Action.Rule.Effect==RuleEffect.Damage:e.Action.Effect==CardEffect.Strike||e.Action.Effect==CardEffect.IncreasedStrike||e.Action.Effect==CardEffect.InverseStrike;
-  if(!e.Action.IsStatusTick&&attack&&(e.Action.Enemy?session.Game.EnemyHealth:session.Game.Health)>0&&e.Slot>=0&&e.Slot<actionViews.Length){var target=e.Action.Enemy?playerTarget:enemyTarget;actionViews[e.Slot].AttackToward(target.TransformPoint(target.rect.center),12+36*(1-Mathf.Exp(-nominal/18f)));}
+  if(!arrived&&!e.Action.IsStatusTick&&attack&&(e.Action.Enemy?session.Game.EnemyHealth:session.Game.Health)>0&&e.Slot>=0&&e.Slot<actionViews.Length){var target=e.Action.Enemy?playerTarget:enemyTarget;actionViews[e.Slot].AttackToward(target.TransformPoint(target.rect.center),12+36*(1-Mathf.Exp(-nominal/18f)));}
  }
- private void SpawnBurst(Vector2 from,Vector2 target,int strengthDamage,int healthDamage,bool aura,bool toEnemy){
+ private static string DamageCaption(ResolutionEvent e,bool enemy){if(e.Action.IsStatusTick)return "中毒 "+(enemy?e.EnemyDamage:e.PlayerDamage);if(e.Action.Enemy==enemy&&(enemy?e.EnemyDamage:e.PlayerDamage)>0)return "流血 "+(enemy?e.EnemyDamage:e.PlayerDamage);return null;}
+ private void SpawnBurst(Vector2 from,Vector2 target,int strengthDamage,int healthDamage,bool aura,bool toEnemy,bool arrived,string caption=null){
   if(bursts.Count>=maxConcurrentBursts){DestroyBurst(bursts[0]);bursts.RemoveAt(0);}
   float strength=1-Mathf.Exp(-strengthDamage/18f),gain=1+(maxComboGain-1)*(1-Mathf.Exp(-Mathf.Max(0,combo-1)/3.5f));
-  var b=new Burst{started=Time.unscaledTime,strength=strength,gain=gain,from=from,target=target,targetEnemy=toEnemy,aura=aura};
+  var b=new Burst{started=Time.unscaledTime-(arrived?.14f:0),strength=strength,gain=gain,from=from,target=target,targetEnemy=toEnemy,aura=aura,arrived=arrived};
   var beam=Instantiate(particlePrefab,overlay);b.beam=(RectTransform)beam.transform;beam.color=aura?new Color(.92f,.75f,.4f):new Color(1,.48f,.43f);
-  b.number=Instantiate(numberPrefab,overlay);b.number.text=aura?"牌序叠加":healthDamage==0?"格挡":"伤害 "+healthDamage;b.number.fontSize=Mathf.RoundToInt((24+strength*24)*Mathf.Sqrt(gain));
+  b.number=Instantiate(numberPrefab,overlay);b.number.text=caption??(aura?"牌序叠加":healthDamage==0?"格挡":"伤害 "+healthDamage);b.number.fontSize=Mathf.RoundToInt((24+strength*24)*Mathf.Sqrt(gain));
   int count=Mathf.Min(maxParticles,Mathf.RoundToInt((8+strength*36)*gain));
   for(int i=0;i<count;i++){var spark=Instantiate(particlePrefab,overlay);spark.color=i%3==0?new Color(1,.85f,.48f):new Color(1,.48f,.43f);b.particles.Add(spark);}
   bursts.Add(b);
@@ -64,7 +67,7 @@ public sealed class BattleEffects : MonoBehaviour {
    if(age>1.15f){DestroyBurst(b);bursts.RemoveAt(n);continue;}
    float hit=Mathf.Max(0,age-.14f),fade=Mathf.Clamp01(1-hit),radius=(25+hit*160)*(0.5f+b.strength)*b.gain;
    Vector2 head=Vector2.Lerp(b.from,b.target,Mathf.Clamp01(age/.14f)),tail=Vector2.Lerp(b.from,b.target,Mathf.Clamp01(age/.14f-.3f));
-   b.beam.anchoredPosition=(head+tail)/2;b.beam.sizeDelta=new Vector2(Vector2.Distance(head,tail),3+12*b.strength*b.gain);b.beam.localRotation=Quaternion.Euler(0,0,Mathf.Atan2(head.y-tail.y,head.x-tail.x)*Mathf.Rad2Deg);b.beam.gameObject.SetActive(age<.2f);
+   b.beam.anchoredPosition=(head+tail)/2;b.beam.sizeDelta=new Vector2(Vector2.Distance(head,tail),3+12*b.strength*b.gain);b.beam.localRotation=Quaternion.Euler(0,0,Mathf.Atan2(head.y-tail.y,head.x-tail.x)*Mathf.Rad2Deg);b.beam.gameObject.SetActive(!b.arrived&&age<.2f);
    b.number.rectTransform.anchoredPosition=b.target+Vector2.up*(38+hit*65);var nc=b.number.color;nc.a=fade;b.number.color=nc;
    for(int i=0;i<b.particles.Count;i++){var image=b.particles[i];var r=(RectTransform)image.transform;float angle=i*2.39996f;Vector2 dir=new Vector2(Mathf.Cos(angle),Mathf.Sin(angle));r.anchoredPosition=b.target+dir*radius*(.55f+i%7*.1f)+Vector2.down*85*hit*hit;r.sizeDelta=Vector2.one*(3+b.strength*6)*Mathf.Sqrt(b.gain)*fade;var c=image.color;c.a=fade*fade;image.color=c;image.gameObject.SetActive(age>=.14f);}
    if(!b.aura&&age>=.14f&&hit<.3f){float flash=(1-hit/.3f)*(.4f+b.strength*.6f);if(b.targetEnemy)enemyFlash=Mathf.Max(enemyFlash,flash);else playerFlash=Mathf.Max(playerFlash,flash);}
