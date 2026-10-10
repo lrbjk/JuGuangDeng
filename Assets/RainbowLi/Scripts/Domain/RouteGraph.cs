@@ -24,9 +24,10 @@ namespace RainbowLi {
   }
  }
  public static class RouteGenerator {
-  public static RouteGraph Generate(int seed,int floors=8,int lanes=3){
+  public static RouteGraph Generate(int seed,int floors=8,int lanes=3)=>Generate(new RecoverableRandom(seed),floors,lanes);
+  public static RouteGraph Generate(Random random,int floors=8,int lanes=3){
    if(floors<4||floors>16||lanes<2||lanes>5)throw new ArgumentOutOfRangeException("Route size");
-   var random=new Random(seed);var nodes=new List<LevelNodeData>();
+   var nodes=new List<LevelNodeData>();
    for(int row=0;row<floors-1;row++)for(int lane=0;lane<lanes;lane++){
     int roll=random.Next(100);LevelKind kind=roll<50?LevelKind.Combat:roll<65?LevelKind.Rest:roll<80?LevelKind.Shop:roll<90?LevelKind.Event:LevelKind.Elite;
     if(row==0)kind=LevelKind.Combat;
@@ -51,6 +52,7 @@ namespace RainbowLi {
   public bool Failed {get;private set;}
   public readonly HashSet<int> Completed=new HashSet<int>();
   public RouteRun(RouteGraph graph){Graph=graph;}
+  public static RouteRun Restore(RouteGraph graph,int current,int active,int[] completed,bool finished,bool failed){var run=new RouteRun(graph);if(current!=-1&&graph.Find(current)==null||active!=-1&&graph.Find(active)==null)throw new ArgumentException("Invalid saved route node");run.CurrentId=current;run.Completed.UnionWith(completed??Array.Empty<int>());if(run.Completed.Any(id=>graph.Find(id)==null))throw new ArgumentException("Invalid completed node");if(active>=0&&!run.CanEnter(active))throw new ArgumentException("Invalid active node");run.ActiveId=active;run.Finished=finished;run.Failed=failed;return run;}
   public bool CanEnter(int id){var n=Graph.Find(id);return n!=null&&!Finished&&!Failed&&ActiveId<0&&!Completed.Contains(id)&&(CurrentId<0?n.floor==0:Graph.Find(CurrentId).next.Contains(id));}
   public bool Enter(int id){if(!CanEnter(id))return false;ActiveId=id;return true;}
   public bool Complete(){if(ActiveId<0||Failed)return false;CurrentId=ActiveId;Completed.Add(ActiveId);Finished=Graph.Find(ActiveId).kind==LevelKind.Boss;ActiveId=-1;return true;}

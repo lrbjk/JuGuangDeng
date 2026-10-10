@@ -12,11 +12,12 @@ namespace RainbowLi
         {
             pending.Clear(); Coins += Boss ? 50 : Elite ? EliteGold : 25; Victories++; RestAvailable = true;
             if (Boss) { Phase = GamePhase.Won; Message = "核心实体已收容，原型通关！"; return; }
-            Rewards.Clear(); for (int i = 0; i < 3; i++) Rewards.Add(GenerateCard());
+            Rewards.Clear(); for (int i = 0; i < (setup?.RewardCount??3); i++) Rewards.Add(GenerateCard());
+            if(setup!=null&&setup.SequencePool.Count>0)AddAvailableEffect(DrawSequenceEffect(setup.RewardSequencePool));
             if (random.NextDouble() < 0.2)
             {
                 var candidates = Deck.Where(c => !c.Engraved).ToList();
-                if (candidates.Count > 0) { candidates[random.Next(candidates.Count)].Engraved = true; Log("稀有战利品：随机一张牌获得铭刻。"); }
+                if (candidates.Count > 0) { var card=candidates[random.Next(candidates.Count)];card.Engraving=DrawEngraving(setup?.EngravingPoolName);card.EngravingCode=card.Engraving.Code;card.Engraved=true; Log("稀有战利品：随机一张牌获得铭刻。"); }
             }
             Phase = GamePhase.Reward; Message = "收容成功，获得金币。选择一张生成卡牌加入牌组。";
         }
@@ -40,7 +41,7 @@ namespace RainbowLi
         public void RestHeal()
         {
             if (Phase != GamePhase.Rest || ServiceUsed) return;
-            BeginSettlement(BattleEventTiming.Service);SettleHealing(false,false,24,"RestHealing",BattleEventSource.Service); ServiceUsed = true; RestAvailable = false; Message = "恢复 24 生命。";
+            BeginSettlement(BattleEventTiming.Service);SettleHealing(false,false,setup?.RestHealing??24,"RestHealing",BattleEventSource.Service); ServiceUsed = true; RestAvailable = false; Message = "恢复 24 生命。";
         }
 
         public void RestGenerate()
@@ -64,16 +65,18 @@ namespace RainbowLi
 
         public bool BuyCard(int number)
         {
-            if (Phase != GamePhase.Shop || Coins < 15 || number < 1 || number > 6) return false;
-            Coins -= 15; Deck.Add(GenerateCard(number)); Message = "已生成指定数字卡牌。"; return true;
+            if (Phase != GamePhase.Shop || Coins < (setup?.CardPrice??15) || number < 1 || number > 6) return false;
+            Coins -= setup?.CardPrice??15; Deck.Add(GenerateCard(number)); Message = "已生成指定数字卡牌。"; return true;
         }
 
 
 
         public bool BuyRule(int index)
         {
-            if (Phase != GamePhase.Shop || Coins < 18 || index < 0 || index >= PlayerRules.Count) return false;
-            Coins -= 18; var rule = PlayerRules[index];
+            if (Phase != GamePhase.Shop || Coins < (setup?.RulePrice??18) || index < 0 || index >= PlayerRules.Count) return false;
+            var rule = PlayerRules[index];
+            if(setup!=null&&setup.SequencePool.Count>0){var effect=DrawSequenceEffect(setup.ShopSequencePool);Coins-=setup.RulePrice;SetRuleEffect(rule,effect);AddAvailableEffect(effect);return true;}
+            Coins-=setup?.RulePrice??18;rule.Code=null;rule.BaseX=0;rule.Multiplier=1;rule.FixedValue=0;
             rule.Effect = (RuleEffect)(((int)rule.Effect + 1) % 3);
             rule.Value = rule.Effect == RuleEffect.Power ? 2 : 10;
             rule.InsertsTwo = rule.Effect == RuleEffect.Power;

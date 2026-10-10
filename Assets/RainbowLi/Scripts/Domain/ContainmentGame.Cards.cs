@@ -9,9 +9,9 @@ namespace RainbowLi
         private void GenerateInitialDeck(){
             if(setup!=null&&!setup.RandomStartingDeck&&setup.InitialDeck.Count>0)return;
             if(setup!=null&&setup.CardEffects.Count>0){
-                var pool=setup.CardEffects.Where(e=>e.StartingEnabled).ToArray();
+                var pool=setup.CardEffects.Where(e=>e.StartingEnabled&&e.Weight>0&&!float.IsNaN(e.Weight)&&!float.IsInfinity(e.Weight)).ToArray();
                 if(pool.Length==0)throw new ArgumentException("起始牌效果池至少需要启用一种效果");
-                for(int group=0;group<3;group++){var weights=pool.Select(e=>(double)Math.Max(.001f,e.Weight)).ToArray();for(int number=1;number<=6;number++){int at=WeightedChoice(weights);Deck.Add(FromSpec(pool[at],number));weights[at]*=Math.Max(.01,Math.Min(1,setup.RepeatWeightMultiplier));}}
+                for(int group=0;group<3;group++){var weights=pool.Select(e=>(double)e.Weight).ToArray();for(int number=1;number<=6;number++){int at=WeightedChoice(weights);Deck.Add(FromSpec(pool[at],number));weights[at]*=Math.Max(.01,Math.Min(1,setup.RepeatWeightMultiplier));}}
                 return;
             }
             for(int group=0;group<3;group++){
@@ -32,11 +32,11 @@ namespace RainbowLi
 
         public Card GenerateCard(int number = 0)
         {
-            if(setup!=null&&setup.CardEffects.Count>0){var weights=setup.CardEffects.Select(e=>(double)Math.Max(.001f,e.Weight)).ToArray();return FromSpec(setup.CardEffects[WeightedChoice(weights)],number==0?random.Next(1,7):number);}
+            if(setup!=null&&setup.CardEffects.Count>0){var pool=setup.CardEffects.Where(e=>e.Weight>0&&!float.IsNaN(e.Weight)&&!float.IsInfinity(e.Weight)).ToArray();if(pool.Length==0)throw new InvalidOperationException("Empty card effect pool");var weights=pool.Select(e=>(double)e.Weight).ToArray();return FromSpec(pool[WeightedChoice(weights)],number==0?random.Next(1,7):number);}
             if (setup != null && setup.CardPool.Count > 0)
             {
                 var candidates = setup.CardPool.Where(c => number == 0 || c.Number == number).ToList();
-                if (candidates.Count > 0) {var c=candidates[random.Next(candidates.Count)].CopyAsNewInstance();c.AttackBase=BaseAttack;return c;}
+                if (candidates.Count > 0) {var c=candidates[random.Next(candidates.Count)].CopyAsNewInstance();c.AttackBase=BaseAttack;return RollCard(c);}
             }
             return new Card { AttackBase=BaseAttack, Number = number == 0 ? random.Next(1, 7) : number, Effect = (CardEffect)random.Next(0, 3) };
         }

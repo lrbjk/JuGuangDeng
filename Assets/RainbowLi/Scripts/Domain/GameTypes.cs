@@ -5,7 +5,8 @@ namespace RainbowLi
 {
     public enum CardEffect { Strike, Guard, Mend, IncreasedStrike, InverseStrike, Strength, Vulnerable, Weaken, Regeneration, Fortify, Poison, Bleed, IronWall, Parry, Barrier, DamageCap, RandomNumbers, Chant, Reciprocity, Burn, Ignite, Envenom, Disorder, Mutation, AddNumber, SubtractNumber }
     public enum GamePhase { Map, Planning, Resolving, Reward, Rest, Shop, Lost, Won, Event }
-    public enum RuleEffect { Damage, Shield, Power, Insert }
+    public enum RuleEffect { Damage, Shield, Power, Insert, Heal, Burn, Poison, Strength, Bleed, RandomNumbers, LastStand, RandomCardEffects, Vulnerable, Parry, RepeatSequenceCards }
+    public enum EngravingEffect { Poison, Burn, FollowUpDamage, Growth, ExtraNumber, Wildcard, SequenceTailBonus, SequenceHeadBonus, BlockSequence, Bridge, Inherit, RandomizeFollowing, Roulette, OnlyPlayerCard, LastActionBonus, FirstActionBonus, Charge, PoisonExplosion, BurnExplosion }
 
     [Serializable]
     public sealed class Card
@@ -13,6 +14,7 @@ namespace RainbowLi
         // Identity belongs to the physical card, not its configuration or deck slot.
         public string InstanceId { get; private set; } = Guid.NewGuid().ToString("N");
         public string EngravingCode;
+        public RuntimeEngraving Engraving;
         public int PermanentGrowth, BattleCharge;
         // Nonempty ordered effects take precedence over the legacy single effect.
         public List<CardEffectInstance> Effects = new List<CardEffectInstance>();
@@ -26,10 +28,12 @@ namespace RainbowLi
         public bool HasOrderedEffects=>Effects!=null&&Effects.Count>0;
         public string RulesText=>HasOrderedEffects?Description:Spec==null?Description:Spec.Text.Replace("X",(Spec.UsesNumber?Number:Value).ToString())+(Upgrade>0?" · 升级后数值 "+Value:"");
         public int BaseBonus = 3, UpgradeBonus = 2, EngravingDamage = 5;
-        public int Value => HasOrderedEffects?Effects[0].ResolveValue(Number,Upgrade):Spec==null?Math.Max(0,AttackBase + Number + BaseBonus + Upgrade * UpgradeBonus):Math.Max(Effect==CardEffect.InverseStrike?1:0,(Spec.UsesNumber?(Effect==CardEffect.IncreasedStrike?1+Number:Effect==CardEffect.InverseStrike?7-Number:Number):EffectAmount)+Upgrade*UpgradeBonus);
+        public int Value => CombatResolver.Clamp((long)UnmodifiedValue+PermanentGrowth+BattleCharge);
+        internal int UnmodifiedValue => HasOrderedEffects?Effects[0].ResolveValue(Number,Upgrade):Spec==null?Math.Max(0,AttackBase + Number + BaseBonus + Upgrade * UpgradeBonus):Math.Max(Effect==CardEffect.InverseStrike?1:0,(Spec.UsesNumber?(Effect==CardEffect.IncreasedStrike?1+Number:Effect==CardEffect.InverseStrike?7-Number:Number):EffectAmount)+Upgrade*UpgradeBonus);
         public string Name => HasOrderedEffects?Effects[0].Spec.Name:Spec!=null?Spec.Name.Replace("X",""):Effect == CardEffect.Strike ? "冲击" : Effect == CardEffect.Guard ? "屏障" : "修复";
-        public string Description => (HasOrderedEffects?string.Join(" / ",Effects.Select(e=>CombatStatuses.Name(e.Spec.Effect)+" "+e.ResolveValue(Number,Upgrade))):Name + " " + Value + (Spec==null||Spec.Lifetime==EffectLifetime.Direct?"":Spec.Lifetime==EffectLifetime.Temporary?" · 本回合":" · 持续")) + (Engraved ? " · 铭刻：牌序收尾时追加伤害" : "");
+        public string Description => (HasOrderedEffects?string.Join(" / ",Effects.Select(e=>CombatStatuses.Name(e.Spec.Effect)+" "+CombatResolver.Clamp((long)e.ResolveValue(Number,Upgrade)+PermanentGrowth+BattleCharge))):Name + " " + Value + (Spec==null||Spec.Lifetime==EffectLifetime.Direct?"":Spec.Lifetime==EffectLifetime.Temporary?" · 本回合":" · 持续")) + (Engraved ? " · 铭刻："+(Engraving==null?"牌序收尾时追加伤害":Engraving.Description) : "");
 
+        internal void RestoreIdentity(string id){InstanceId=string.IsNullOrWhiteSpace(id)?Guid.NewGuid().ToString("N"):id;}
         public void ResetBattleState() { BattleCharge = 0; }
         // Snapshots retain identity and all state; a new physical copy has a new ID
         // and starts without encounter-local charge. Neither shares effect objects.
@@ -40,6 +44,7 @@ namespace RainbowLi
             var copy = (Card)MemberwiseClone();
             copy.InstanceId = snapshot ? InstanceId : Guid.NewGuid().ToString("N");
             copy.Spec = Spec?.Copy();
+            copy.Engraving = Engraving?.Copy();
             copy.Effects = Effects==null?new List<CardEffectInstance>():Effects.Select(e=>e.Copy()).ToList();
             if(!snapshot)copy.ResetBattleState();
             return copy;
@@ -49,11 +54,12 @@ namespace RainbowLi
     public enum PatternRequirement { Any, Straight, Triple }
 
     [Serializable]
-    public sealed class SequenceEffect { public RuleEffect Effect; public int Value; public bool InsertsTwo; public PatternRequirement Requirement; }
+    public sealed class SequenceEffect { public RuleEffect Effect; public int Value; public bool InsertsTwo; public PatternRequirement Requirement; public string Code; public int BaseX, Multiplier=1, FixedValue, MinX,MaxX; public bool RollX; }
 
-    public sealed class SequenceRule
+    [Serializable] public sealed class SequenceRule
     {
         public string Name;
+        public string Code; public int BaseX, Multiplier=1, FixedValue, MinX,MaxX; public bool RollX;
         public int[] Numbers;
         public RuleEffect Effect;
         public int Value;
@@ -65,9 +71,10 @@ namespace RainbowLi
         public string Pattern => string.Join(" → ", Numbers.Select(n => n.ToString()).ToArray());
         public string Description => Describe(Effect,Value,InsertsTwo)+(AdditionalEffect==null?"":" / "+Describe(AdditionalEffect.Effect,AdditionalEffect.Value,AdditionalEffect.InsertsTwo))+(Requirement==PatternRequirement.Any?"":" · "+RequirementName(Requirement))+(AdditionalEffect==null||AdditionalEffect.Requirement==PatternRequirement.Any?"":" · 效果2 "+RequirementName(AdditionalEffect.Requirement));
         private static string RequirementName(PatternRequirement requirement)=>requirement==PatternRequirement.Straight?"顺子":"三同号";
-        private static string Describe(RuleEffect Effect,int Value,bool InsertsTwo) => Effect == RuleEffect.Damage ? "伤害 " + Value :
-            Effect == RuleEffect.Shield ? "护盾 " + Value :
-            Effect == RuleEffect.Power ? "后续卡效 +" + Value + (InsertsTwo ? "，插入数字 2" : "") : "插入数字 " + Value;
+        private static string Describe(RuleEffect effect,int value,bool insertsTwo) {
+            string[] names={"伤害","护盾","后续卡效 +","插入数字","恢复","烧伤","中毒","力量","流血","随机数字","生命降至百分比","随机卡效次数","易伤","招架","参与卡牌重放次数"};
+            return names[(int)effect]+" "+value+(insertsTwo?"，插入数字 2":"");
+        }
     }
 
     public sealed class BattleAction
@@ -83,6 +90,9 @@ namespace RainbowLi
         public CardEffectSpec EffectSpec;
         public bool IsRepeat,IsStatusTick,EndTick;
         public int SequenceTrigger;
+        public bool EffectOnly, BonusOnly;
+        public int EffectBonus, EffectMultiplier=1;
+        public List<BattleAction> Participants=new List<BattleAction>();
         public BattleAction SourceAction;
         public string Label => IsStatusTick?(Enemy?"敌方":"玩家")+" / 回合结束中毒结算":Rule != null ? Rule.Name + (Enemy ? "（敌人触发）" : "（玩家触发）") + "：" + Rule.Description :
             IsNumberOnly ? "插入数字 " + Number : Enemy ? (Special?"特殊 / ":"")+(string.IsNullOrEmpty(SkillName)?"实体":SkillName)+" " + Number + " · " + CombatStatuses.Name(Effect)+" " + Value :

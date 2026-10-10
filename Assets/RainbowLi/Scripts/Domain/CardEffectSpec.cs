@@ -8,7 +8,7 @@ namespace RainbowLi {
    effect==CardEffect.Vulnerable||effect==CardEffect.Weaken||effect==CardEffect.Poison||effect==CardEffect.Bleed||effect==CardEffect.Burn||effect==CardEffect.Disorder;
   public static bool TargetsEnemy(BattleAction action){
    if(action.IsStatusTick||action.IsNumberOnly)return action.Enemy;
-   if(action.Rule!=null)return action.Rule.Effect==RuleEffect.Damage?!action.Enemy:action.Enemy;
+   if(action.Rule!=null){var effect=action.Rule.Effect;bool opponent=effect==RuleEffect.Damage||effect==RuleEffect.Burn||effect==RuleEffect.Poison||effect==RuleEffect.Bleed||effect==RuleEffect.Vulnerable||effect==RuleEffect.LastStand;return opponent?!action.Enemy:action.Enemy;}
    return TargetsOpponent(action.Effect)?!action.Enemy:action.Enemy;
   }
  }

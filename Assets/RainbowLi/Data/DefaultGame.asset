@@ -70,3 +70,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4447df1d913c48747a5c29f6bb75f162, type: 2}
   enemyRule: {fileID: 11400000, guid: 2fb20cce62759c341b4d517e25ff54f7, type: 2}
   cardEffects: {fileID: 11400000, guid: 089d7196ae0f535c90370e8322908b11, type: 2}
+  sequenceEffects: {fileID: 11400000, guid: ba1ba1b1c46d5e03b646ba91c02d48e7, type: 2}
+  engravingEffects: {fileID: 11400000, guid: 13ec4584d6cd5cf1845f0c17465c5d4e, type: 2}
+  playerSequencePool: "默认池"
+  enemySequencePool: "默认池"
+  rewardSequencePool: "默认池"
+  shopSequencePool: "默认池"
+  engravingPool: ""

@@ -1,0 +1,11 @@
+{
+  "name": "RainbowLi.Runtime",
+  "rootNamespace": "RainbowLi",
+  "references": [
+    "RainbowLi.Domain",
+    "UnityEngine.UI",
+    "Unity.InputSystem"
+  ],
+  "includePlatforms": [],
+  "noEngineReferences": false
+}

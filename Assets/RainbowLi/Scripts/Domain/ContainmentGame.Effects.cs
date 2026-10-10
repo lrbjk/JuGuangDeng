@@ -3,27 +3,27 @@ using System.Collections.Generic;
 namespace RainbowLi {
  public sealed partial class ContainmentGame {
   private CombatantState Actor(bool enemy)=>enemy?(CombatantState)Enemy:Player;
-  private int NextBattleNumber(){battleRandomState^=battleRandomState<<13;battleRandomState^=battleRandomState>>17;battleRandomState^=battleRandomState<<5;return (int)(battleRandomState%6)+1;}
+  private int NextBattleNumber()=>random.Next(1,7);
   private void ApplyCardEffect(BattleAction action){
-   var card=action.Card;
+   var card=action.Card;if(action.EffectMultiplier==0)return;
    if(card!=null&&card.HasOrderedEffects){
     for(int i=0;i<card.Effects.Count;i++){
      settlingEffectIndex=i;var effect=card.Effects[i];
-     ApplyEffect(action.Enemy,effect.Spec.Effect,effect.ResolveValue(card.Number,card.Upgrade),effect.Spec);
+     ApplyEffect(action.Enemy,effect.Spec.Effect,CombatResolver.Clamp(((long)(action.BonusOnly?0:effect.ResolveValue(card.Number,card.Upgrade))+action.EffectBonus)*action.EffectMultiplier),effect.Spec);
      if(Health<=0||EnemyHealth<=0)return;
     }
-   }else {settlingEffectIndex=0;ApplyEffect(action.Enemy,action.Effect,card==null?action.Value:card.Value,card?.Spec??action.EffectSpec);}
+   }else {settlingEffectIndex=0;ApplyEffect(action.Enemy,action.Effect,CombatResolver.Clamp(((long)(action.BonusOnly?0:card==null?action.Value:card.UnmodifiedValue)+action.EffectBonus)*action.EffectMultiplier),card?.Spec??action.EffectSpec);}
   }
   private void ApplyEffect(bool enemy,CardEffect effect,int amount,CardEffectSpec spec){
-   var owner=Actor(enemy);int value=CombatResolver.Clamp((long)amount+owner.Power);
+   var owner=Actor(enemy);int value=CombatResolver.Clamp((long)amount+(settlingAction?.BonusOnly==true?0:owner.Power));
    string code=string.IsNullOrEmpty(spec?.Code)?effect.ToString():spec.Code;
    var source=settlingAction?.Card!=null?BattleEventSource.Card:BattleEventSource.EnemySkill;
-   if(effect==CardEffect.Strike||effect==CardEffect.IncreasedStrike||effect==CardEffect.InverseStrike)SettleDamage(enemy,!enemy,value,code,source);
+   if(effect==CardEffect.Strike||effect==CardEffect.IncreasedStrike||effect==CardEffect.InverseStrike)SettleDamage(enemy,!enemy,value,code,source,settlingAction?.BonusOnly!=true);
    else if(effect==CardEffect.Guard)SettleShield(enemy,enemy,value,code,source);
    else if(effect==CardEffect.Mend)SettleHealing(enemy,enemy,value,code,source);
    else{
-    var spec=card?.Spec??action.EffectSpec;
-    (CardEffectTargeting.TargetsOpponent(action.Effect)?target:owner).Statuses.Add(action.Effect,value,spec==null?(EffectLifetime?)null:spec.Lifetime);
+    bool targetEnemy=CardEffectTargeting.TargetsOpponent(effect)?!enemy:enemy;
+    ApplyStatus(enemy,targetEnemy,effect,value,code,source,spec?.Lifetime);
    }
   }
   private bool BleedBefore(BattleAction action){var owner=Actor(action.Enemy);int amount=owner.Statuses[CardEffect.Bleed];if(amount>0){settlingTiming=BattleEventTiming.BeforeAction;SettleHealthLoss(action.Enemy,amount,"Bleed",BattleEventSource.Status);ChangeStatus(action.Enemy,CardEffect.Bleed,amount-1,"Bleed");Log((action.Enemy?"敌方":"玩家")+"流血，失去 "+amount+" 生命。");}settlingTiming=BattleEventTiming.Action;return owner.Health>0;}
@@ -33,7 +33,7 @@ namespace RainbowLi {
    ApplyStatus(action.Enemy,!action.Enemy,CardEffect.Burn,owner.Statuses[CardEffect.Ignite],"Ignite",BattleEventSource.Status);
    ApplyStatus(action.Enemy,!action.Enemy,CardEffect.Poison,owner.Statuses[CardEffect.Envenom],"Envenom",BattleEventSource.Status);
    var added=new List<BattleAction>();
-   if(owner.Statuses[CardEffect.Reciprocity]>0&&!action.IsRepeat)added.Add(new BattleAction {Card=action.Card,Enemy=action.Enemy,Number=action.Number,Effect=action.Effect,EffectSpec=action.EffectSpec,Value=action.Value,Rule=action.Rule,SequenceTrigger=action.SequenceTrigger,SourceAction=action.SourceAction??action,IsRepeat=true,SkillName=action.SkillName,Special=action.Special});
+   if(owner.Statuses[CardEffect.Reciprocity]>0&&!action.IsRepeat)added.Add(new BattleAction {Card=action.Card,Enemy=action.Enemy,Number=action.Number,Effect=action.Effect,EffectSpec=action.EffectSpec,Value=action.Value,Rule=action.Rule,Participants=new List<BattleAction>(action.Participants),SequenceTrigger=action.SequenceTrigger,SourceAction=action.SourceAction??action,IsRepeat=true,EffectBonus=action.EffectBonus,EffectMultiplier=action.EffectMultiplier,SkillName=action.SkillName,Special=action.Special});
    for(int i=0;i<Math.Min(4096,owner.Statuses[CardEffect.RandomNumbers]);i++)added.Add(new BattleAction {IsNumberOnly=true,Enemy=action.Enemy,Number=NextBattleNumber()});
    pending.InsertRange(0,added);
   }
@@ -42,8 +42,8 @@ namespace RainbowLi {
    var status=Actor(action.Enemy).Statuses;int number=action.Number;
    if(status[CardEffect.Disorder]>0||status[CardEffect.Mutation]>0)number=NextBattleNumber();
    if(status[CardEffect.Mutation]>0)ChangeStatus(action.Enemy,CardEffect.Mutation,status[CardEffect.Mutation]-1,"Mutation");
-   number+=status[CardEffect.AddNumber]-status[CardEffect.SubtractNumber];NumberStream.Add(number);LastAction=action.Label+" · 填入 "+number;Log("填入数字 "+number+(action.Enemy?" / 敌方":" / 玩家"));
-   bool matched=MatchSequences(action.Enemy);ApplyEngraving(action.Card,matched,action.Enemy);
+   number+=status[CardEffect.AddNumber]-status[CardEffect.SubtractNumber];if(randomizeFollowing)number=NextBattleNumber();NumberStream.Add(number);AddNumberEntry(action,number);LastAction=action.Label+" · 填入 "+number;Log("填入数字 "+number+(action.Enemy?" / 敌方":" / 玩家"));
+   bool matched=MatchSequences(action.Enemy);ApplyEngraving(action.Card,matched,action.Enemy);if(action.Card?.Engraving?.Effect==EngravingEffect.RandomizeFollowing)randomizeFollowing=true;
   }
   private void StartStatusEffects(CombatantState actor,bool enemy){
    var status=actor.Statuses;string name=enemy?"敌方":"玩家";

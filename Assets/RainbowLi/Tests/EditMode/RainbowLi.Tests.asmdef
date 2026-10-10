@@ -1,0 +1,13 @@
+{
+  "name": "RainbowLi.Tests",
+  "references": [
+    "RainbowLi.Domain",
+    "RainbowLi.Runtime"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

@@ -23,8 +23,21 @@ public sealed class GameSession : MonoBehaviour {
  public event Action<BattleEvent> Settled;
  private ContainmentGame publishedGame;
  private long publishedEventId;
+ private GameSetup currentSetup;
  private void Awake() { NewGame(); }
- public void NewGame() { var setup=definition==null?new GameSetup():definition.CreateSetup();player?.Apply(setup);enemy?.Apply(setup);cardSystem?.Apply(setup);player?.definition?.cardTable?.Apply(setup);Game=new ContainmentGame(seed,setup); Notify(); }
+ public void NewGame() { var setup=definition==null?new GameSetup():definition.CreateSetup();player?.Apply(setup);enemy?.Apply(setup);cardSystem?.Apply(setup);player?.definition?.cardTable?.Apply(setup);currentSetup=setup;Game=new ContainmentGame(seed,setup); Notify(); }
+ public string SavePath=>System.IO.Path.Combine(Application.persistentDataPath,"RainbowLi.save.json");
+ public void SaveGame(){
+  if(Game==null)throw new InvalidOperationException("No active game");
+  string json=JsonUtility.ToJson(Game.CaptureSave(),true);string temp=SavePath+".tmp";
+  System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(SavePath));System.IO.File.WriteAllText(temp,json,new System.Text.UTF8Encoding(false));
+  if(System.IO.File.Exists(SavePath))System.IO.File.Replace(temp,SavePath,SavePath+".bak");else System.IO.File.Move(temp,SavePath);
+ }
+ public bool ContinueGame(){
+  if(!System.IO.File.Exists(SavePath))return false;
+  try {var data=JsonUtility.FromJson<RunSave>(System.IO.File.ReadAllText(SavePath));var restored=ContainmentGame.RestoreSave(data,currentSetup);Game=restored;publishedGame=null;Notify();return true;}
+  catch(Exception error) when(error is ArgumentException||error is System.IO.IOException||error is InvalidOperationException||error is NullReferenceException||error is IndexOutOfRangeException){Debug.LogWarning("Cannot load RainbowLi save: "+error.Message);return false;}
+ }
  public void Notify() {
   var game=Game;
   if(publishedGame!=game){publishedGame=game;publishedEventId=0;}

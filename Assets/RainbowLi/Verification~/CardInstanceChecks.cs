@@ -75,10 +75,10 @@ public static class CardInstanceChecks
         Check(ReferenceEquals(battleSnapshot.LastResolvedAction.Card, snapshotCard), "snapshot queue shares deck card");
         Check(game.EnemyHealth == 300 && game.Player.Statuses[CardEffect.Strength] == 0, "snapshot execution does not mutate live combatants");
         var forecast = game.Forecast(); var again = game.Forecast();
-        Check(forecast.EnemyHealth == 290 && again.EnemyHealth == 290, "strength precedes doubled attack, multiplier applied once");
+        Check(forecast.EnemyHealth == 250 && again.EnemyHealth == 250, "strength precedes doubled attack, multiplier applied once");
         Check(card.BattleCharge == 9 && card.PermanentGrowth == 11 && card.Effects[1].BaseX == 4, "repeated preview preserves instance state");
         Check(game.Confirm(), "compound battle confirms"); game.Step();
-        Check(game.EnemyHealth == 290 && game.Player.Statuses[CardEffect.Strength] == 2 && game.NumberStream.Count == 1, "compound effects execute as one card behavior and one number");
+        Check(game.EnemyHealth == 250 && game.Player.Statuses[CardEffect.Strength] == 22 && game.NumberStream.Count == 1, "compound effects execute as one card behavior and one number");
         while (game.Phase == GamePhase.Resolving && game.Round == 1) game.Step();
         Check(card.BattleCharge == 9 && card.PermanentGrowth == 11, "new round retains encounter charge and growth");
 

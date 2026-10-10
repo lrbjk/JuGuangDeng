@@ -11,13 +11,13 @@ $project = @"
     <StartupObject>RuntimeChecksRunner</StartupObject><LangVersion>9.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$sourceRoot/Assets/RainbowLi/Scripts/ContainmentGame.cs" />
     <Compile Include="$sourceRoot/Assets/RainbowLi/Scripts/Domain/**/*.cs" />
     <Compile Include="$sourceRoot/Assets/RainbowLi/Verification~/RuleChecks.cs" />
     <Compile Include="$sourceRoot/Assets/RainbowLi/Verification~/ContentChecks.cs" />
     <Compile Include="$sourceRoot/Assets/RainbowLi/Verification~/TableEffectChecks.cs" />
     <Compile Include="$sourceRoot/Assets/RainbowLi/Verification~/CardInstanceChecks.cs" />
     <Compile Include="$sourceRoot/Assets/RainbowLi/Verification~/SettlementChecks.cs" />
+    <Compile Include="$sourceRoot/Assets/RainbowLi/Tests/EditMode/AdvancedRuntimeChecks.cs" />
     <Compile Include="Runner.cs" />
   </ItemGroup>
 </Project>
@@ -27,7 +27,7 @@ using System;
 public static class RuntimeChecksRunner {
     public static void Main() {
         int failures = 0;
-        foreach (Action suite in new Action[] { RuleChecks.Main, ContentChecks.Main, TableEffectChecks.Main, CardInstanceChecks.Main, SettlementChecks.Main }) {
+        foreach (Action suite in new Action[] { RuleChecks.Main, ContentChecks.Main, TableEffectChecks.Main, CardInstanceChecks.Main, SettlementChecks.Main, AdvancedRuntimeChecks.Main }) {
             try { suite(); }
             catch (Exception error) { Console.WriteLine(error); failures++; }
         }

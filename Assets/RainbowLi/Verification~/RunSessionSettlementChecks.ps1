@@ -12,6 +12,7 @@ $hint = [string]$core.HintPath
 if (-not [System.IO.Path]::IsPathRooted($hint)) { $hint = Join-Path $sourceRoot $hint }
 if (-not (Test-Path -LiteralPath $hint)) { throw "Unity assembly was not found: $hint" }
 $escapedHint = [System.Security.SecurityElement]::Escape($hint)
+$jsonHint = [System.Security.SecurityElement]::Escape((Join-Path ([System.IO.Path]::GetDirectoryName($hint)) 'UnityEngine.JSONSerializeModule.dll'))
 $compileRoot = [System.Security.SecurityElement]::Escape($sourceRoot.Replace('\', '/'))
 $verifyRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('RainbowLi-session-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $verifyRoot | Out-Null
@@ -23,12 +24,12 @@ $project = @"
     <StartupObject>SettlementSessionChecks</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$compileRoot/Assets/RainbowLi/Scripts/ContainmentGame.cs" />
     <Compile Include="$compileRoot/Assets/RainbowLi/Scripts/Domain/**/*.cs" />
     <Compile Include="$compileRoot/Assets/RainbowLi/Scripts/Unity/Data/**/*.cs" />
-    <Compile Include="$compileRoot/Assets/RainbowLi/Scripts/Unity/Systems/**/*.cs" />
+    <Compile Include="$compileRoot/Assets/RainbowLi/Scripts/Unity/Systems/**/*.cs" Exclude="$compileRoot/Assets/RainbowLi/Scripts/Unity/Systems/BattleModule.cs" />
     <Compile Include="$compileRoot/Assets/RainbowLi/Verification~/SettlementSessionChecks.cs" />
     <Reference Include="UnityEngine.CoreModule"><HintPath>$escapedHint</HintPath></Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule"><HintPath>$jsonHint</HintPath></Reference>
   </ItemGroup>
 </Project>
 "@

@@ -17,6 +17,8 @@ namespace RainbowLi {
   private readonly HashSet<int> activeRules=new HashSet<int>();
   public IEnumerable<SequenceRule> ActiveRules {get {if(Rule!=null)yield return Rule;for(int i=0;i<ConditionalRules.Count;i++)if(activeRules.Contains(i))yield return ConditionalRules[i].Rule;}}
   public bool Meets(ActivationCondition condition,int threshold,int round)=>condition==ActivationCondition.RoundAtLeast?round>=threshold:(long)Health*100<=(long)MaxHealth*threshold;
+  public int[] UnlockedIndices=>unlocked.ToArray();public int[] ActiveRuleIndices=>activeRules.ToArray();
+  public void RestoreActivation(int[] skills,int[] rules){unlocked.Clear();activeRules.Clear();unlocked.UnionWith(skills??Array.Empty<int>());activeRules.UnionWith(rules??Array.Empty<int>());}
   public void CopyActivationFrom(EnemyState source){unlocked.UnionWith(source.unlocked);activeRules.UnionWith(source.activeRules);}
   public void StartEncounter(int maxHealth,bool boss,bool elite=false){MaxHealth=Health=maxHealth;Boss=boss;Elite=elite;EliteAttackBonus=0;unlocked.Clear();activeRules.Clear();ConditionalRules.Clear();Statuses.Clear();ResetRound();}
   private BattleAction Action(EnemySkill skill,GameSetup setup,Random random){
