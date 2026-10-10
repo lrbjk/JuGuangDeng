@@ -14,13 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.LevelDefinition
   floors: 8
   lanes: 3
-  randomizeEachRun: 1
+  randomizeEachRun: 0
+  stackedLayout: 1
+  cardDungeon: 1
+  startingLane: -1
   seed: 0
   authoredNodes:
   - id: 0
     floor: 0
     lane: 0
-    kind: 0
+    kind: 2
     next: 0300000004000000
   - id: 1
     floor: 0
@@ -30,7 +33,7 @@ MonoBehaviour:
   - id: 2
     floor: 0
     lane: 2
-    kind: 0
+    kind: 1
     next: 0500000004000000
   - id: 3
     floor: 1
@@ -127,6 +130,7 @@ MonoBehaviour:
     lane: 1
     kind: 5
     next: 
+  presentations: []
   eventGold: 18
   eventHealing: 16
   eliteHealthMultiplier: 1.5

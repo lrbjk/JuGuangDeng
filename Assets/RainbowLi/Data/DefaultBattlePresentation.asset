@@ -1,0 +1,140 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b5488b8dab14874a7fe902d0be21803, type: 3}
+  m_Name: DefaultBattlePresentation
+  m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.BattlePresentationProfile
+  drawDuration: 0.46
+  placeDuration: 0.34
+  discardDuration: 0.38
+  dealStagger: 0.065
+  flightArc: 90
+  flightRotation: 14
+  chargeDuration: 0.18
+  projectileDuration: 0.22
+  impactDuration: 0.3
+  attackLunge: 0.3
+  damageIntensity:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.048506975
+      outSlope: 0.048506975
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 5
+      value: 0.24253488
+      inSlope: 0.04262466
+      outSlope: 0.04262466
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 10
+      value: 0.42624658
+      inSlope: 0.031238293
+      outSlope: 0.031238293
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 18
+      value: 0.63212055
+      inSlope: 0.020325616
+      outSlope: 0.020325616
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 30
+      value: 0.8111244
+      inSlope: 0.010625971
+      outSlope: 0.010625971
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 50
+      value: 0.9378235
+      inSlope: 0.004008026
+      outSlope: 0.004008026
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 80
+      value: 0.9882564
+      inSlope: 0.00091308414
+      outSlope: 0.00091308414
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 160
+      value: 0.9998621
+      inSlope: 0.000145071
+      outSlope: 0.000145071
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  chainWindow: 1.25
+  maxChainGain: 2.4
+  maxComboGain: 2.8
+  chainRiseActions: 3
+  comboRiseActions: 3.5
+  burstDuration: 1.15
+  fallbackTravelDuration: 0.14
+  maxParticles: 60
+  maxConcurrentBursts: 10
+  particleSpread: 160
+  particleSize: 6
+  damageTextBaseSize: 24
+  damageTextGrowth: 24
+  damageTextRise: 65
+  screenShake: 1
+  hitFlash: 1
+  maxShake: 44.1
+  shakeDuration: 0.45
+  flashDuration: 0.3
+  shakeStrength: 1.16
+  flashStrength: 1
+  attackColor: {r: 1, g: 0.35, b: 0.2, a: 1}
+  shieldColor: {r: 0.25, g: 0.7, b: 1, a: 1}
+  healColor: {r: 0.3, g: 1, b: 0.64, a: 1}
+  statusColor: {r: 0.75, g: 0.4, b: 1, a: 1}
+  sparkColor: {r: 1, g: 0.48, b: 0.43, a: 1}
+  sparkAccentColor: {r: 1, g: 0.85, b: 0.48, a: 1}
+  lightHit: {fileID: 0}
+  heavyHit: {fileID: 0}
+  soundVolume: 1
+  lightPitch: 1.2
+  heavyPitch: 0.7
+  actionInterval: 0.95
+  ruleInterval: 0.16
+  accelerateRepeats: 1
+  accelerateAfter: 6
+  speedGainPerRepeat: 0.25
+  maxRepeatSpeed: 6

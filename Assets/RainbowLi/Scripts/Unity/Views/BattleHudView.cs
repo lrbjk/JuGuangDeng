@@ -13,10 +13,15 @@ public sealed class BattleHudView : MonoBehaviour {
  public GameObject settingsPanel,pilePanel;
  public Text pileTitle,pileBody,speedLabel;
  public Slider volume;
+ public BattleStatusPanelView playerStatuses,enemyStatuses;
+ public ScrollRect handScroll,actionScroll;
  [Range(.1f,1.2f)] public float handScale=.88f,actionScale=.57f;
  [Min(0)] public float cardGap=12;
  private int displayedPile=-1;
  public void Refresh(ContainmentGame g) {
+  if(playerStatuses!=null)playerStatuses.Refresh(g.Player.Statuses);
+  if(enemyStatuses!=null)enemyStatuses.Refresh(g.Enemy.Statuses);
+  if(speedLabel!=null)speedLabel.text="播放速度  "+view.battle.PlaybackSpeed.ToString("0.#")+"×";
   enemyName.text=g.EnemyName;
   enemyPortrait.enabled=enemyPortrait.sprite!=null;
   portraitPlaceholder.gameObject.SetActive(enemyPortrait.sprite==null);
@@ -34,8 +39,8 @@ public sealed class BattleHudView : MonoBehaviour {
   for(int i=0;i<enemySkills.Length;i++){
    bool valid=rows!=null?i<rows.Length:skills!=null&&i<skills.Length;
    enemySkills[i].gameObject.SetActive(valid);if(!valid)continue;
-   if(rows!=null){var r=rows[i];enemySkills[i].Bind(r.number,r.effect,r.name+(r.special?"\n特殊技能":""),true,false,false,false,null);}
-   else {var s=skills[i];enemySkills[i].Bind(s.Number,s.Effect,s.Name+(s.Special?"\n特殊技能":""),true,false,false,false,null);}
+   if(rows!=null){var r=rows[i];enemySkills[i].Bind(r.number,r.effect,r.name+(r.special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+r.name,r.description+"\n效果数值："+r.min+"～"+r.max);}
+   else {var s=skills[i];enemySkills[i].Bind(s.Number,s.Effect,s.Name+(s.Special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+s.Name,CombatStatuses.Name(s.Effect)+" · 数字 "+s.Number+" · 修正 "+s.Modifier);}
   }
   LayoutCards(g);
   if(pilePanel.activeSelf)UpdatePile(g);
@@ -43,10 +48,13 @@ public sealed class BattleHudView : MonoBehaviour {
  public void LayoutCards(ContainmentGame g) {LayoutCards(g.Hand.Count,g.Timeline.Count);}
  public void LayoutCardsPreview(){LayoutCards(view.hand.Length,view.actions.Length);}
  private void LayoutCards(int count,int timelineCount) {
-  float scale=Mathf.Min(handScale,(handArea.rect.width-32-cardGap*Mathf.Max(0,count-1))/Mathf.Max(1,count*130f));
+  float handWidth=handScroll==null?handArea.rect.width:handScroll.viewport.rect.width;
+  float scale=Mathf.Min(handScale,(handWidth-32-cardGap*Mathf.Max(0,count-1))/Mathf.Max(1,count*130f));
+  if(handScroll!=null){scale=Mathf.Max(.65f,scale);handArea.sizeDelta=new Vector2(Mathf.Max(handWidth,count*130*scale+Mathf.Max(0,count-1)*cardGap+32),handArea.sizeDelta.y);}
+  if(handScroll!=null)scale=Mathf.Min(scale,(handArea.rect.height-32)/225f);
   float width=count*130*scale+Mathf.Max(0,count-1)*cardGap,start=(handArea.rect.width-width)/2;
-  for(int i=0;i<view.hand.Length;i++)PlaceCard(view.hand[i],new Vector2(start+i*(130*scale+cardGap),-34),scale);
-  int slots=Mathf.Max(1,timelineCount);float spacing=(actionArea.rect.width-52)/slots;
+  for(int i=0;i<view.hand.Length;i++)PlaceCard(view.hand[i],new Vector2(start+i*(130*scale+cardGap),handScroll==null?-34:-24),scale);
+  int slots=Mathf.Max(1,timelineCount);if(actionScroll!=null)actionArea.sizeDelta=new Vector2(Mathf.Max(actionScroll.viewport.rect.width,slots*148+52),actionArea.sizeDelta.y);float spacing=(actionArea.rect.width-52)/slots;
   scale=Mathf.Min(actionScale,(spacing-28)/130);
   for(int i=0;i<view.actions.Length;i++){
    float x=26+i*spacing+(spacing-130*scale)/2;
@@ -61,7 +69,7 @@ public sealed class BattleHudView : MonoBehaviour {
  public void ToggleSettings(){settingsPanel.SetActive(!settingsPanel.activeSelf);}
  public void CloseSettings(){settingsPanel.SetActive(false);}
  public void SetVolume(float value){var fx=view.session.GetComponentInChildren<BattleEffects>();if(fx!=null&&fx.audioSource!=null)fx.audioSource.volume=value;}
- public void CycleSpeed(){view.battle.actionInterval=view.battle.actionInterval>.7f?.45f:view.battle.actionInterval>.3f?.22f:.95f;speedLabel.text="播放速度  "+(view.battle.actionInterval>.7f?"1×":view.battle.actionInterval>.3f?"2×":"4×");}
+ public void CycleSpeed(){view.battle.CycleSpeed();speedLabel.text="播放速度  "+view.battle.PlaybackSpeed.ToString("0.#")+"×";}
  public void ShowDrawPile(){displayedPile=0;pilePanel.SetActive(true);UpdatePile(view.session.Game);}
  public void ShowDiscardPile(){displayedPile=1;pilePanel.SetActive(true);UpdatePile(view.session.Game);}
  public void ClosePile(){pilePanel.SetActive(false);}

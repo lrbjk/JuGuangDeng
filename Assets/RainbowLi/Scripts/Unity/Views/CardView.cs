@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,8 +18,10 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
  private UnityAction callback;
  private RectTransform rect;
  private Vector2 home;
- private bool selected;
+ private bool selected,attacking;
  private Coroutine movement;
+ private TooltipView tooltip;private string detailTitle,detailBody;
+ public void SetDetails(TooltipView target,string title,string body){tooltip=target;detailTitle=title;detailBody=body;}
  private void Awake(){rect=(RectTransform)transform;home=rect.anchoredPosition;}
  public void Bind(int number,CardEffect effect,string description,bool enemy,bool engraved,bool active,bool enabled,Action clicked) {
   if(rect==null){rect=(RectTransform)transform;home=rect.anchoredPosition;}
@@ -36,23 +38,25 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
   engravingBadge.gameObject.SetActive(engraved);
   Lift(active?selectedLift:0);
  }
- public void OnPointerEnter(PointerEventData e){if(button.interactable)Lift(hoverLift+(selected?selectedLift:0));}
- public void OnPointerExit(PointerEventData e){Lift(selected?selectedLift:0);}
- private void Lift(float amount){ if(!Application.isPlaying||!isActiveAndEnabled)return;if(movement!=null)StopCoroutine(movement);movement=StartCoroutine(MoveTo(home+Vector2.up*amount)); }
+ public void OnPointerEnter(PointerEventData e){if(button.interactable)Lift(hoverLift+(selected?selectedLift:0));if(tooltip!=null&&!string.IsNullOrEmpty(detailBody))tooltip.Show(this,detailTitle,detailBody,e.position);}
+ public void OnPointerExit(PointerEventData e){Lift(selected?selectedLift:0);if(tooltip!=null)tooltip.Hide(this);}
+ private void Lift(float amount){ if(attacking||!Application.isPlaying||!isActiveAndEnabled)return;if(movement!=null)StopCoroutine(movement);movement=StartCoroutine(MoveTo(home+Vector2.up*amount)); }
  private IEnumerator MoveTo(Vector2 target){Vector2 from=rect.anchoredPosition;for(float t=0;t<1;t+=Time.unscaledDeltaTime*9){rect.anchoredPosition=Vector2.LerpUnclamped(from,target,1-Mathf.Pow(1-t,3));yield return null;}rect.anchoredPosition=target;movement=null;}
- public void AttackToward(Vector3 worldTarget,float amount){
+ public void AttackToward(Vector3 worldTarget,float amount,BattleModule playback=null){
   if(!isActiveAndEnabled)return;
   if(movement!=null)StopCoroutine(movement);
   Vector3 localTarget=rect.parent.InverseTransformPoint(worldTarget);
   Vector2 direction=((Vector2)localTarget-(Vector2)rect.localPosition).normalized;
-  movement=StartCoroutine(Punch(direction,amount));
+  attacking=true;movement=StartCoroutine(Punch(direction,amount,playback));
  }
- private IEnumerator Punch(Vector2 direction,float amount){
-  for(float age=0;age<.42f;age+=Time.unscaledDeltaTime){rect.anchoredPosition=home+direction*Mathf.Sin(age/.42f*Mathf.PI)*amount;yield return null;}
-  rect.anchoredPosition=home;movement=null;
+ private IEnumerator Punch(Vector2 direction,float amount,BattleModule playback){
+  float began=playback==null?Time.unscaledTime:playback.PresentationTime;
+  while(true){float age=(playback==null?Time.unscaledTime:playback.PresentationTime)-began;if(age>=.42f)break;rect.anchoredPosition=home+direction*Mathf.Sin(age/.42f*Mathf.PI)*amount;yield return null;}
+  rect.anchoredPosition=home;movement=null;attacking=false;
  }
- private void OnDisable(){if(movement!=null)StopCoroutine(movement);movement=null;if(rect!=null)rect.anchoredPosition=home;}
- public void SetLayout(Vector2 position,float scale){if(movement!=null)StopCoroutine(movement);movement=null;rect=(RectTransform)transform;home=position;rect.anchoredPosition=position;rect.localScale=Vector3.one*scale;}
+ public void ClearAttack(){if(!attacking)return;if(movement!=null)StopCoroutine(movement);movement=null;attacking=false;if(rect!=null)rect.anchoredPosition=home;}
+ private void OnDisable(){attacking=false;if(tooltip!=null)tooltip.Hide(this);if(movement!=null)StopCoroutine(movement);movement=null;if(rect!=null)rect.anchoredPosition=home;}
+ public void SetLayout(Vector2 position,float scale){attacking=false;if(movement!=null)StopCoroutine(movement);movement=null;rect=(RectTransform)transform;home=position;rect.anchoredPosition=position;rect.localScale=Vector3.one*scale;}
  public void SetPreview(int number,CardEffect effect,string label){ Bind(number,effect,label,false,false,false,false,null); }
  public void SetPresentationOnly(){
   if(movement!=null)StopCoroutine(movement);movement=null;button.interactable=false;

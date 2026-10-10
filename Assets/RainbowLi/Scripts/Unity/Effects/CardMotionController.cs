@@ -5,6 +5,10 @@ using UnityEngine.UI;
 namespace RainbowLi.UnityGame {
 [DisallowMultipleComponent]
 public sealed class CardMotionController : MonoBehaviour {
+ [Tooltip("策划统一动效配置；赋值后以下旧调参字段以该资源为准。留空兼容旧场景。")]
+ public BattlePresentationProfile profile;
+ private bool designerPreview;
+ public void ApplyProfile(){if(profile==null)return;drawDuration=Mathf.Max(.05f,profile.drawDuration);placeDuration=Mathf.Max(.05f,profile.placeDuration);discardDuration=Mathf.Max(.05f,profile.discardDuration);dealStagger=profile.dealStagger;flightArc=profile.flightArc;chargeDuration=Mathf.Max(.01f,profile.chargeDuration);projectileDuration=Mathf.Max(.01f,profile.projectileDuration);impactDuration=Mathf.Max(.01f,profile.impactDuration);attackLunge=profile.attackLunge;maxChainGain=profile.maxChainGain;attackColor=profile.attackColor;shieldColor=profile.shieldColor;healColor=profile.healColor;statusColor=profile.statusColor;}
  [Header("场景引用")]
  public GameView view;
  public BattleEffects effects;
@@ -66,17 +70,19 @@ public sealed class CardMotionController : MonoBehaviour {
  private void OnEnable(){if(view!=null&&view.session!=null)view.session.Resolved+=OnResolution;}
  private void OnDisable(){if(view!=null&&view.session!=null)view.session.Resolved-=OnResolution;ResetPresentation();observed=null;}
  public void PrepareRefresh(ContainmentGame g){
+  ApplyProfile();
   if(observed!=g){ResetPresentation();observed=g;round=0;wasBattle=false;hands.Clear();actions.Clear();animateAfterReset=true;latestAction=null;displayedVitals=null;waitingForImpact=false;}
   bool battle=g.Phase==GamePhase.Planning||g.Phase==GamePhase.Resolving;
-  if(enableMotion&&isActiveAndEnabled&&wasBattle&&g.Round==round&&g.LastResolvedAction!=null&&g.LastResolvedAction!=latestAction)waitingForImpact=true;
-  if(enableMotion&&isActiveAndEnabled&&wasBattle&&!battle&&!KeepBattleVisible){
-   KeepBattleVisible=true;closeAt=Time.unscaledTime+(chargeDuration+projectileDuration+impactDuration+discardDuration+dealStagger*hands.Count+.15f)*Pace;
+  if(!Skipping&&enableMotion&&isActiveAndEnabled&&wasBattle&&g.Round==round&&g.LastResolvedAction!=null&&g.LastResolvedAction!=latestAction)waitingForImpact=true;
+  if(!Skipping&&enableMotion&&isActiveAndEnabled&&wasBattle&&!battle&&!KeepBattleVisible){
+   KeepBattleVisible=true;closeAt=Now+(chargeDuration+projectileDuration+impactDuration+discardDuration+dealStagger*hands.Count+.15f)*Pace;
   }
  }
  public void Observe(ContainmentGame g){
+  ApplyProfile();
   if(motionLayer==null||cardPrefab==null)return;
   bool battle=g.Phase==GamePhase.Planning||g.Phase==GamePhase.Resolving;
-  bool canAnimate=enableMotion&&isActiveAndEnabled&&Application.isPlaying;
+  bool canAnimate=!Skipping&&enableMotion&&isActiveAndEnabled&&Application.isPlaying;
   var nextHands=new Dictionary<Card,Visual>();var nextActions=new Dictionary<BattleAction,Visual>();
   for(int i=0;i<g.Hand.Count&&i<view.hand.Length;i++)nextHands[g.Hand[i]]=Read(view.hand[i],g.Hand[i],false);
   for(int i=0;i<g.Timeline.Count&&i<view.actions.Length;i++)nextActions[g.Timeline[i]]=Read(view.actions[i],g.Timeline[i].Card,g.Timeline[i].Enemy);
@@ -124,7 +130,9 @@ public sealed class CardMotionController : MonoBehaviour {
   if(canAnimate&&(waitingForImpact||casts.Count>0)&&displayedVitals!=null)ShowVitals(displayedVitals);
   else {displayedVitals=VitalsFor(g);waitingForImpact=false;}
  }
- private float Pace=>view==null||view.battle==null?1:Mathf.Clamp(view.battle.actionInterval/.95f,.35f,1.6f);
+ private float Now=>view==null||view.battle==null?Time.unscaledTime:view.battle.PresentationTime;
+ private bool Skipping=>view!=null&&view.battle!=null&&view.battle.IsSkipping;
+ private float Pace=>1;
  private RectTransform HandRect(ContainmentGame g,Card c){int i=g.Hand.IndexOf(c);return i<0||i>=view.hand.Length?null:(RectTransform)view.hand[i].transform;}
  private RectTransform ActionRect(ContainmentGame g,BattleAction a){int i=g.Timeline.IndexOf(a);return i<0||i>=view.actions.Length?null:(RectTransform)view.actions[i].transform;}
  private Visual Read(CardView card,Card data,bool enemy){
@@ -150,26 +158,30 @@ public sealed class CardMotionController : MonoBehaviour {
  private DuelRingGraphic Ring(string name,Color color){var go=new GameObject(name,typeof(RectTransform),typeof(DuelRingGraphic));go.transform.SetParent(motionLayer,false);var r=go.GetComponent<DuelRingGraphic>();r.color=color;r.raycastTarget=false;return r;}
  private Image Back(CardView ghost){var go=new GameObject("CardBack",typeof(RectTransform),typeof(UnityEngine.UI.Image));go.transform.SetParent(ghost.face.transform,false);var r=(RectTransform)go.transform;r.anchorMin=Vector2.zero;r.anchorMax=Vector2.one;r.offsetMin=r.offsetMax=Vector2.zero;var im=go.GetComponent<Image>();im.color=new Color(.08f,.22f,.35f);im.raycastTarget=false;var outline=go.AddComponent<Outline>();outline.effectColor=new Color(.9f,.76f,.45f);outline.effectDistance=new Vector2(3,-3);return im;}
  private void Fly(Visual from,Visual to,RectTransform destination,float duration,float delay,bool flip){
-  var t=new Transfer{from=from,to=to,destination=destination,start=Time.unscaledTime+delay,duration=Mathf.Max(.05f,duration),arc=flightArc,flip=flip};
+  var t=new Transfer{from=from,to=to,destination=destination,start=Now+delay,duration=Mathf.Max(.05f,duration),arc=flightArc,flip=flip};
   t.ghost=Ghost(from);if(flip)t.back=Back(t.ghost);t.ghost.gameObject.SetActive(delay<=0);
   for(int i=0;i<6;i++){var trail=Image("CardFlightTrail",from.enemy?attackColor:shieldColor);trail.gameObject.SetActive(false);t.trails.Add(trail);}
   if(destination!=null){hidden.TryGetValue(destination,out int count);hidden[destination]=count+1;}transfers.Add(t);
  }
  private void OnResolution(ResolutionEvent e){
-  if(!enableMotion||!isActiveAndEnabled||e.Action==null||motionLayer==null)return;
+  ApplyProfile();
+  if(Skipping||!enableMotion||!isActiveAndEnabled||e.Action==null||motionLayer==null)return;
+  // Idempotent tracking also guarantees the correct speed regardless of event subscription order.
+  if(view.battle!=null&&!designerPreview)view.battle.TrackResolution(e);
   var a=e.Action;bool cancelledByBleed=!a.IsNumberOnly&&!a.IsStatusTick&&(a.Enemy?view.session.Game.EnemyHealth:view.session.Game.Health)<=0;
   bool targetEnemy=cancelledByBleed?a.Enemy:TargetsEnemy(a);
   int damage=targetEnemy?e.EnemyDamage+e.EnemyBlocked:e.PlayerDamage+e.PlayerBlocked;
-  chain=chainRound==e.Round&&chainEnemy==a.Enemy&&Time.unscaledTime-lastCast<1.6f?Mathf.Min(chain+1,99):1;
-  if(!a.IsNumberOnly){chainRound=e.Round;chainEnemy=a.Enemy;lastCast=Time.unscaledTime;}
-  float gain=1+(maxChainGain-1)*(1-Mathf.Exp(-Mathf.Max(0,chain-1)/3f));
+  chain=chainRound==e.Round&&chainEnemy==a.Enemy&&Now-lastCast<(profile==null?1.6f:profile.chainWindow)?Mathf.Min(chain+1,99):1;
+  if(!a.IsNumberOnly){chainRound=e.Round;chainEnemy=a.Enemy;lastCast=Now;}
+  float gain=1+(maxChainGain-1)*(1-Mathf.Exp(-Mathf.Max(0,chain-1)/(profile==null?3f:Mathf.Max(.1f,profile.chainRiseActions))));
   var color=cancelledByBleed?statusColor:EffectColor(a);var source=a.SourceAction??a;actions.TryGetValue(source,out var origin);
   if(origin==null&&a.Card!=null)hands.TryGetValue(a.Card,out origin);
   if(origin==null)origin=new Visual{point=Point(a.IsStatusTick?(a.Enemy?enemyTarget:playerTarget):ruleOrigin),size=new Vector2(90,156),number=Mathf.Clamp(a.Number,1,6),effect=a.Effect,label=a.Label,enemy=a.Enemy};
   if(a.IsNumberOnly){color=shieldColor;targetEnemy=a.Enemy;}
   LastEffectTarget=a.IsNumberOnly||a.Rule!=null&&a.Rule.Effect==RuleEffect.Insert&&!cancelledByBleed?ruleOrigin:targetEnemy?enemyTarget:playerTarget;
   if(cancelledByBleed)origin=At(LastEffectTarget,origin,.3f);
-  var c=new Cast{resolution=e,origin=origin,target=Point(LastEffectTarget),start=Time.unscaledTime,charge=chargeDuration*Pace,travel=projectileDuration*Pace,impact=impactDuration*Pace,gain=gain,strength=1-Mathf.Exp(-damage/18f),color=color,caption=cancelledByBleed?"流血 · 行动中断":Caption(a,targetEnemy),statusReaction=cancelledByBleed||a.IsStatusTick,after=VitalsFor(view.session.Game)};
+  float effectPace=1;
+  var c=new Cast{resolution=e,origin=origin,target=Point(LastEffectTarget),start=Now,charge=chargeDuration*effectPace,travel=projectileDuration*effectPace,impact=impactDuration*effectPace,gain=gain,strength=profile==null?1-Mathf.Exp(-damage/18f):profile.DamageStrength(damage),color=color,caption=cancelledByBleed?"流血 · 行动中断":Caption(a,targetEnemy),statusReaction=cancelledByBleed||a.IsStatusTick,after=VitalsFor(view.session.Game)};
   latestAction=a;
   if(!cancelledByBleed&&a.Rule==null&&!a.IsStatusTick&&!a.IsNumberOnly){c.ghost=Ghost(origin);c.sourceView=ActionRect(view.session.Game,source);if(c.sourceView!=null){hidden.TryGetValue(c.sourceView,out int count);hidden[c.sourceView]=count+1;}}
   c.sourceRing=Ring("CardActivationRing",color);c.targetRing=Ring("TargetImpactRing",color);c.targetRing.gameObject.SetActive(false);
@@ -179,6 +191,9 @@ public sealed class CardMotionController : MonoBehaviour {
   casts.Add(c);TotalCasts++;
  }
  public static bool TargetsEnemy(BattleAction a)=>CardEffectTargeting.TargetsEnemy(a);
+ public void PreviewFlight(bool placement){if(!Application.isPlaying||view.session.Game.Hand.Count==0||!enableMotion)return;view.battle?.BeginDesignerPreview();ApplyProfile();var g=view.session.Game;var card=g.Hand[0];var sample=Read(view.hand[0],card,false);var to=placement?At(ruleOrigin,sample,.57f):sample;Fly(placement?sample:At(drawPile,sample,.24f),to,null,(placement?placeDuration:drawDuration)*Pace,0,!placement);}
+ public void PreviewAttack(int damage,int repetitions,bool enemy=false){if(!Application.isPlaying||!enableMotion||view.session.Game==null)return;view.battle?.BeginDesignerPreview();var g=view.session.Game;var card=new Card{Number=1,Effect=CardEffect.Strike,AttackBase=Mathf.Max(0,damage),BaseBonus=0};var source=g.Hand.Count>0?Read(view.hand[0],card,enemy):At(ruleOrigin,new Visual{number=1,effect=CardEffect.Strike,label="预览",enemy=enemy},.57f);hands[card]=source;chain=Mathf.Max(0,repetitions-1);chainEnemy=enemy;chainRound=g.Round;lastCast=Now;effects?.PrepareDesignerCombo(repetitions,enemy);designerPreview=true;try{OnResolution(new ResolutionEvent{Action=new BattleAction{Card=card,Number=1,Effect=CardEffect.Strike,Enemy=enemy,Value=damage},Slot=-1,Round=g.Round,EnemyDamage=enemy?0:Mathf.Max(0,damage),PlayerDamage=enemy?Mathf.Max(0,damage):0});}finally{designerPreview=false;hands.Remove(card);}}
+ public void ClearDesignerPreview(){ResetPresentation();displayedVitals=null;latestAction=null;view?.battle?.EndDesignerPreview();effects?.ClearDesignerPreview();if(view!=null&&view.session!=null&&view.session.Game!=null)ShowVitals(VitalsFor(view.session.Game));}
  private Color EffectColor(BattleAction a){
   if(a.IsStatusTick)return statusColor;
   if(a.Rule!=null)return a.Rule.Effect==RuleEffect.Damage?attackColor:shieldColor;
@@ -196,17 +211,18 @@ public sealed class CardMotionController : MonoBehaviour {
   int stacks=(enemy?enemyChanges:playerChanges)[(int)a.Effect];return stacks>0?CombatStatuses.Name(a.Effect)+" +"+stacks:CombatStatuses.Name(a.Effect);
  }
  private void Update(){
+  ApplyProfile();
   if(!enableMotion){if(transfers.Count>0||casts.Count>0||KeepBattleVisible){ResetPresentation();view.Refresh();}return;}
-  for(int i=transfers.Count-1;i>=0;i--){var t=transfers[i];float age=Time.unscaledTime-t.start;if(age<0)continue;
+  for(int i=transfers.Count-1;i>=0;i--){var t=transfers[i];float age=Now-t.start;if(age<0)continue;
    float p=Mathf.Clamp01(age/t.duration),ease=1-Mathf.Pow(1-p,3);t.ghost.gameObject.SetActive(true);
    var r=(RectTransform)t.ghost.transform;r.anchoredPosition=Curve(t.from.point,t.to.point,ease,t.arc);var size=Vector2.Lerp(t.from.size,t.to.size,ease);
    float flip=t.flip?Mathf.Max(.06f,Mathf.Abs(Mathf.Cos(p*Mathf.PI))):1;r.localScale=new Vector3(size.x/r.rect.width*flip,size.y/r.rect.height,1);
-   r.localRotation=Quaternion.Euler(0,0,Mathf.Lerp(t.from.angle,t.to.angle,ease)+Mathf.Sin(p*Mathf.PI)*14);
+   r.localRotation=Quaternion.Euler(0,0,Mathf.Lerp(t.from.angle,t.to.angle,ease)+Mathf.Sin(p*Mathf.PI)*(profile==null?14:profile.flightRotation));
    if(t.back!=null)t.back.gameObject.SetActive(p<.5f);
    Trail(t.trails,t.from.point,t.to.point,ease,t.arc,shieldColor,1,Mathf.Sin(p*Mathf.PI));
    if(p>=1){DestroyTransfer(t);transfers.RemoveAt(i);}
   }
-  for(int i=casts.Count-1;i>=0;i--){var c=casts[i];float age=Time.unscaledTime-c.start;
+  for(int i=casts.Count-1;i>=0;i--){var c=casts[i];float age=Now-c.start;
    float charge=Mathf.Clamp01(age/c.charge),travel=Mathf.Clamp01((age-c.charge)/c.travel),hit=Mathf.Clamp01((age-c.charge-c.travel)/c.impact);
    var ring=c.sourceRing.rectTransform;ring.anchoredPosition=c.origin.point;ring.sizeDelta=Vector2.one*(45+charge*95*c.gain);c.sourceRing.color=Alpha(c.color,(1-travel)*.8f);
    if(c.ghost!=null){var r=(RectTransform)c.ghost.transform;float lunge=travel<.5f?travel*2:(1-travel)*2;r.anchoredPosition=c.origin.point+(c.target-c.origin.point)*attackLunge*lunge;r.localScale=new Vector3(c.origin.size.x/r.rect.width,c.origin.size.y/r.rect.height,1)*(1+Mathf.Sin(charge*Mathf.PI)*.12f);c.ghost.face.color=Color.Lerp(c.origin.enemy?c.ghost.enemyFace:c.ghost.playerFace,Color.white,Mathf.Sin(charge*Mathf.PI)*.6f);}
@@ -219,7 +235,7 @@ public sealed class CardMotionController : MonoBehaviour {
    if(hit>=1){DestroyCast(c);casts.RemoveAt(i);}
   }
   ApplyVisibility();
-  if(KeepBattleVisible&&Time.unscaledTime>=closeAt&&transfers.Count==0&&casts.Count==0){KeepBattleVisible=false;view.Refresh();}
+  if(KeepBattleVisible&&Now>=closeAt&&transfers.Count==0&&casts.Count==0&&(effects==null||effects.ActiveBursts==0)){KeepBattleVisible=false;view.Refresh();}
  }
  private static Color Alpha(Color c,float a){c.a=Mathf.Clamp01(a);return c;}
  private static Vitals VitalsFor(ContainmentGame g)=>new Vitals{hp=g.Health,enemyHp=g.EnemyHealth,hpLimit=g.HealthLimit,enemyLimit=g.EnemyMaxHealth,

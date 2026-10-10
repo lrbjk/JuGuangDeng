@@ -395,7 +395,7 @@ MonoBehaviour:
     specialWeightRatio: 0.5
   - id: "卡效_21"
     name: "点燃X"
-    description: "进行任意行动后，施加X层烧伤。"
+    description: "自身获得X层点燃增益。本回合内，自身每次行动后，对对方施加X层烧伤。点燃增益不会使自身受到烧伤。"
     range: "1"
     notes: ""
     effect: 20

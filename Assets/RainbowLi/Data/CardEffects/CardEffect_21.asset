@@ -17,7 +17,7 @@ MonoBehaviour:
   effect: 20
   lifetime: 1
   polarity: 0
-  description: "进行任意行动后，施加X层烧伤。"
+  description: "自身获得X层点燃增益。本回合内，自身每次行动后，对对方施加X层烧伤。点燃增益不会使自身受到烧伤。"
   usesCardNumber: 0
   includeInStartingDeck: 1
   minValue: 1
