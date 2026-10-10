@@ -12,9 +12,7 @@ namespace RainbowLi {
    else if(action.Effect==CardEffect.Mend)owner.Heal(value);
    else{
     var spec=card?.Spec??action.EffectSpec;
-    bool negative=spec!=null?spec.Polarity==EffectPolarity.Negative:
-     action.Effect==CardEffect.Vulnerable||action.Effect==CardEffect.Weaken||action.Effect==CardEffect.Poison||action.Effect==CardEffect.Bleed||action.Effect==CardEffect.Burn||action.Effect==CardEffect.Disorder;
-    (negative?target:owner).Statuses.Add(action.Effect,value,spec==null?(EffectLifetime?)null:spec.Lifetime);
+    (CardEffectTargeting.TargetsOpponent(action.Effect)?target:owner).Statuses.Add(action.Effect,value,spec==null?(EffectLifetime?)null:spec.Lifetime);
    }
   }
   private bool BleedBefore(BattleAction action){var owner=Actor(action.Enemy);int amount=owner.Statuses[CardEffect.Bleed];if(amount>0){owner.LoseHealth(amount);owner.Statuses[CardEffect.Bleed]--;Log((action.Enemy?"敌方":"玩家")+"流血，失去 "+amount+" 生命。");}return owner.Health>0;}

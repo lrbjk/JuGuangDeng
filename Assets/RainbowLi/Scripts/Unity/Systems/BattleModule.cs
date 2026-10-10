@@ -2,6 +2,7 @@
 namespace RainbowLi.UnityGame {
 public sealed class BattleModule : MonoBehaviour {
  public GameSession session;
+ public CardMotionController presentation;
  public bool autoPlay=true;
  [Min(0.05f)] public float actionInterval=0.95f, ruleInterval=0.16f;
  private float nextStep;
@@ -9,7 +10,7 @@ public sealed class BattleModule : MonoBehaviour {
  public void Confirm(){if(session.Game.Confirm()){nextStep=Time.unscaledTime+0.45f;session.Notify();}}
  public void ToggleAutoPlay(){autoPlay=!autoPlay;session.Notify();}
  public void Step(){
-  if(session.Game.Phase!=GamePhase.Resolving)return;
+  if(session.Game.Phase!=GamePhase.Resolving||presentation!=null&&presentation.BlocksResolution)return;
   session.ResolveOne(); var a=session.Game.LastResolvedAction;
   nextStep=Time.unscaledTime+(a!=null && (a.Rule!=null||a.IsNumberOnly)?ruleInterval:actionInterval);
  }

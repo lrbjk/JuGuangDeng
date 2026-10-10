@@ -1,0 +1,224 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17912dc2651752fc996ffd9d065c6f0f, type: 3}
+  m_Name: DefaultEngravingEffects
+  m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.EngravingEffectTable
+  rows:
+  - id: "铭刻效果_01"
+    name: "毒素X"
+    description: "施加X层中毒"
+    range: "5-15"
+    pools: ""
+    notes: ""
+    behavior: "Poison"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_02"
+    name: "灼烧X"
+    description: "施加X层烧伤"
+    range: "4-12"
+    pools: ""
+    notes: ""
+    behavior: "Burn"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_03"
+    name: "追击X"
+    description: "造成X点伤害。"
+    range: "8-18"
+    pools: ""
+    notes: ""
+    behavior: "FollowUpDamage"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_04"
+    name: "成长X"
+    description: "每当此卡牌触发牌序效果时，卡牌效果+X。（跨战斗继承）"
+    range: "1"
+    pools: ""
+    notes: ""
+    behavior: "Growth"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_05"
+    name: "变化X"
+    description: "此卡被同时视作数字X。"
+    range: "1-6"
+    pools: ""
+    notes: ""
+    behavior: "ExtraNumber"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_06"
+    name: "泛用"
+    description: "此卡被视作任意数字。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "Wildcard"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_07"
+    name: "收尾"
+    description: "此卡位于卡序“后”时，卡牌效果+3。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "SequenceTailBonus"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 3
+  - id: "铭刻效果_08"
+    name: "冲锋"
+    description: "此卡位于卡序“前”时，卡牌效果+3。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "SequenceHeadBonus"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 3
+  - id: "铭刻效果_09"
+    name: "阻断"
+    description: "此卡与其前后卡牌无法参与任何卡序的构建。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "BlockSequence"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_10"
+    name: "桥接"
+    description: "此卡可跨越卡牌顺序，与此之后的任意卡牌实现卡序。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "Bridge"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_11"
+    name: "传承"
+    description: "此卡的卡牌效果触发后，会将其效果传承至下一张卡牌。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "Inherit"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_12"
+    name: "千变万化"
+    description: "此卡后的所有数字为随机数字。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "RandomizeFollowing"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_13"
+    name: "轮盘赌"
+    description: "此卡触发卡效时，50%概率不触发，50%概率效果翻倍。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "Roulette"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_14"
+    name: "独木成林"
+    description: "场上除开敌人卡牌外，只存在此卡一张卡牌时，触发效果。随机触发本回合弃置的任意三张卡牌的效果，并使其卡牌效果获得+2。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "OnlyPlayerCard"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_15"
+    name: "谢幕"
+    description: "此卡最后行动时触发，此卡的卡牌效果+2。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "LastActionBonus"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 2
+  - id: "铭刻效果_16"
+    name: "开幕"
+    description: "此卡最先行动时触发，此卡的卡牌效果+2。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "FirstActionBonus"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 2
+  - id: "铭刻效果_17"
+    name: "充能"
+    description: "本场战斗中，每打出一次此卡时，此卡卡牌效果+1。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "Charge"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 1
+  - id: "铭刻效果_18"
+    name: "毒爆"
+    description: "消耗所有中毒，造成1.5倍消耗层数的伤害。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "PoisonExplosion"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "铭刻效果_19"
+    name: "引燃"
+    description: "消耗所有烧伤，造成2倍消耗层数的伤害。"
+    range: ""
+    pools: ""
+    notes: ""
+    behavior: "BurnExplosion"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0

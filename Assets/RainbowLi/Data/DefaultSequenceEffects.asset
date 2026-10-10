@@ -1,0 +1,268 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed8b25a3054e5a7caaae679893a664d2, type: 3}
+  m_Name: DefaultSequenceEffects
+  m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.SequenceEffectTable
+  rows:
+  - id: "牌序效果_01"
+    name: "伤害X"
+    description: "造成X点伤害。"
+    range: "5-10"
+    pools: "默认池,伤害池"
+    notes: ""
+    behavior: "Damage"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_02"
+    name: "填充X"
+    description: "在牌序最后填充数字X。"
+    range: "1-6"
+    pools: "默认池,特殊效果池,数字效果池"
+    notes: ""
+    behavior: "InsertNumber"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_03"
+    name: "护盾X"
+    description: "获得X点护盾。"
+    range: "4-8"
+    pools: "默认池,增益池"
+    notes: ""
+    behavior: "Shield"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_04"
+    name: "恢复X"
+    description: "恢复X点血量。"
+    range: "2-8"
+    pools: "默认池,增益池"
+    notes: ""
+    behavior: "Heal"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_05"
+    name: "增幅X"
+    description: "后续的卡牌效果获得+X。"
+    range: "1-3"
+    pools: "默认池,增益池,特殊效果池"
+    notes: ""
+    behavior: "Boost"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_06"
+    name: "燃烧X"
+    description: "施加X层烧伤。"
+    range: "2-6"
+    pools: "伤害池,减益池"
+    notes: ""
+    behavior: "Burn"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_07"
+    name: "掷毒X"
+    description: "施加X层中毒。"
+    range: "3-9"
+    pools: "伤害池,减益池"
+    notes: ""
+    behavior: "Poison"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_08"
+    name: "强化X"
+    description: "获得X层强壮。"
+    range: "2-4"
+    pools: "增益池"
+    notes: ""
+    behavior: "Strength"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_09"
+    name: "撕裂X"
+    description: "施加X层流血。"
+    range: "3-7"
+    pools: "增益池"
+    notes: ""
+    behavior: "Bleed"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_10"
+    name: "重构X"
+    description: "添加X个随机数字。"
+    range: "1-3"
+    pools: "特殊效果池,数字效果池"
+    notes: ""
+    behavior: "RandomNumbers"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_11"
+    name: "背水X"
+    description: "减少血量至X%，造成2倍减少血量的伤害。"
+    range: "5-25"
+    pools: "伤害池,特殊效果池"
+    notes: ""
+    behavior: "LastStand"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_12"
+    name: "混乱X"
+    description: "触发X次随机卡牌效果。"
+    range: "1-4"
+    pools: "特殊效果池"
+    notes: ""
+    behavior: "RandomCardEffects"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_13"
+    name: "破甲X"
+    description: "施加X层易伤。"
+    range: "2-4"
+    pools: "减益池"
+    notes: ""
+    behavior: "Vulnerable"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_14"
+    name: "无敌X"
+    description: "获得X层招架。"
+    range: "1-3"
+    pools: "特殊效果池"
+    notes: ""
+    behavior: "Parry"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_15"
+    name: "回环X"
+    description: "重复触发X次构成此牌序的卡牌效果。"
+    range: "1-3"
+    pools: "特殊效果池"
+    notes: ""
+    behavior: "RepeatSequenceCards"
+    enabled: 1
+    weight: 10
+    multiplier: 1
+    fixedValue: 0
+  - id: "牌序效果_16"
+    name: "伤害2X"
+    description: "造成2X点伤害。"
+    range: "5-10"
+    pools: "默认池,伤害池"
+    notes: ""
+    behavior: "Damage"
+    enabled: 1
+    weight: 10
+    multiplier: 2
+    fixedValue: 0
+  - id: "牌序效果_17"
+    name: "恢复2X"
+    description: "恢复2X点血量。"
+    range: "2-8"
+    pools: "默认池,增益池"
+    notes: ""
+    behavior: "Heal"
+    enabled: 1
+    weight: 10
+    multiplier: 2
+    fixedValue: 0
+  - id: "牌序效果_18"
+    name: "护盾2X"
+    description: "获得2X点护盾。"
+    range: "4-8"
+    pools: "默认池,增益池"
+    notes: ""
+    behavior: "Shield"
+    enabled: 1
+    weight: 10
+    multiplier: 2
+    fixedValue: 0
+  - id: "牌序效果_19"
+    name: "增幅2X"
+    description: "后续的卡牌效果获得+2X。"
+    range: "1-3"
+    pools: "增益池,特殊效果池"
+    notes: ""
+    behavior: "Boost"
+    enabled: 1
+    weight: 10
+    multiplier: 2
+    fixedValue: 0
+  - id: "牌序效果_20"
+    name: "燃烧2X"
+    description: "施加2X层烧伤。"
+    range: "1-5"
+    pools: "伤害池,减益池"
+    notes: ""
+    behavior: "Burn"
+    enabled: 1
+    weight: 10
+    multiplier: 2
+    fixedValue: 0
+  - id: "牌序效果_21"
+    name: "掷毒2X"
+    description: "施加2X层中毒。"
+    range: "2-7"
+    pools: "伤害池,减益池"
+    notes: ""
+    behavior: "Poison"
+    enabled: 1
+    weight: 10
+    multiplier: 2
+    fixedValue: 0
+  - id: "牌序效果_22"
+    name: "强化2X"
+    description: "获得2X层强壮。"
+    range: "1-4"
+    pools: "增益池"
+    notes: ""
+    behavior: "Strength"
+    enabled: 1
+    weight: 10
+    multiplier: 2
+    fixedValue: 0
+  - id: "牌序效果_23"
+    name: "撕裂2X"
+    description: "施加2X层流血。"
+    range: "2-6"
+    pools: "伤害池,减益池"
+    notes: ""
+    behavior: "Bleed"
+    enabled: 1
+    weight: 10
+    multiplier: 2
+    fixedValue: 0
