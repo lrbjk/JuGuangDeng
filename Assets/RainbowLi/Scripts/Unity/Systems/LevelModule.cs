@@ -10,7 +10,7 @@ namespace RainbowLi.UnityGame {
   private void Start(){Track();session.Notify();}
   private void Track(){
    if(session.Game==null)return;
-   if(observed!=session.Game){observed=session.Game;int seed=session.seed==0?System.Environment.TickCount:session.seed;Run=new RouteRun(definition==null?RouteGenerator.Generate(seed):definition.CreateGraph(seed));}
+   if(observed!=session.Game){observed=session.Game;int seed=session.seed==0?System.Environment.TickCount:session.seed;if(definition==null)session.Game.ConfigureGeneratedRoute();else if(definition.randomizeEachRun&&definition.seed==0)session.Game.ConfigureGeneratedRoute(definition.floors,definition.lanes);else session.Game.ConfigureRoute(definition.CreateGraph(seed));Run=session.Game.Route;}
    if(session.Game.Phase==GamePhase.Lost)Run.Fail();
    if(session.Game.Phase==GamePhase.Won&&Run.ActiveId>=0)Run.Complete();
   }
@@ -25,6 +25,8 @@ namespace RainbowLi.UnityGame {
    session.Notify();
   }
   public void CompleteNode(){if(session.Game.Phase==GamePhase.Map&&Run!=null&&Run.ActiveId>=0){Run.Complete();session.Notify();}}
+  public void Save(){session.SaveGame();}
+  public void Continue(){session.ContinueGame();}
   public void EventGold(){ResolveEvent(false);}
   public void EventHeal(){ResolveEvent(true);}
   private void ResolveEvent(bool heal){if(session.Game.Phase!=GamePhase.Event||Run==null||Run.ActiveId<0)return;session.Game.ResolveRouteEvent(heal,definition==null?(heal?16:18):(heal?definition.eventHealing:definition.eventGold));CompleteNode();}

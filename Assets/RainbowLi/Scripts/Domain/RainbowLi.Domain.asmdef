@@ -1,0 +1,7 @@
+{
+  "name": "RainbowLi.Domain",
+  "rootNamespace": "RainbowLi",
+  "references": [],
+  "includePlatforms": [],
+  "noEngineReferences": true
+}

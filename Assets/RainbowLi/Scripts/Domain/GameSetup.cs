@@ -18,5 +18,9 @@ namespace RainbowLi
         public readonly List<SequenceRule> PlayerRules = new List<SequenceRule>(), ArenaRules = new List<SequenceRule>();
         public readonly List<SequenceEffect> AvailablePlayerEffects=new List<SequenceEffect>();
         public SequenceRule EnemyRule;
+        public readonly List<EffectPoolEntry> SequencePool=new List<EffectPoolEntry>(), EngravingPool=new List<EffectPoolEntry>();
+        public bool RandomPlayerSequenceEffects,RandomEnemySequenceEffects;
+        public string PlayerSequencePool, EnemySequencePool, RewardSequencePool, ShopSequencePool, EngravingPoolName;
+        public int RewardCount=3, CardPrice=15, UpgradePrice=12, EngravingPrice=20, RulePrice=18, RestHealing=24;
     }
 }

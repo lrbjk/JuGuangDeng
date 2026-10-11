@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using RainbowLi;
 
@@ -120,16 +120,19 @@ public static class RuleChecks
         {
             g = Battle(); g.PlayerRules.Clear();
             var arena = g.ArenaRules[0]; arena.Numbers = new[] { 1, 2, 3 }; arena.Effect = effect; arena.Value = 8;
+            var mandatory = g.Timeline.ToArray(); int enemyIndex = 0;
             g.Timeline.Clear(); g.Hand.Clear();
             for (int n = 1; n <= 3; n++)
             {
                 bool enemy = enemyFinish ? n != 1 : n != 3;
                 var c = enemy ? null : Card(n);
                 if (c != null) g.Hand.Add(c);
-                g.Timeline.Add(new BattleAction { Enemy = enemy, Number = n, Card = c, Effect = CardEffect.Guard, Value = 0 });
+                var action = enemy ? mandatory[enemyIndex++] : new BattleAction { Card = c };
+                action.Number = n; action.Effect = CardEffect.Guard; action.Value = 0;
+                g.Timeline.Add(action);
             }
             var preview = g.Forecast();
-            g.Confirm(); g.Step(); g.Step(); g.Step();
+            Check(g.Confirm(), "arena arrangement retains mandatory enemy actions"); g.Step(); g.Step(); g.Step();
             int shieldBefore = g.Shield, enemyShieldBefore = g.EnemyShield, hpBefore = g.Health, enemyHpBefore = g.EnemyHealth;
             g.Step();
             Check(g.LastResolvedAction.Enemy == enemyFinish, "arena belongs to final card for " + effect);
@@ -147,10 +150,14 @@ public static class RuleChecks
             Check(g.Health == preview.Health && g.Shield == preview.Shield && g.EnemyHealth == preview.EnemyHealth && g.EnemyShield == preview.EnemyShield, "arena forecast matches actual");
         }
         g = Battle(); g.PlayerRules.Clear();
+        var guardActions = g.Timeline.ToArray();
         g.Timeline.Clear(); var strike = Card(4, CardEffect.Strike); g.Hand.Clear(); g.Hand.Add(strike);
-        g.Timeline.Add(new BattleAction { Enemy = true, Number = 6, Effect = CardEffect.Guard, Value = 10 });
+        guardActions[0].Number = 6; guardActions[0].Effect = CardEffect.Guard; guardActions[0].Value = 10;
+        guardActions[1].Effect = CardEffect.Guard; guardActions[1].Value = 0;
+        g.Timeline.Add(guardActions[0]);
         g.Timeline.Add(new BattleAction { Card = strike, Number = 4, Effect = CardEffect.Strike });
-        g.Confirm(); g.Step(); Check(g.EnemyShield == 10, "enemy guard adds shield");
+        g.Timeline.Add(guardActions[1]);
+        Check(g.Confirm(), "guard arrangement retains mandatory enemy actions"); g.Step(); Check(g.EnemyShield == 10, "enemy guard adds shield");
         g.Step(); Check(g.EnemyShield == 3 && g.EnemyHealth == g.EnemyMaxHealth, "enemy shield absorbs player attack");
 
         var authored = new GameSetup { PlayerHealth = 90, EnemyHealth = 50, HandSize = 4 };

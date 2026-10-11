@@ -1,0 +1,14 @@
+{
+  "name": "RainbowLi.Editor",
+  "rootNamespace": "RainbowLi",
+  "references": [
+    "RainbowLi.Domain",
+    "RainbowLi.Runtime",
+    "UnityEngine.UI",
+    "Unity.InputSystem"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "noEngineReferences": false
+}
