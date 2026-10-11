@@ -7,13 +7,15 @@ namespace RainbowLi
     {
         public void StartBattle(bool boss = false, bool elite=false, bool routeBoss=false)
         {
-            if (Phase != GamePhase.Map || boss && !routeBoss && Victories < 2) return;
+            if (Phase != GamePhase.Map || boss && (Route?.BossUnlockByBattles==true?!Route.CanStartBossBattle:!routeBoss&&Victories<6)) return;
             BeginSettlement(BattleEventTiming.EncounterStart);Round=0;
             foreach(var card in Deck)card.ResetBattleState();
             Boss = boss;ClearStatuses(false);ClearStatuses(true);
             EnemyMaxHealth = setup == null ? (boss ? 110 : 36 + Victories * 12) : (boss ? setup.BossHealth : setup.EnemyHealth + Victories * setup.EnemyHealthGrowth);
             ResetRoundState(true);Enemy.StartEncounter(EnemyMaxHealth,boss,elite);
             if(setup!=null)Enemy.ConditionalRules.AddRange(setup.EnemyConditionalRules.Select(c=>new ConditionalSequence {Condition=c.Condition,Threshold=c.Threshold,Rule=RollRule(CloneRule(c.Rule))}));
+            EnemyCardEffectBonus=setup!=null&&setup.EnemyGrowthEnabled
+                ?CombatResolver.Clamp((long)((Route?.Completed.Count??0)/Math.Max(1,setup.EnemyGrowthLevelInterval))*Math.Max(0,setup.EnemyGrowthAmount)):0;
             Round = 0; ArenaIndex = 0; ArenaTriggerCount = 0; rotateArena = false;
             ArenaRules.Clear();
             for (int i = 0; i < 3; i++)

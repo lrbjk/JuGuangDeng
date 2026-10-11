@@ -11,7 +11,9 @@ namespace RainbowLi {
  }
  [Serializable] public sealed class SavedNumber {public int Number,Action=-1;public bool Enemy,Blocked;public int[] Candidates;}
  [Serializable] public sealed class RunSave {
+  public float ElapsedSeconds;
   public int Version=2;public uint RandomState;public GamePhase Phase;public SavedActor Player,Enemy;
+  public int EnemyCardEffectBonus;
   public int Coins,Victories,Round,ArenaIndex,ArenaTriggerCount,EliteAttackBonus,EliteGold,ProcessedActions;
   public bool Boss,Elite,ServiceUsed,RestAvailable,RotateArena,EndTicksQueued,RandomizeFollowing;
   public string Message,LastAction;public int LastResolved=-1;public long NextEventId;
@@ -21,11 +23,13 @@ namespace RainbowLi {
   public List<ConditionalSequence> Conditions=new List<ConditionalSequence>();public int EnemyRule=-1;public int[] Unlocked,ActiveRules;
   public List<SequenceEffect> AvailableEffects=new List<SequenceEffect>();public List<SavedNumber> Numbers=new List<SavedNumber>();public List<string> History=new List<string>();
   public List<string> PositionBonuses=new List<string>();
+  public bool RouteBossUnlockByBattles;public int RouteAdventureLayer=1;
+  public bool RouteStacked,RouteCardDungeon;public int RouteStartLane;
   public List<LevelNodeData> RouteNodes=new List<LevelNodeData>();public int RouteCurrent=-1,RouteActive=-1;public bool RouteFinished,RouteFailed;public int[] Completed=Array.Empty<int>();
  }
  public sealed partial class ContainmentGame {
   public RunSave CaptureSave(){
-   var result=new RunSave {RandomState=random.State,Phase=Phase,Player=SaveActor(Player),Enemy=SaveActor(Enemy),Coins=Coins,Victories=Victories,Round=Round,ArenaIndex=ArenaIndex,ArenaTriggerCount=ArenaTriggerCount,EliteAttackBonus=EliteAttackBonus,EliteGold=EliteGold,ProcessedActions=processedActions,Boss=Boss,Elite=Elite,ServiceUsed=ServiceUsed,RestAvailable=RestAvailable,RotateArena=rotateArena,EndTicksQueued=endTicksQueued,RandomizeFollowing=randomizeFollowing,Message=Message,LastAction=LastAction,NextEventId=nextEventId};
+   var result=new RunSave {EnemyCardEffectBonus=EnemyCardEffectBonus,RandomState=random.State,Phase=Phase,Player=SaveActor(Player),Enemy=SaveActor(Enemy),Coins=Coins,Victories=Victories,Round=Round,ArenaIndex=ArenaIndex,ArenaTriggerCount=ArenaTriggerCount,EliteAttackBonus=EliteAttackBonus,EliteGold=EliteGold,ProcessedActions=processedActions,Boss=Boss,Elite=Elite,ServiceUsed=ServiceUsed,RestAvailable=RestAvailable,RotateArena=rotateArena,EndTicksQueued=endTicksQueued,RandomizeFollowing=randomizeFollowing,Message=Message,LastAction=LastAction,NextEventId=nextEventId};
    var cards=new List<Card>();var rules=new List<SequenceRule>();var actions=new List<BattleAction>();
    int CardId(Card c){if(c==null)return -1;int id=cards.IndexOf(c);if(id<0){id=cards.Count;cards.Add(c);}return id;}
    int RuleId(SequenceRule r){if(r==null)return -1;int id=rules.IndexOf(r);if(id<0){id=rules.Count;rules.Add(r);}return id;}
@@ -40,7 +44,7 @@ namespace RainbowLi {
    for(int i=0;i<actions.Count;i++){var a=actions[i];result.Actions.Add(new SavedAction {HasSpec=a.EffectSpec!=null,Card=CardId(a.Card),Rule=RuleId(a.Rule),Source=ActionId(a.SourceAction),Enemy=a.Enemy,Number=a.Number,Value=a.Value,Effect=a.Effect,EffectSpec=a.EffectSpec?.Copy(),SkillName=a.SkillName,IsNumberOnly=a.IsNumberOnly,Special=a.Special,IsRepeat=a.IsRepeat,IsStatusTick=a.IsStatusTick,EndTick=a.EndTick,EffectOnly=a.EffectOnly,BonusOnly=a.BonusOnly,SequenceTrigger=a.SequenceTrigger,EffectBonus=a.EffectBonus,EffectMultiplier=a.EffectMultiplier,Participants=a.Participants.Select(ActionId).ToArray()});}
    result.PositionBonuses=positionBonuses.ToList();
    result.Cards=cards.Select(c=>new SavedCard {InstanceId=c.InstanceId,HasSpec=c.Spec!=null,HasEngraving=c.Engraving!=null,Card=c.CopyForSnapshot()}).ToList();result.Rules=rules.Select(CloneRule).ToList();result.AdditionalEffects=rules.Select(r=>r.AdditionalEffect!=null).ToArray();result.History=new List<string>(History);
-   if(Route!=null){result.RouteNodes=Route.Graph.Nodes.Select(n=>n.Copy()).ToList();result.RouteCurrent=Route.CurrentId;result.RouteActive=Route.ActiveId;result.RouteFinished=Route.Finished;result.RouteFailed=Route.Failed;result.Completed=Route.Completed.ToArray();}
+   if(Route!=null){result.RouteBossUnlockByBattles=Route.BossUnlockByBattles;result.RouteAdventureLayer=Route.AdventureLayer;result.RouteStacked=Route.Graph.Stacked;result.RouteCardDungeon=Route.Graph.CardDungeon;result.RouteStartLane=Route.Graph.StartLane;result.RouteNodes=Route.Graph.Nodes.Select(n=>n.Copy()).ToList();result.RouteCurrent=Route.CurrentId;result.RouteActive=Route.ActiveId;result.RouteFinished=Route.Finished;result.RouteFailed=Route.Failed;result.Completed=Route.Completed.ToArray();}
    return result;
   }
   private static SavedActor SaveActor(CombatantState a)=>new SavedActor {Health=a.Health,MaxHealth=a.MaxHealth,Shield=a.Shield,Power=a.Power,Statuses=a.Statuses.Snapshot().Select(s=>new SavedStatus {Effect=s.Key,Value=s.Value,Lifetime=a.Statuses.LifetimeOf(s.Key)??EffectLifetime.Persistent}).ToList()};
@@ -65,8 +69,8 @@ namespace RainbowLi {
    g.Player.AvailableEffects.Clear();g.Player.AvailableEffects.AddRange(s.AvailableEffects.Select(CopyEffect));
    g.NumberStream.Clear();g.NumberEntries.Clear();foreach(var n in s.Numbers){g.NumberStream.Add(n.Number);g.NumberEntries.Add(new NumberEntry {Number=n.Number,Enemy=n.Enemy,Blocked=n.Blocked,Candidates=n.Candidates==null||n.Candidates.Length==0?null:(int[])n.Candidates.Clone(),Action=At(actions,n.Action)});}
    g.positionBonuses.UnionWith(s.PositionBonuses);
-   g.random.State=s.RandomState==0?0x9e3779b9:s.RandomState;g.Phase=s.Phase;g.Coins=s.Coins;g.Victories=s.Victories;g.Round=s.Round;g.ArenaIndex=s.ArenaIndex;g.ArenaTriggerCount=s.ArenaTriggerCount;g.EliteAttackBonus=s.EliteAttackBonus;g.EliteGold=s.EliteGold;g.Boss=s.Boss;g.Enemy.Elite=s.Elite;g.ServiceUsed=s.ServiceUsed;g.RestAvailable=s.RestAvailable;g.rotateArena=s.RotateArena;g.endTicksQueued=s.EndTicksQueued;g.processedActions=s.ProcessedActions;g.pending.Budget=Math.Max(0,ChainLimit-g.processedActions);g.randomizeFollowing=s.RandomizeFollowing;g.Message=s.Message;g.LastAction=s.LastAction;g.nextEventId=s.NextEventId;g.History.Clear();g.History.AddRange(s.History);
-   if(s.RouteNodes.Count>0)g.Route=RouteRun.Restore(new RouteGraph(s.RouteNodes),s.RouteCurrent,s.RouteActive,s.Completed,s.RouteFinished,s.RouteFailed);
+   g.EnemyCardEffectBonus=Math.Max(0,s.EnemyCardEffectBonus);g.random.State=s.RandomState==0?0x9e3779b9:s.RandomState;g.Phase=s.Phase;g.Coins=s.Coins;g.Victories=s.Victories;g.Round=s.Round;g.ArenaIndex=s.ArenaIndex;g.ArenaTriggerCount=s.ArenaTriggerCount;g.EliteAttackBonus=s.EliteAttackBonus;g.EliteGold=s.EliteGold;g.Boss=s.Boss;g.Enemy.Elite=s.Elite;g.ServiceUsed=s.ServiceUsed;g.RestAvailable=s.RestAvailable;g.rotateArena=s.RotateArena;g.endTicksQueued=s.EndTicksQueued;g.processedActions=s.ProcessedActions;g.pending.Budget=Math.Max(0,ChainLimit-g.processedActions);g.randomizeFollowing=s.RandomizeFollowing;g.Message=s.Message;g.LastAction=s.LastAction;g.nextEventId=s.NextEventId;g.History.Clear();g.History.AddRange(s.History);
+   if(s.RouteNodes.Count>0)g.Route=RouteRun.Restore(new RouteGraph(s.RouteNodes,s.RouteStacked,s.RouteCardDungeon,s.RouteStartLane),s.RouteCurrent,s.RouteActive,s.Completed,s.RouteFinished,s.RouteFailed,s.RouteBossUnlockByBattles,s.RouteAdventureLayer);
    if(g.Phase==GamePhase.Planning||g.Phase==GamePhase.Resolving){if(g.ArenaRules.Count==0||g.ArenaIndex<0||g.ArenaIndex>=g.ArenaRules.Count)throw new ArgumentException("Invalid saved arena");}
    return g;
   }

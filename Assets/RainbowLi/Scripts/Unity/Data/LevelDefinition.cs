@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 namespace RainbowLi.UnityGame {
  [CreateAssetMenu(menuName="RainbowLi/关卡路线定义")]
  public sealed class LevelDefinition : ScriptableObject {
+  [Header("BOSS 解锁")]
+  [Min(1),Tooltip("冒险大层数，从 1 开始；与卡片行号独立。完成 5 + 当前冒险层数场普通或精英战斗后，可随时挑战 BOSS。新局读取。")]
+  public int adventureLayer=1;
   [Range(4,16)] public int floors=8;
   [Range(2,5)] public int lanes=3;
   public bool randomizeEachRun=true;
-  [Tooltip("起点三选一；选定后隐藏其他列，只沿所选列推进，完成该列后显露首领。")]
+  [Tooltip("起点三选一；选定后隐藏其他列，只沿所选列推进。BOSS 独立按完成战斗数解锁。")]
   public bool stackedLayout=true;
   [Header("卡片地牢（优先于旧路线模式）")]
   [Tooltip("玩家每步可进入前方左、中、右卡片，完成后移动位置，中途可换方向。")]

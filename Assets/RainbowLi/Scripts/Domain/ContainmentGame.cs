@@ -63,6 +63,9 @@ namespace RainbowLi
         private int processedActions;
         private readonly List<BattleAction> requiredEnemyActions=new List<BattleAction>();
         public int HandLimit=>setup==null?9:setup.HandLimit;
+        // Snapshot at encounter start; each enemy card effect receives this bonus once.
+        public int EnemyCardEffectBonus {get;private set;}
+        public int CardEffectGrowthFor(BattleAction action)=>action!=null&&action.Enemy&&action.Rule==null&&!action.IsNumberOnly&&!action.IsStatusTick&&!action.BonusOnly?EnemyCardEffectBonus:0;
         public int BaseAttack=>setup==null?0:setup.PlayerAttack;
         public bool CanConfirm=>Phase==GamePhase.Planning && PlayerActionCount>0 && requiredEnemyActions.All(a=>Timeline.Count(t=>ReferenceEquals(t,a))==1);
 

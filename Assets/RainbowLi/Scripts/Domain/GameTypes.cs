@@ -26,12 +26,15 @@ namespace RainbowLi
         public CardEffectSpec Spec; public int EffectAmount;
         public bool CanUpgrade=>HasOrderedEffects?Effects.Any(e=>e.UpgradeBonus>0):UpgradeBonus>0;
         public bool HasOrderedEffects=>Effects!=null&&Effects.Count>0;
-        public string RulesText=>HasOrderedEffects?Description:Spec==null?Description:Spec.Text.Replace("X",(Spec.UsesNumber?Number:Value).ToString())+(Upgrade>0?" · 升级后数值 "+Value:"");
+        public string RulesText=>HasOrderedEffects?string.Join(" / ",Effects.Select(e=>e.Spec.Effect==CardEffect.Ignite?IgniteRules(ResolvedEffectValue(e),e.Spec.Lifetime):EffectDescription(e)))+(Engraved?" · 铭刻："+(Engraving==null?"牌序收尾时追加伤害":Engraving.Description):""):Effect==CardEffect.Ignite?IgniteRules(Value,Spec==null?EffectLifetime.Temporary:Spec.Lifetime):Spec==null?Description:(Spec.Text??"").Replace("X",(Spec.UsesNumber?Number:Value).ToString())+(Upgrade>0?" · 升级后数值 "+Value:"");
+        private int ResolvedEffectValue(CardEffectInstance e)=>CombatResolver.Clamp((long)e.ResolveValue(Number,Upgrade)+PermanentGrowth+BattleCharge);
+        private string EffectDescription(CardEffectInstance e)=>CombatStatuses.Name(e.Spec.Effect)+" "+ResolvedEffectValue(e)+(e.Spec.Effect==CardEffect.Ignite?" · 自身增益":"");
+        private static string IgniteRules(int value,EffectLifetime lifetime)=>"自身获得 "+value+" 层点燃增益；自身每次行动后，对对方施加 "+value+" 层烧伤。点燃增益不会使自身受到烧伤。"+(lifetime==EffectLifetime.Temporary?"增益在本回合结束时消失。":"增益在本场战斗内保留，按效果规则消耗。");
         public int BaseBonus = 3, UpgradeBonus = 2, EngravingDamage = 5;
         public int Value => CombatResolver.Clamp((long)UnmodifiedValue+PermanentGrowth+BattleCharge);
         internal int UnmodifiedValue => HasOrderedEffects?Effects[0].ResolveValue(Number,Upgrade):Spec==null?Math.Max(0,AttackBase + Number + BaseBonus + Upgrade * UpgradeBonus):Math.Max(Effect==CardEffect.InverseStrike?1:0,(Spec.UsesNumber?(Effect==CardEffect.IncreasedStrike?1+Number:Effect==CardEffect.InverseStrike?7-Number:Number):EffectAmount)+Upgrade*UpgradeBonus);
-        public string Name => HasOrderedEffects?Effects[0].Spec.Name:Spec!=null?Spec.Name.Replace("X",""):Effect == CardEffect.Strike ? "冲击" : Effect == CardEffect.Guard ? "屏障" : "修复";
-        public string Description => (HasOrderedEffects?string.Join(" / ",Effects.Select(e=>CombatStatuses.Name(e.Spec.Effect)+" "+CombatResolver.Clamp((long)e.ResolveValue(Number,Upgrade)+PermanentGrowth+BattleCharge))):Name + " " + Value + (Spec==null||Spec.Lifetime==EffectLifetime.Direct?"":Spec.Lifetime==EffectLifetime.Temporary?" · 本回合":" · 持续")) + (Engraved ? " · 铭刻："+(Engraving==null?"牌序收尾时追加伤害":Engraving.Description) : "");
+        public string Name => HasOrderedEffects?Effects[0].Spec.Name:Spec!=null?Spec.Name.Replace("X",""):Effect == CardEffect.Ignite ? "点燃增益" : Effect == CardEffect.Strike ? "冲击" : Effect == CardEffect.Guard ? "屏障" : "修复";
+        public string Description => (HasOrderedEffects?string.Join(" / ",Effects.Select(EffectDescription)):Name + " " + Value + (Effect==CardEffect.Ignite?" · 自身增益":"") + (Spec==null||Spec.Lifetime==EffectLifetime.Direct?"":Spec.Lifetime==EffectLifetime.Temporary?" · 本回合":" · 持续")) + (Engraved ? " · 铭刻："+(Engraving==null?"牌序收尾时追加伤害":Engraving.Description) : "");
 
         internal void RestoreIdentity(string id){InstanceId=string.IsNullOrWhiteSpace(id)?Guid.NewGuid().ToString("N"):id;}
         public void ResetBattleState() { BattleCharge = 0; }

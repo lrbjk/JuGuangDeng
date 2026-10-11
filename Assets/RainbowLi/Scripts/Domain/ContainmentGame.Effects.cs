@@ -5,14 +5,14 @@ namespace RainbowLi {
   private CombatantState Actor(bool enemy)=>enemy?(CombatantState)Enemy:Player;
   private int NextBattleNumber()=>random.Next(1,7);
   private void ApplyCardEffect(BattleAction action){
-   var card=action.Card;if(action.EffectMultiplier==0)return;
+   var card=action.Card;if(action.EffectMultiplier==0)return;int adventureBonus=CardEffectGrowthFor(action);
    if(card!=null&&card.HasOrderedEffects){
     for(int i=0;i<card.Effects.Count;i++){
      settlingEffectIndex=i;var effect=card.Effects[i];
-     ApplyEffect(action.Enemy,effect.Spec.Effect,CombatResolver.Clamp(((long)(action.BonusOnly?0:effect.ResolveValue(card.Number,card.Upgrade))+action.EffectBonus)*action.EffectMultiplier),effect.Spec);
+     ApplyEffect(action.Enemy,effect.Spec.Effect,CombatResolver.Clamp(((long)(action.BonusOnly?0:effect.ResolveValue(card.Number,card.Upgrade))+action.EffectBonus+adventureBonus)*action.EffectMultiplier),effect.Spec);
      if(Health<=0||EnemyHealth<=0)return;
     }
-   }else {settlingEffectIndex=0;ApplyEffect(action.Enemy,action.Effect,CombatResolver.Clamp(((long)(action.BonusOnly?0:card==null?action.Value:card.UnmodifiedValue)+action.EffectBonus)*action.EffectMultiplier),card?.Spec??action.EffectSpec);}
+   }else {settlingEffectIndex=0;ApplyEffect(action.Enemy,action.Effect,CombatResolver.Clamp(((long)(action.BonusOnly?0:card==null?action.Value:card.UnmodifiedValue)+action.EffectBonus+adventureBonus)*action.EffectMultiplier),card?.Spec??action.EffectSpec);}
   }
   private void ApplyEffect(bool enemy,CardEffect effect,int amount,CardEffectSpec spec){
    var owner=Actor(enemy);int value=CombatResolver.Clamp((long)amount+(settlingAction?.BonusOnly==true?0:owner.Power));

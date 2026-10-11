@@ -250,8 +250,9 @@ public sealed class CardMotionController : MonoBehaviour {
   foreach(var c in view.actions)Visibility(c,!enableMotion||!hidden.ContainsKey((RectTransform)c.transform));
  }
  private static void Visibility(CardView c,bool show){if(c==null)return;var group=c.GetComponent<CanvasGroup>();if(group==null)group=c.gameObject.AddComponent<CanvasGroup>();group.alpha=show?1:0;group.blocksRaycasts=show;}
- private void DestroyTransfer(Transfer t){if(t.ghost!=null)Destroy(t.ghost.gameObject);foreach(var im in t.trails)if(im!=null)Destroy(im.gameObject);if(t.destination!=null&&hidden.TryGetValue(t.destination,out int count)){if(count<=1)hidden.Remove(t.destination);else hidden[t.destination]=count-1;}}
- private void DestroyCast(Cast c){if(c.sourceView!=null&&hidden.TryGetValue(c.sourceView,out int count)){if(count<=1)hidden.Remove(c.sourceView);else hidden[c.sourceView]=count-1;}if(c.ghost!=null)Destroy(c.ghost.gameObject);if(c.sourceRing!=null)Destroy(c.sourceRing.gameObject);if(c.targetRing!=null)Destroy(c.targetRing.gameObject);if(c.head!=null)Destroy(c.head.gameObject);if(c.label!=null)Destroy(c.label.gameObject);foreach(var im in c.trails)if(im!=null)Destroy(im.gameObject);}
+ private void ReleaseVisual(Component visual){if(visual==null)return;visual.gameObject.SetActive(false);Destroy(visual.gameObject);}
+ private void DestroyTransfer(Transfer t){ReleaseVisual(t.ghost);foreach(var im in t.trails)ReleaseVisual(im);if(t.destination!=null&&hidden.TryGetValue(t.destination,out int count)){if(count<=1)hidden.Remove(t.destination);else hidden[t.destination]=count-1;}}
+ private void DestroyCast(Cast c){if(c.sourceView!=null&&hidden.TryGetValue(c.sourceView,out int count)){if(count<=1)hidden.Remove(c.sourceView);else hidden[c.sourceView]=count-1;}ReleaseVisual(c.ghost);ReleaseVisual(c.sourceRing);ReleaseVisual(c.targetRing);ReleaseVisual(c.head);ReleaseVisual(c.label);foreach(var im in c.trails)ReleaseVisual(im);}
  private void ClearTransfers(){foreach(var t in transfers)DestroyTransfer(t);transfers.Clear();hidden.Clear();}
  private void ResetPresentation(){ClearTransfers();foreach(var c in casts)DestroyCast(c);casts.Clear();KeepBattleVisible=false;waitingForImpact=false;chain=0;lastCast=-10;if(view!=null){foreach(var c in view.hand)Visibility(c,true);foreach(var c in view.actions)Visibility(c,true);}}
 }

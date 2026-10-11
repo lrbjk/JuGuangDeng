@@ -76,10 +76,10 @@ public sealed class LevelRouteEditorWindow : EditorWindow {
   GUI.EndScrollView();
  }
  private void DrawProperties(){
-  EditorGUILayout.LabelField("路线配置",EditorStyles.boldLabel);EditorGUI.BeginChangeCheck();bool random=EditorGUILayout.Toggle("每局随机生成",definition.randomizeEachRun);int floors=EditorGUILayout.IntSlider("生成层数",definition.floors,4,16);int lanes=EditorGUILayout.IntSlider("生成列数",definition.lanes,2,5);int seed=EditorGUILayout.IntField("运行种子 (0 随机)",definition.seed);
+  EditorGUILayout.LabelField("路线配置",EditorStyles.boldLabel);EditorGUI.BeginChangeCheck();int adventureLayer=Mathf.Max(1,EditorGUILayout.IntField("当前冒险大层数",definition.adventureLayer));EditorGUILayout.LabelField("BOSS 解锁战斗数",(5L+adventureLayer).ToString());bool random=EditorGUILayout.Toggle("每局随机生成",definition.randomizeEachRun);int floors=EditorGUILayout.IntSlider("生成层数",definition.floors,4,16);int lanes=EditorGUILayout.IntSlider("生成列数",definition.lanes,2,5);int seed=EditorGUILayout.IntField("运行种子 (0 随机)",definition.seed);
   bool dungeon=EditorGUILayout.Toggle("玩家移动的卡片地牢",definition.cardDungeon);int startLane=EditorGUILayout.IntField("起点列 (-1 中间 / 0 起)",definition.startingLane);
   bool stacked=definition.stackedLayout;using(new EditorGUI.DisabledScope(dungeon)){stacked=EditorGUILayout.Toggle("旧版单列推进",stacked);}
-  if(EditorGUI.EndChangeCheck()){Undo.RecordObject(definition,"路线设置");definition.cardDungeon=dungeon;definition.startingLane=Mathf.Max(-1,startLane);definition.stackedLayout=dungeon||stacked;definition.randomizeEachRun=random;definition.floors=floors;definition.lanes=lanes;definition.seed=seed;EditorUtility.SetDirty(definition);}
+  if(EditorGUI.EndChangeCheck()){Undo.RecordObject(definition,"路线设置");definition.adventureLayer=adventureLayer;definition.cardDungeon=dungeon;definition.startingLane=Mathf.Max(-1,startLane);definition.stackedLayout=dungeon||stacked;definition.randomizeEachRun=random;definition.floors=floors;definition.lanes=lanes;definition.seed=seed;EditorUtility.SetDirty(definition);}
   if(random)EditorGUILayout.HelpBox("当前为随机模式。图中节点仅为模板，不会按固定节点运行。取消“每局随机生成”即可使用本图。",MessageType.Warning);
   previewSeed=EditorGUILayout.IntField("模板生成种子",previewSeed);if(GUILayout.Button("重新生成模板（可撤销）")){Generate(definition,previewSeed);selected=-1;result="已生成模板。";}
   EditorGUILayout.Space();var n=definition.authoredNodes.Find(v=>v.id==selected);if(n==null){EditorGUILayout.HelpBox("点击左侧节点，编辑关卡类型、文字、图标与出口。",MessageType.Info);return;}

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using UnityEngine;
+using System.Linq;
 namespace RainbowLi.UnityGame {
  public sealed class LevelModule : MonoBehaviour {
   public GameSession session;
@@ -10,10 +11,11 @@ namespace RainbowLi.UnityGame {
   private void Start(){Track();session.Notify();}
   private void Track(){
    if(session.Game==null)return;
-   if(observed!=session.Game){observed=session.Game;int seed=session.seed==0?System.Environment.TickCount:session.seed;if(definition==null)session.Game.ConfigureGeneratedRoute();else if(definition.randomizeEachRun&&definition.seed==0)session.Game.ConfigureGeneratedRoute(definition.floors,definition.lanes);else session.Game.ConfigureRoute(definition.CreateGraph(seed));Run=session.Game.Route;}
+   if(observed!=session.Game){observed=session.Game;int seed=session.seed==0?System.Environment.TickCount:session.seed;if(definition==null)session.Game.ConfigureGeneratedRoute();else if(definition.randomizeEachRun&&definition.seed==0)session.Game.ConfigureGeneratedRoute(definition.floors,definition.lanes);else session.Game.ConfigureRoute(definition.CreateGraph(seed));Run=session.Game.Route;if(!Run.BossUnlockByBattles)Run.ConfigureBossUnlock(definition==null?1:definition.adventureLayer);}
    if(session.Game.Phase==GamePhase.Lost)Run.Fail();
    if(session.Game.Phase==GamePhase.Won&&Run.ActiveId>=0)Run.Complete();
   }
+  public void SelectBoss(){Track();var boss=Run?.Graph.Nodes.FirstOrDefault(n=>n.kind==LevelKind.Boss);if(boss!=null)SelectNode(boss.id);}
   public void SelectNode(int id){
    Track();var g=session.Game;if(g.Phase!=GamePhase.Map||!Run.CanEnter(id))return;
    var node=Run.Graph.Find(id);

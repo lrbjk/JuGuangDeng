@@ -9,12 +9,17 @@ public sealed class BattleHudView : MonoBehaviour {
  public Image enemyPortrait;
  public Text portraitPlaceholder,enemyName,playerShield,enemyShield,coins,deckCount,drawCount,discardCount,turnLabel;
  public Text[] enemyRules;
+ public SequenceView[] enemySequenceViews;
+ public SequenceView arenaSequenceView;
  public CardView[] enemySkills;
  public GameObject settingsPanel,pilePanel;
  public Text pileTitle,pileBody,speedLabel;
+ public DeckBrowserView deckBrowser;
+ public Text mapDeckCount;
  public Slider volume;
  public BattleStatusPanelView playerStatuses,enemyStatuses;
  public ScrollRect handScroll,actionScroll;
+ public PokerActionLayout pokerLayout;
  [Range(.1f,1.2f)] public float handScale=.88f,actionScale=.57f;
  [Min(0)] public float cardGap=12;
  private int displayedPile=-1;
@@ -28,18 +33,24 @@ public sealed class BattleHudView : MonoBehaviour {
   playerShield.text="护盾\n"+g.Shield;enemyShield.text="护盾\n"+g.EnemyShield;
   view.playerStats.text="玩家   "+g.Health+" / "+g.HealthLimit+"    增伤 "+g.Power;
   view.enemyStats.text=g.EnemyHealth+" / "+g.EnemyMaxHealth+"    增伤 "+g.EnemyPower;
-  coins.text="金币  "+g.Coins;deckCount.text="牌组  "+g.Deck.Count;
+  coins.text="金币  "+g.Coins;deckCount.text="牌组  "+g.Deck.Count;if(mapDeckCount!=null)mapDeckCount.text="牌组  "+g.Deck.Count+" · 查看";
   drawCount.text="抽牌堆\n"+g.DrawPileCards.Count;discardCount.text="弃牌堆\n"+g.DiscardCards.Count;
   turnLabel.text="回合 "+g.Round+"   行动 "+g.PlayerActionCount+" / "+g.PlayerActionLimit;
   var rules=g.Enemy.ActiveRules.ToArray();
   for(int i=0;i<enemyRules.Length;i++)enemyRules[i].text=i<rules.Length?rules[i].Pattern+"\n"+rules[i].Description:"—";
+  if(enemySequenceViews!=null)for(int i=0;i<enemySequenceViews.Length;i++){
+   if(enemySequenceViews[i]==null)continue;
+   if(i<rules.Length)enemySequenceViews[i].Bind(rules[i],false);else enemySequenceViews[i].BindEmpty("未激活牌序");
+  }
+  if(arenaSequenceView!=null){if(g.ArenaRules.Count>0&&g.ArenaIndex>=0&&g.ArenaIndex<g.ArenaRules.Count)arenaSequenceView.Bind(g.ArenaRules[g.ArenaIndex],false);else arenaSequenceView.BindEmpty("场地牌序");}
+
   var definition=view.session.enemy==null?null:view.session.enemy.definition;
   var rows=definition==null||definition.cardTable==null?null:definition.cardTable.rows.Where(r=>r.enabled).ToArray();
   var skills=definition==null?null:definition.skills;
   for(int i=0;i<enemySkills.Length;i++){
    bool valid=rows!=null?i<rows.Length:skills!=null&&i<skills.Length;
    enemySkills[i].gameObject.SetActive(valid);if(!valid)continue;
-   if(rows!=null){var r=rows[i];enemySkills[i].Bind(r.number,r.effect,r.name+(r.special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+r.name,r.description+"\n效果数值："+r.min+"～"+r.max);}
+   if(rows!=null){var r=rows[i];int bonus=g.EnemyCardEffectBonus;enemySkills[i].Bind(r.number,r.effect,r.name+(r.special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+r.name,r.description+"\n效果数值："+CombatResolver.Clamp((long)r.min+bonus)+"～"+CombatResolver.Clamp((long)r.max+bonus)+(bonus>0?"\n全局敌人卡牌效果 +"+bonus:""));}
    else {var s=skills[i];enemySkills[i].Bind(s.Number,s.Effect,s.Name+(s.Special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+s.Name,CombatStatuses.Name(s.Effect)+" · 数字 "+s.Number+" · 修正 "+s.Modifier);}
   }
   LayoutCards(g);
@@ -54,6 +65,8 @@ public sealed class BattleHudView : MonoBehaviour {
   if(handScroll!=null)scale=Mathf.Min(scale,(handArea.rect.height-32)/225f);
   float width=count*130*scale+Mathf.Max(0,count-1)*cardGap,start=(handArea.rect.width-width)/2;
   for(int i=0;i<view.hand.Length;i++)PlaceCard(view.hand[i],new Vector2(start+i*(130*scale+cardGap),handScroll==null?-34:-24),scale);
+  if(pokerLayout==null)pokerLayout=actionArea.GetComponent<PokerActionLayout>();
+  if(pokerLayout!=null){pokerLayout.Layout(timelineCount);return;}
   int slots=Mathf.Max(1,timelineCount);if(actionScroll!=null)actionArea.sizeDelta=new Vector2(Mathf.Max(actionScroll.viewport.rect.width,slots*148+52),actionArea.sizeDelta.y);float spacing=(actionArea.rect.width-52)/slots;
   scale=Mathf.Min(actionScale,(spacing-28)/130);
   for(int i=0;i<view.actions.Length;i++){
@@ -66,13 +79,23 @@ public sealed class BattleHudView : MonoBehaviour {
  }
  private static void PlaceCard(CardView card,Vector2 p,float scale){var r=(RectTransform)card.transform;if((r.anchoredPosition-p).sqrMagnitude>1||Mathf.Abs(r.localScale.x-scale)>.001f)card.SetLayout(p,scale);}
  private static void Place(Component c,float x,float y,float w,float h){var r=(RectTransform)c.transform;r.anchoredPosition=new Vector2(x,-y);r.sizeDelta=new Vector2(w,h);}
- public void ToggleSettings(){settingsPanel.SetActive(!settingsPanel.activeSelf);}
+ public void ToggleSettings(){settingsPanel.SetActive(!settingsPanel.activeSelf);if(settingsPanel.activeSelf)settingsPanel.transform.SetAsLastSibling();}
  public void CloseSettings(){settingsPanel.SetActive(false);}
  public void SetVolume(float value){var fx=view.session.GetComponentInChildren<BattleEffects>();if(fx!=null&&fx.audioSource!=null)fx.audioSource.volume=value;}
  public void CycleSpeed(){view.battle.CycleSpeed();speedLabel.text="播放速度  "+view.battle.PlaybackSpeed.ToString("0.#")+"×";}
- public void ShowDrawPile(){displayedPile=0;pilePanel.SetActive(true);UpdatePile(view.session.Game);}
- public void ShowDiscardPile(){displayedPile=1;pilePanel.SetActive(true);UpdatePile(view.session.Game);}
+ public void ShowDrawPile(){if(deckOperations!=null){deckOperations.Open(DeckOperation.DrawPile);return;}displayedPile=0;pilePanel.SetActive(true);UpdatePile(view.session.Game);}
+ public void ShowDiscardPile(){if(deckOperations!=null){deckOperations.Open(DeckOperation.DiscardPile);return;}displayedPile=1;pilePanel.SetActive(true);UpdatePile(view.session.Game);}
+ public DeckOperationView deckOperations;
+ public void ShowDeck(){if(deckOperations!=null){deckOperations.Open(DeckOperation.Browse);return;}displayedPile=2;pilePanel.SetActive(true);pilePanel.transform.SetAsLastSibling();UpdatePile(view.session.Game);if(deckBrowser!=null)deckBrowser.ResetScroll();}
  public void ClosePile(){pilePanel.SetActive(false);}
- private void UpdatePile(ContainmentGame g){if(g==null)return;var cards=displayedPile==0?g.DrawPileCards:g.DiscardCards;pileTitle.text=(displayedPile==0?"抽牌堆":"弃牌堆")+" / "+cards.Count+" 张";pileBody.text=cards.Count==0?"暂无卡牌":string.Join("\n",cards.OrderBy(c=>c.Number).Select(c=>c.Number+"  ·  "+c.Description));}
+ private void UpdatePile(ContainmentGame g){
+  if(g==null)return;
+  bool fullDeck=displayedPile==2;
+  if(deckBrowser!=null)deckBrowser.SetVisible(fullDeck);
+  if(fullDeck){pileTitle.text="当前牌组 / "+g.Deck.Count+" 张";if(deckBrowser!=null){deckBrowser.Refresh(g);return;}}
+  var cards=fullDeck?g.Deck:displayedPile==0?g.DrawPileCards:g.DiscardCards;
+  pileTitle.text=(fullDeck?"当前牌组":displayedPile==0?"抽牌堆":"弃牌堆")+" / "+cards.Count+" 张";
+  pileBody.text=cards.Count==0?"暂无卡牌":string.Join("\n",cards.OrderBy(c=>c.Number).Select(c=>c.Number+"  ·  "+c.Description));
+ }
 }
 }

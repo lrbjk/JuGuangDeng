@@ -11,10 +11,26 @@ public static class BuffUiSceneMigration {
  public static void ApplyCurrent(){if(Application.isPlaying)return;var scene=EditorSceneManager.GetActiveScene();if(!scene.path.StartsWith(Root+"/",StringComparison.Ordinal))throw new InvalidOperationException("请打开 RainbowLi 场景。");Apply();EditorSceneManager.MarkSceneDirty(scene);}
  public static void Run(){var scene=EditorSceneManager.OpenScene(Root+"/Scenes/RainbowLiGame.unity");Apply();EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();}
  static void Apply(){
-  var hud=UnityEngine.Object.FindFirstObjectByType<BattleHudView>();if(hud==null)throw new InvalidOperationException("缺少 BattleHudView");if(hud.playerStatuses!=null)return;
+  var hud=UnityEngine.Object.FindFirstObjectByType<BattleHudView>();if(hud==null)throw new InvalidOperationException("缺少 BattleHudView");
   font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");var parent=hud.view.battlePanel.transform;
   if(hud.view.statusSummary!=null)hud.view.statusSummary.gameObject.SetActive(false);
-  hud.playerStatuses=Panel(parent,false,238);hud.enemyStatuses=Panel(parent,true,342);EditorUtility.SetDirty(hud);
+  if(hud.playerStatuses==null)hud.playerStatuses=Panel(parent,false,238);if(hud.enemyStatuses==null)hud.enemyStatuses=Panel(parent,true,342);
+  MovePlayerAboveHealth(hud);EditorUtility.SetDirty(hud);
+ }
+ public static void MovePlayerAboveHealth(BattleHudView hud){
+  var status=hud.playerStatuses;var root=(RectTransform)status.transform;root.anchoredPosition=new Vector2(82,-704);root.sizeDelta=new Vector2(1136,54);status.singleRow=true;
+  var scroll=root.GetComponent<ScrollRect>();scroll.horizontal=true;scroll.vertical=false;scroll.StopMovement();scroll.horizontalNormalizedPosition=0;
+  var viewport=scroll.viewport;viewport.anchoredPosition=new Vector2(8,-18);viewport.sizeDelta=new Vector2(1120,34);status.content.anchoredPosition=Vector2.zero;status.content.sizeDelta=new Vector2(1120,34);
+  var heading=root.Find("Heading").GetComponent<Text>();heading.text="玩家状态 · 点击查看说明 / 横向滚动查看更多";heading.fontSize=13;heading.rectTransform.anchoredPosition=new Vector2(8,0);heading.rectTransform.sizeDelta=new Vector2(1120,18);
+  status.emptyLabel.rectTransform.sizeDelta=new Vector2(1120,34);status.emptyLabel.fontSize=15;
+  var health=(RectTransform)hud.view.playerHealth.transform;health.anchoredPosition=new Vector2(health.anchoredPosition.x,-764);
+  var stats=hud.view.playerStats.rectTransform;stats.anchoredPosition=new Vector2(stats.anchoredPosition.x,-762);
+  var shield=(RectTransform)hud.playerShield.transform.parent;shield.anchoredPosition=new Vector2(shield.anchoredPosition.x,-748);
+  // Reserve a clear strip between the poker table, buffs and health bar.
+  var area=hud.actionArea;var table=(RectTransform)(hud.actionScroll==null?area.parent:hud.actionScroll.viewport.parent);table.sizeDelta=new Vector2(table.sizeDelta.x,180);
+  if(hud.actionScroll!=null){var vp=hud.actionScroll.viewport;vp.sizeDelta=new Vector2(vp.sizeDelta.x,174);}
+  area.sizeDelta=new Vector2(area.sizeDelta.x,174);if(hud.pokerLayout!=null)hud.pokerLayout.Layout(2);
+  EditorUtility.SetDirty(status);EditorUtility.SetDirty(scroll);EditorUtility.SetDirty(heading);
  }
  static BattleStatusPanelView Panel(Transform parent,bool enemy,float y){
   var root=Box(enemy?"EnemyStatuses":"PlayerStatuses",parent,1040,y,388,98,new Color(.06f,.09f,.09f));

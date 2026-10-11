@@ -2,9 +2,11 @@ namespace RainbowLi
 {
     public sealed partial class ContainmentGame
     {
+        public int CardUpgradePrice => setup?.UpgradePrice ?? 12;
+        public int CardEngravingPrice => setup?.EngravingPrice ?? 20;
         public bool BuyUpgrade(Card card, bool engrave)
         {
-            int cost = engrave ? (setup?.EngravingPrice??20) : (setup?.UpgradePrice??12);
+            int cost = engrave ? CardEngravingPrice : CardUpgradePrice;
             if (Phase != GamePhase.Shop || Coins < cost || !Deck.Contains(card) || !engrave&&!card.CanUpgrade || engrave && card.Engraved) return false;
             var engraving=engrave?DrawEngraving(setup?.EngravingPoolName):null;
             Coins -= cost; if (engrave) {card.Engraved = true;card.Engraving=engraving;card.EngravingCode=engraving.Code;} else card.Upgrade++;

@@ -58,6 +58,17 @@ namespace RainbowLi
             var next=CopyEffect(pool[(at+1)%pool.Count]);if(secondary)rule.AdditionalEffect=next;else SetRuleEffect(rule,next);
         }
 
+        public bool EquipSequenceEffect(int index, bool secondary, int availableIndex)
+        {
+            if (Phase != GamePhase.Map || index < 0 || index >= PlayerRules.Count) return false;
+            var rule = PlayerRules[index];
+            if (availableIndex == -1 && secondary) { rule.AdditionalEffect = null; return true; }
+            if (availableIndex < 0 || availableIndex >= Player.AvailableEffects.Count) return false;
+            var effect = CopyEffect(Player.AvailableEffects[availableIndex]);
+            if (secondary) rule.AdditionalEffect = effect; else SetRuleEffect(rule, effect);
+            return true;
+        }
+
         public void ChangeNumber(int rule, int digit)
         {
             if (Phase != GamePhase.Map || rule < 0 || rule >= PlayerRules.Count || digit < 0 || digit > 2) return;

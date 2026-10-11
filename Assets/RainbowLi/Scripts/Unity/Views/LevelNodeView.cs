@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -18,7 +18,7 @@ namespace RainbowLi.UnityGame {
   private bool hover;
   public static string KindName(LevelKind kind)=>kind==LevelKind.Combat?"战斗":kind==LevelKind.Elite?"精英":kind==LevelKind.Rest?"休息":kind==LevelKind.Shop?"商店":kind==LevelKind.Event?"事件":"首领";
   public void SetDepth(float scale){baseScale=Vector3.one*scale;transform.localScale=baseScale;}
-  public void SetStackDepth(int depth){bool front=depth==0;label.gameObject.SetActive(front);stateLabel.gameObject.SetActive(front);banner.raycastTarget=front&&button.interactable;float width=((RectTransform)transform).rect.width;foreach(var g in new Graphic[]{icon,customIcon}){g.transform.localScale=Vector3.one*(front?1:.72f);((RectTransform)g.transform).anchoredPosition=new Vector2(width*.5f-(front?32:23),front?-(banner.pointDepth<=.01f?75:31):-10);}}
+  public void SetStackDepth(int depth){bool front=depth==0;label.gameObject.SetActive(front);stateLabel.gameObject.SetActive(front);banner.raycastTarget=front&&button.interactable;float width=((RectTransform)transform).rect.width;foreach(var g in new Graphic[]{icon,customIcon}){g.transform.localScale=Vector3.one*(map!=null&&map.diagramLayout?(front?1.5f:.55f):(front?1:.72f));((RectTransform)g.transform).anchoredPosition=map!=null&&map.diagramLayout?new Vector2(width*.5f-(front?48:17.6f),front?-64:-12):new Vector2(width*.5f-(front?32:23),front?-(banner.pointDepth<=.01f?75:31):-10);}}
   private void Update(){if(banner==null)return;float pulse=button.interactable?Mathf.Sin(Time.unscaledTime*2.2f+nodeId)*.018f:0;transform.localScale=Vector3.Lerp(transform.localScale,baseScale*(1+(hover?.06f:pulse)),Time.unscaledDeltaTime*10);}
   public void OnPointerEnter(PointerEventData e){hover=true;map?.ShowTooltip(nodeId);}
   public void OnPointerExit(PointerEventData e){hover=false;map?.HideTooltip();}

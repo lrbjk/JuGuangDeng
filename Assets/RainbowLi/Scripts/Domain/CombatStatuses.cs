@@ -10,7 +10,6 @@ namespace RainbowLi {
   public EffectLifetime? LifetimeOf(CardEffect effect)=>lifetimes.TryGetValue(effect,out var lifetime)?lifetime:(EffectLifetime?)null;
   public bool Any=>values.Count>0;
   public IEnumerable<CardEffect> ActiveEffects=>values.Keys.OrderBy(e=>(int)e);
-  public EffectLifetime LifetimeOf(CardEffect effect)=>lifetimes.TryGetValue(effect,out var lifetime)?lifetime:Temporary.Contains(effect)?EffectLifetime.Temporary:EffectLifetime.Persistent;
   public string Summary=>string.Join(" · ",values.OrderBy(v=>(int)v.Key).Select(v=>Name(v.Key)+v.Value));
   public string Brief=>string.Join(" · ",values.OrderBy(v=>(int)v.Key).Take(6).Select(v=>Name(v.Key)+v.Value))+(values.Count>6?" …":"");
   public void Add(CardEffect effect,int amount,EffectLifetime? lifetime=null){if(amount<=0)return;lifetimes[effect]=lifetime??(Temporary.Contains(effect)?EffectLifetime.Temporary:EffectLifetime.Persistent);this[effect]=effect==CardEffect.Reciprocity||effect==CardEffect.Disorder?1:effect==CardEffect.DamageCap&&this[effect]>0?Math.Min(this[effect],amount):CombatResolver.Clamp((long)this[effect]+amount);}

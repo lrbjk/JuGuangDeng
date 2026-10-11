@@ -63,10 +63,11 @@ namespace RainbowLi
             PlayerRules[index].Numbers = RandomPattern(); ServiceUsed = true; RestAvailable = false; Message = "已重构牌序数字。";
         }
 
+        public int CardPurchasePrice => setup?.CardPrice ?? 15;
         public bool BuyCard(int number)
         {
-            if (Phase != GamePhase.Shop || Coins < (setup?.CardPrice??15) || number < 1 || number > 6) return false;
-            Coins -= setup?.CardPrice??15; Deck.Add(GenerateCard(number)); Message = "已生成指定数字卡牌。"; return true;
+            if (Phase != GamePhase.Shop || Coins < CardPurchasePrice || number < 1 || number > 6) return false;
+            Coins -= CardPurchasePrice; Deck.Add(GenerateCard(number)); Message = "已生成指定数字卡牌。"; return true;
         }
 
 

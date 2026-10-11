@@ -6,6 +6,8 @@ namespace RainbowLi
     {
         public int PlayerHealth = 70, HandSize = 6, EnemyHealth = 36, EnemyHealthGrowth = 12;
         public int PlayerAttack, HandLimit=9;
+        public bool EnemyGrowthEnabled;
+        public int EnemyGrowthLevelInterval=10, EnemyGrowthAmount=1;
         public bool RandomStartingDeck;
         public float RepeatWeightMultiplier=.5f;
         public readonly List<EnemySkill> EnemySkills=new List<EnemySkill>();

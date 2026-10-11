@@ -12,6 +12,8 @@ public sealed class BattleStatusPanelView:MonoBehaviour {
  public Text detailTitle,detailBody;
  public Button closeButton;
  public Color positiveColor=new Color(.13f,.31f,.25f),negativeColor=new Color(.39f,.15f,.16f),specialColor=new Color(.26f,.20f,.37f);
+ [Tooltip("横排状态标签，状态较多时搭配水平 ScrollRect 查看。")]
+ public bool singleRow;
  readonly Dictionary<CardEffect,Button> chips=new Dictionary<CardEffect,Button>();
  CombatStatuses statuses;CardEffect? selected;
  void Awake(){closeButton.onClick.AddListener(CloseDetails);}
@@ -20,10 +22,11 @@ public sealed class BattleStatusPanelView:MonoBehaviour {
   statuses=value;emptyLabel.gameObject.SetActive(!value.Any);
   foreach(var chip in chips.Values)chip.gameObject.SetActive(false);
   var effects=value.ActiveEffects.OrderBy(e=>Category(e)).ThenBy(e=>(int)e).ToArray();
-  content.sizeDelta=new Vector2(content.sizeDelta.x,Mathf.Max(70,((effects.Length+2)/3)*38));
+  int columns=singleRow?Mathf.Max(1,effects.Length):3;
+  content.sizeDelta=singleRow?new Vector2(Mathf.Max(((RectTransform)content.parent).rect.width,effects.Length*123),34):new Vector2(content.sizeDelta.x,Mathf.Max(70,((effects.Length+2)/3)*38));
   for(int i=0;i<effects.Length;i++){
    var effect=effects[i];if(!chips.TryGetValue(effect,out var button)){button=Instantiate(chipTemplate,content);button.name="Status_"+effect;button.onClick=new Button.ButtonClickedEvent();button.onClick.AddListener(()=>ShowDetails(effect));chips.Add(effect,button);}
-   button.gameObject.SetActive(true);var r=(RectTransform)button.transform;r.anchoredPosition=new Vector2(i%3*123,-i/3*38);button.GetComponent<Image>().color=Category(effect)==0?positiveColor:Category(effect)==1?negativeColor:specialColor;
+   button.gameObject.SetActive(true);var r=(RectTransform)button.transform;r.anchoredPosition=new Vector2(i%columns*123,-i/columns*38);button.GetComponent<Image>().color=Category(effect)==0?positiveColor:Category(effect)==1?negativeColor:specialColor;
    button.GetComponentInChildren<Text>().text=CombatStatuses.Name(effect)+"  "+value[effect]+"层\n"+CategoryName(effect);
   }
   if(selected.HasValue){if(value[selected.Value]<=0)CloseDetails();else UpdateDetails(selected.Value);}
