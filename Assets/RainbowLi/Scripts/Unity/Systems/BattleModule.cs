@@ -30,7 +30,7 @@ public sealed class BattleModule : MonoBehaviour {
  private bool InPlayback=>session!=null&&session.Game!=null&&(session.Game.Phase==GamePhase.Resolving||presentation!=null&&presentation.KeepBattleVisible);
  public bool IsPresentationPaused=>InPlayback&&!autoPlay&&!stepping&&!(designerPlaying&&HasPresentation)&&!IsSkipping;
  private readonly BattlePlaybackClock clock=new BattlePlaybackClock();
- public float PresentationTime=>clock.Tick(Time.frameCount,Time.unscaledDeltaTime,!IsPresentationPaused,PlaybackSpeed*(InPlayback?RepeatSpeed:1));
+ public float PresentationTime=>clock.Tick(Time.frameCount,Time.unscaledDeltaTime,!IsPresentationPaused&&(session==null||!session.PauseElapsedTime),PlaybackSpeed*(InPlayback?RepeatSpeed:1));
  public void BeginDesignerPreview(){designerPlaying=true;}
  public void EndDesignerPreview(){designerPlaying=false;}
  public void CycleSpeed(){SetSpeed(PlaybackSpeed<1.5f?2:PlaybackSpeed<3?4:1);}
@@ -51,7 +51,7 @@ public sealed class BattleModule : MonoBehaviour {
   else RepeatedEffects=0;
  }
  private void Update(){
-  if(session==null||session.Game==null)return;
+  if(session==null||session.Game==null||session.PauseElapsedTime)return;
   float now=PresentationTime;
   if(IsSkipping){for(int i=0;i<32&&session.Game.Phase==GamePhase.Resolving;i++){if(!session.ResolveOne())break;}if(session.Game.Phase!=GamePhase.Resolving)FinishSkip();return;}
   if(designerPlaying&&!HasPresentation)designerPlaying=false;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -62,7 +62,7 @@ namespace RainbowLi.EditorTools {
   public static readonly string[] CompoundHeaders={"卡牌编号","执行序号","结算效果","持续方式","性质","效果描述","基础取值范围","启用"};
   public static void Write(string path,IEnumerable<CardTableRow> rows){var data=rows.ToArray();WriteSheets(path,new[]{"Sheet1","复合效果"},new[]{Headers,CompoundHeaders},new[]{data.Select(Cells).ToArray(),data.SelectMany(r=>(r.additionalEffects??Array.Empty<CardTableEffect>()).Select((e,i)=>new[]{r.id,(i+2).ToString(),e.effect.ToString(),Lifetimes[(int)e.lifetime],Polarities[(int)e.polarity],e.description,e.range,e.enabled?"1":"0"})).ToArray()});}
   public static void WriteRows(string path,string[] headers,IEnumerable<string[]> rows)=>WriteSheets(path,new[]{"Sheet1"},new[]{headers},new[]{rows.ToArray()});
-  static void WriteSheets(string path,string[] names,string[][] headers,string[][][] rows){
+  public static void WriteSheets(string path,string[] names,string[][] headers,string[][][] rows){
    using(var zip=ZipFile.Open(path,ZipArchiveMode.Create)){
     XNamespace types="http://schemas.openxmlformats.org/package/2006/content-types",rels="http://schemas.openxmlformats.org/package/2006/relationships",office="http://schemas.openxmlformats.org/officeDocument/2006/relationships";
     var content=new XElement(types+"Types",new XElement(types+"Default",new XAttribute("Extension","rels"),new XAttribute("ContentType","application/vnd.openxmlformats-package.relationships+xml")),new XElement(types+"Default",new XAttribute("Extension","xml"),new XAttribute("ContentType","application/xml")),new XElement(types+"Override",new XAttribute("PartName","/xl/workbook.xml"),new XAttribute("ContentType","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml")));

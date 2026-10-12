@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Linq;
 namespace RainbowLi.UnityGame {
  [CreateAssetMenu(menuName="RainbowLi/敌人定义")]
@@ -14,6 +14,12 @@ namespace RainbowLi.UnityGame {
   [System.Serializable] public sealed class ConditionalRuleDefinition {public ActivationCondition condition;public int threshold=3;public SequenceDefinition sequence;}
   public ConditionalRuleDefinition[] conditionalSequences;
   public EnemyCardTable cardTable;
+  [Header("普通敌人策划表（新运行时接入入口）")]
+  [Tooltip("原Excel完整配置；当前Apply仍使用旧配置。完整结算由运行时读取CreateContentSnapshot后实现。")]
+  public NormalEnemyTable contentTable;
+  public string contentEnemyId;
+  public NormalEnemyRow CreateContentSnapshot()=>contentTable==null?null:contentTable.GetSnapshot(contentEnemyId);
+  public NormalEnemyRow CreateConfiguredContentSnapshot()=>contentTable==null?null:contentTable.GetConfiguredSnapshot(contentEnemyId);
   public void Apply(GameSetup setup){
    setup.EnemySkills.Clear();
    float baseWeight=skills==null?10:skills.Where(b=>b!=null&&!b.Special).Select(b=>Mathf.Max(.001f,b.Weight)).DefaultIfEmpty(10).Average();

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e902f9438c565294b9258efc3cd1ade0, type: 3}
   m_Name: DefaultLevels
   m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.LevelDefinition
+  adventureLayer: 1
   floors: 8
   lanes: 3
   randomizeEachRun: 0
@@ -23,7 +24,7 @@ MonoBehaviour:
   - id: 0
     floor: 0
     lane: 0
-    kind: 2
+    kind: 0
     next: 0300000004000000
   - id: 1
     floor: 0
@@ -33,7 +34,7 @@ MonoBehaviour:
   - id: 2
     floor: 0
     lane: 2
-    kind: 1
+    kind: 0
     next: 0500000004000000
   - id: 3
     floor: 1

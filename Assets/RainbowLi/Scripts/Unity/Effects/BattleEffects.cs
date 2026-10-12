@@ -5,6 +5,7 @@ namespace RainbowLi.UnityGame {
 public sealed class BattleEffects : MonoBehaviour {
  [Tooltip("策划统一动效配置，下一次命中和更新即时生效。")]
  public BattlePresentationProfile profile;
+ [HideInInspector] public bool playerScreenShake=true;
  public void ApplyProfile(){if(profile==null)return;maxShake=profile.screenShake?profile.maxShake:0;maxParticles=Mathf.Max(0,profile.maxParticles);maxConcurrentBursts=Mathf.Max(1,profile.maxConcurrentBursts);chainWindow=Mathf.Max(.1f,profile.chainWindow);maxComboGain=profile.maxComboGain;}
  public void PrepareDesignerCombo(int repeat,bool enemy){combo=Mathf.Max(0,repeat-1);lastRound=session.Game.Round;lastEnemy=enemy;lastEffect=Now;}
  public void ClearDesignerPreview(){Clear();}
@@ -86,7 +87,7 @@ public sealed class BattleEffects : MonoBehaviour {
    if(age>=travel&&hit<shakeTime)shake+=new Vector2(Mathf.Sin(hit*93),Mathf.Sin(hit*71+1.8f))*(1.5f+9.5f*b.strength)*b.gain*Mathf.Exp(-hit*9)*(profile==null?1:profile.shakeStrength);
   }
   playerFill.color=Color.Lerp(playerColor,Color.white,playerFlash);enemyFill.color=Color.Lerp(enemyColor,Color.white,enemyFlash);
-  shake=Vector2.ClampMagnitude(shake,maxShake);shakeRoot.localPosition=restPosition+new Vector3(shake.x,shake.y,0);
+  shake=playerScreenShake?Vector2.ClampMagnitude(shake,maxShake):Vector2.zero;shakeRoot.localPosition=restPosition+new Vector3(shake.x,shake.y,0);
   float comboAge=Now-lastEffect;if(comboAge>1.1f)comboLabel.text="";else{comboLabel.fontSize=Mathf.RoundToInt(30+Mathf.Min(combo,8)*3+Mathf.Sin(Mathf.Clamp01(comboAge/.28f)*Mathf.PI)*10);var c=comboLabel.color;c.a=Mathf.Clamp01((1.1f-comboAge)/.4f);comboLabel.color=c;}
  }
  private void DestroyBurst(Burst b){if(b.beam!=null)Destroy(b.beam.gameObject);if(b.number!=null)Destroy(b.number.gameObject);foreach(var p in b.particles)if(p!=null)Destroy(p.gameObject);}

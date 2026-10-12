@@ -1,0 +1,1599 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24f9f58b0b102914c85223975bb48730, type: 3}
+  m_Name: DefaultNormalEnemies
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.NormalEnemyTable
+  rows:
+  - id: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
+    sheetName: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
+    title: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1\uFF1A\u7535\u8111"
+    enabled: 1
+    configured: 1
+    health: 50
+    healthThresholdPercent: 50
+    skillCount: 4
+    sequenceCount: 3
+    actions: 2-3
+    attack: 4-7
+    initialEffects: "\u65E0"
+    skills:
+    - slot: "\u57FA\u7840\u6280\u80FD1"
+      name: "\u6253\u51FB"
+      description: "\u9020\u6210\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3"
+      numberRange: 1-6
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 80
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD2"
+      name: "\u9632\u5FA1"
+      description: "\u83B7\u5F97\u57FA\u7840\u653B\u51FB\u503C\u7684\u62A4\u76FE"
+      numberRange: 2-5
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 80
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD3"
+      name: "\u4FEE\u590D"
+      description: "\u6062\u590D5\u70B9\u8840\u91CF"
+      numberRange: 1-4
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 70
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 3
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 5
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u7279\u6B8A\u6280\u80FD1"
+      name: "\u4EA4\u6D41\u6253\u51FB"
+      description: "\u9020\u62102\u500D\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3\uFF0C\u65BD\u52A02\u5C42\u70E7\u4F24"
+      numberRange: 1-6
+      conditionLabel: "\u89E6\u53D1\u6761\u4EF6"
+      condition: "\u8840\u91CF\u7B2C\u4E00\u6B21\u8FBE\u5230\u531D\u503C"
+      notes: 
+      weight: 40
+      special: 1
+      trigger: 1
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 2
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+      - operation: 5
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 2
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    sequences:
+    - slot: "\u724C\u5E8F\u6548\u679C1"
+      name: "\u5F3A\u53162"
+      description: "\u83B7\u5F972\u5C42\u5F3A\u58EE\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 4
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 2
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C2"
+      name: "\u4F24\u5BB38"
+      description: "\u9020\u62108\u70B9\u4F24\u5BB3\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 8
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C3"
+      name: "\u71C3\u70E74"
+      description: "\u65BD\u52A04\u5C42\u70E7\u4F24\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 5
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 4
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    rewards:
+    - slot: "\u5956\u52B11"
+      name: "\u91D1\u5E01"
+      amount: 10-18
+      notes: 
+      probability: 100
+      kind: 1
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B12"
+      name: "\u83B7\u5F97\u5361\u724C"
+      amount: 1
+      notes: "\u83B7\u5F97\u5361\u724C\u65F6\uFF0C\u4ECE3\u5F20\u5361\u724C\u4E2D\u9009\u62E9\u4E00\u5F20\uFF0C\u53EF\u8DF3\u8FC7\u3002"
+      probability: 100
+      kind: 2
+      choiceCount: 3
+      canSkip: 1
+    - slot: "\u5956\u52B13"
+      name: "\u83B7\u5F97\u5361\u5E8F\u6548\u679C"
+      amount: 1
+      notes: 
+      probability: 5
+      kind: 3
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B14"
+      name: "\u83B7\u5F97\u94ED\u523B"
+      amount: 1
+      notes: 
+      probability: 5
+      kind: 4
+      choiceCount: 0
+      canSkip: 0
+  - id: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
+    sheetName: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
+    title: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2\uFF1A\u952E\u76D8\u805A\u5408\u4F53"
+    enabled: 1
+    configured: 1
+    health: 60
+    healthThresholdPercent: 40
+    skillCount: 4
+    sequenceCount: 3
+    actions: 2-3
+    attack: 3-6
+    initialEffects: "\u65E0"
+    skills:
+    - slot: "\u57FA\u7840\u6280\u80FD1"
+      name: "\u6253\u51FB"
+      description: "\u9020\u6210\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3"
+      numberRange: 2-5
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 80
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD2"
+      name: "\u9632\u5FA1"
+      description: "\u83B7\u5F97\u57FA\u7840\u653B\u51FB\u503C+4\u7684\u62A4\u76FE"
+      numberRange: 1-6
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 85
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 4
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD3"
+      name: "\u4FEE\u590D"
+      description: "\u6062\u590D6\u70B9\u8840\u91CF"
+      numberRange: 1-4
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 70
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 3
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 6
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u7279\u6B8A\u6280\u80FD1"
+      name: "\u805A\u5408"
+      description: "\u83B7\u5F972\u500D\u57FA\u7840\u653B\u51FB\u503C\u7684\u62A4\u76FE\uFF0C\u83B7\u5F972\u5C42\u575A\u56FA"
+      numberRange: 1-6
+      conditionLabel: "\u89E6\u53D1\u6761\u4EF6"
+      condition: "\u8840\u91CF\u7B2C\u4E00\u6B21\u8FBE\u5230\u531D\u503C"
+      notes: 
+      weight: 40
+      special: 1
+      trigger: 1
+      requiredSkill: 
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 1
+        multiplier: 2
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+      - operation: 6
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 2
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    sequences:
+    - slot: "\u724C\u5E8F\u6548\u679C1"
+      name: "\u94C1\u58C12"
+      description: "\u83B7\u5F972\u5C42\u94C1\u58C1\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 7
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 2
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C2"
+      name: "\u62A4\u76FE13"
+      description: "\u83B7\u5F9713\u70B9\u62A4\u76FE\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 13
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C3"
+      name: "\u65E0\u654C2"
+      description: "\u83B7\u5F972\u5C42\u62DB\u67B6"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 8
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 2
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: "\u6309\u5177\u4F53\u6548\u679C\u83B7\u5F97\u62DB\u67B6\uFF1B\u539F\u540D\u79F0\u65E0\u654C2\u4FDD\u7559\u3002"
+    rewards:
+    - slot: "\u5956\u52B11"
+      name: "\u91D1\u5E01"
+      amount: 10-18
+      notes: 
+      probability: 100
+      kind: 1
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B12"
+      name: "\u83B7\u5F97\u5361\u724C"
+      amount: 1
+      notes: "\u83B7\u5F97\u5361\u724C\u65F6\uFF0C\u4ECE3\u5F20\u5361\u724C\u4E2D\u9009\u62E9\u4E00\u5F20\uFF0C\u53EF\u8DF3\u8FC7\u3002"
+      probability: 100
+      kind: 2
+      choiceCount: 3
+      canSkip: 1
+    - slot: "\u5956\u52B13"
+      name: "\u83B7\u5F97\u5361\u5E8F\u6548\u679C"
+      amount: 1
+      notes: 
+      probability: 5
+      kind: 3
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B14"
+      name: "\u83B7\u5F97\u94ED\u523B"
+      amount: 1
+      notes: 
+      probability: 5
+      kind: 4
+      choiceCount: 0
+      canSkip: 0
+  - id: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3"
+    sheetName: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3"
+    title: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3\uFF1A\u7834\u788E\u805A\u5408\u4F53"
+    enabled: 1
+    configured: 1
+    health: 40
+    healthThresholdPercent: 50
+    skillCount: 4
+    sequenceCount: 3
+    actions: 2-3
+    attack: 5-9
+    initialEffects: "\u65E0"
+    skills:
+    - slot: "\u57FA\u7840\u6280\u80FD1"
+      name: "\u6253\u51FB"
+      description: "\u9020\u6210\u57FA\u7840\u653B\u51FB\u503C+3\u7684\u4F24\u5BB3"
+      numberRange: 1-6
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 85
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 3
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD2"
+      name: "\u9632\u5FA1"
+      description: "\u83B7\u5F97\u57FA\u7840\u653B\u51FB\u503C-3\u7684\u62A4\u76FE"
+      numberRange: 2-5
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 80
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: -3
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD3"
+      name: "\u5F3A\u53161"
+      description: "\u83B7\u5F971\u5C42\u5F3A\u58EE\u3002"
+      numberRange: 1-4
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 70
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 4
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u7279\u6B8A\u6280\u80FD1"
+      name: "\u81EA\u6211\u91CD\u6784"
+      description: "\u6062\u590D10\u70B9\u8840\u91CF\uFF0C\u83B7\u5F973\u5C42\u5F3A\u58EE"
+      numberRange: 1-6
+      conditionLabel: "\u89E6\u53D1\u6761\u4EF6"
+      condition: "\u8840\u91CF\u7B2C\u4E00\u6B21\u8FBE\u5230\u531D\u503C"
+      notes: 
+      weight: 40
+      special: 1
+      trigger: 1
+      requiredSkill: 
+      effects:
+      - operation: 3
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 10
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+      - operation: 4
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 3
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    sequences:
+    - slot: "\u724C\u5E8F\u6548\u679C1"
+      name: "\u6495\u88C23"
+      description: "\u65BD\u52A03\u5C42\u6D41\u8840\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 9
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 3
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C2"
+      name: "\u4F24\u5BB312"
+      description: "\u9020\u621012\u70B9\u4F24\u5BB3\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 12
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C3"
+      name: "\u7834\u75323"
+      description: "\u65BD\u52A03\u5C42\u6613\u4F24\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 10
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 3
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    rewards:
+    - slot: "\u5956\u52B11"
+      name: "\u91D1\u5E01"
+      amount: 15-25
+      notes: 
+      probability: 100
+      kind: 1
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B12"
+      name: "\u83B7\u5F97\u5361\u724C"
+      amount: 1
+      notes: "\u83B7\u5F97\u5361\u724C\u65F6\uFF0C\u4ECE3\u5F20\u5361\u724C\u4E2D\u9009\u62E9\u4E00\u5F20\uFF0C\u53EF\u8DF3\u8FC7\u3002"
+      probability: 100
+      kind: 2
+      choiceCount: 3
+      canSkip: 1
+    - slot: "\u5956\u52B13"
+      name: "\u83B7\u5F97\u5361\u5E8F\u6548\u679C"
+      amount: 1
+      notes: 
+      probability: 10
+      kind: 3
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B14"
+      name: "\u83B7\u5F97\u94ED\u523B"
+      amount: 1
+      notes: 
+      probability: 10
+      kind: 4
+      choiceCount: 0
+      canSkip: 0
+  - id: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
+    sheetName: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
+    title: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1\uFF1A\u8815\u52A8\u8089\u56E2"
+    enabled: 1
+    configured: 1
+    health: 40
+    healthThresholdPercent: 60
+    skillCount: 4
+    sequenceCount: 3
+    actions: 2-3
+    attack: 3-6
+    initialEffects: "\u65E0"
+    skills:
+    - slot: "\u57FA\u7840\u6280\u80FD1"
+      name: "\u6253\u51FB"
+      description: "\u9020\u6210\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3"
+      numberRange: 1-6
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 70
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD2"
+      name: "\u9632\u5FA1"
+      description: "\u83B7\u5F97\u57FA\u7840\u653B\u51FB\u503C\u7684\u62A4\u76FE"
+      numberRange: 2-5
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 70
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD3"
+      name: "\u5455\u5410"
+      description: "\u65BD\u52A06\u5C42\u4E2D\u6BD2\u3002"
+      numberRange: 1-4
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 75
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 11
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 6
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u7279\u6B8A\u6280\u80FD1"
+      name: "\u8089\u4F53\u589E\u503C"
+      description: "\u6062\u590D5\u500D\u57FA\u7840\u653B\u51FB\u503C\u7684\u8840\u91CF\uFF0C\u5BF9\u81EA\u5DF1\u65BD\u52A05\u5C42\u4E2D\u6BD2"
+      numberRange: 1-6
+      conditionLabel: "\u89E6\u53D1\u6761\u4EF6"
+      condition: "\u8840\u91CF\u7B2C\u4E00\u6B21\u8FBE\u5230\u531D\u503C"
+      notes: 
+      weight: 40
+      special: 1
+      trigger: 1
+      requiredSkill: 
+      effects:
+      - operation: 3
+        target: 0
+        amountSource: 1
+        multiplier: 5
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+      - operation: 11
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 5
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: "\u660E\u786E\u7ED9\u654C\u4EBA\u81EA\u8EAB\u4E2D\u6BD2\uFF1B\u4E0D\u8981\u6309\u8D1F\u9762\u6548\u679C\u9ED8\u8BA4\u6539\u4E3A\u5BF9\u624B\u3002"
+    sequences:
+    - slot: "\u724C\u5E8F\u6548\u679C1"
+      name: "\u518D\u751F4"
+      description: "\u83B7\u5F974\u5C42\u518D\u751F\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 12
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 4
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C2"
+      name: "\u4F24\u5BB38"
+      description: "\u9020\u62108\u70B9\u4F24\u5BB3\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 8
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C3"
+      name: "\u63B7\u6BD24"
+      description: "\u65BD\u52A08\u5C42\u4E2D\u6BD2\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 11
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 8
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: "\u6309\u5177\u4F53\u6548\u679C8\u5C42\uFF1B\u539F\u540D\u79F0\u63B7\u6BD24\u4FDD\u7559\u3002"
+    rewards:
+    - slot: "\u5956\u52B11"
+      name: "\u91D1\u5E01"
+      amount: 9-15
+      notes: 
+      probability: 100
+      kind: 1
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B12"
+      name: "\u83B7\u5F97\u5361\u724C"
+      amount: 1
+      notes: "\u83B7\u5F97\u5361\u724C\u65F6\uFF0C\u4ECE3\u5F20\u5361\u724C\u4E2D\u9009\u62E9\u4E00\u5F20\uFF0C\u53EF\u8DF3\u8FC7\u3002"
+      probability: 100
+      kind: 2
+      choiceCount: 3
+      canSkip: 1
+    - slot: "\u5956\u52B13"
+      name: "\u83B7\u5F97\u5361\u5E8F\u6548\u679C"
+      amount: 1
+      notes: 
+      probability: 5
+      kind: 3
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B14"
+      name: "\u83B7\u5F97\u94ED\u523B"
+      amount: 1
+      notes: 
+      probability: 5
+      kind: 4
+      choiceCount: 0
+      canSkip: 0
+  - id: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
+    sheetName: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
+    title: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2\uFF1A\u7A81\u53D8\u4EBA\u5F62"
+    enabled: 1
+    configured: 1
+    health: 70
+    healthThresholdPercent: 40
+    skillCount: 4
+    sequenceCount: 3
+    actions: 3
+    attack: 3-7
+    initialEffects: "\u65E0"
+    skills:
+    - slot: "\u57FA\u7840\u6280\u80FD1"
+      name: "\u6253\u51FB"
+      description: "\u9020\u6210\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3"
+      numberRange: 1-6
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 80
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD2"
+      name: "\u9632\u5FA1"
+      description: "\u83B7\u5F97\u57FA\u7840\u653B\u51FB\u503C\u7684\u62A4\u76FE"
+      numberRange: 2-5
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 80
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD3"
+      name: "\u5F31\u5316"
+      description: "\u65BD\u52A02\u5C42\u5F31\u5316\u3002"
+      numberRange: 1-5
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 70
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 13
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 2
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u7279\u6B8A\u6280\u80FD1"
+      name: "\u5D29\u6E83\u568E\u53EB"
+      description: "\u65BD\u52A06\u5C42\u5F31\u5316\uFF0C\u586B\u51651\u4E2A\u4EFB\u610F\u6570\u5B57\u3002"
+      numberRange: 1-6
+      conditionLabel: "\u89E6\u53D1\u6761\u4EF6"
+      condition: "\u8840\u91CF\u7B2C\u4E00\u6B21\u8FBE\u5230\u531D\u503C"
+      notes: 
+      weight: 40
+      special: 1
+      trigger: 1
+      requiredSkill: 
+      effects:
+      - operation: 13
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 6
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+      - operation: 14
+        target: 2
+        amountSource: 0
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 4
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    sequences:
+    - slot: "\u724C\u5E8F\u6548\u679C1"
+      name: "\u586B\u5145X"
+      description: "\u5728\u724C\u5E8F\u6700\u540E\u586B\u5145\u6570\u5B57X\u3002(X\u7531\u5F53\u573A\u6218\u6597\u968F\u673A\u51B3\u5B9A)"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 14
+        target: 2
+        amountSource: 0
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 3
+        numberMin: 1
+        numberMax: 6
+        notes: "\u672C\u573A\u6218\u6597\u968F\u673A\u51B3\u5B9AX\u5E76\u56FA\u5B9A\uFF0C\u724C\u5E8F\u6700\u540E\u586B\u5145X\u3002"
+    - slot: "\u724C\u5E8F\u6548\u679C2"
+      name: "\u62A4\u76FE8"
+      description: "\u83B7\u5F978\u70B9\u62A4\u76FE\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 8
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C3"
+      name: "\u589E\u5E452"
+      description: "\u540E\u7EED\u7684\u5361\u724C\u6548\u679C\u83B7\u5F97+2\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 15
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 2
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    rewards:
+    - slot: "\u5956\u52B11"
+      name: "\u91D1\u5E01"
+      amount: 15-22
+      notes: 
+      probability: 100
+      kind: 1
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B12"
+      name: "\u83B7\u5F97\u5361\u724C"
+      amount: 1
+      notes: "\u83B7\u5F97\u5361\u724C\u65F6\uFF0C\u4ECE3\u5F20\u5361\u724C\u4E2D\u9009\u62E9\u4E00\u5F20\uFF0C\u53EF\u8DF3\u8FC7\u3002"
+      probability: 100
+      kind: 2
+      choiceCount: 3
+      canSkip: 1
+    - slot: "\u5956\u52B13"
+      name: "\u83B7\u5F97\u5361\u5E8F\u6548\u679C"
+      amount: 1
+      notes: 
+      probability: 8
+      kind: 3
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B14"
+      name: "\u83B7\u5F97\u94ED\u523B"
+      amount: 1
+      notes: 
+      probability: 8
+      kind: 4
+      choiceCount: 0
+      canSkip: 0
+  - id: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3"
+    sheetName: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3"
+    title: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3\uFF1A\u730E\u72AC"
+    enabled: 1
+    configured: 1
+    health: 38
+    healthThresholdPercent: 50
+    skillCount: 4
+    sequenceCount: 3
+    actions: 2-3
+    attack: 8-15
+    initialEffects: "\u65E0"
+    skills:
+    - slot: "\u57FA\u7840\u6280\u80FD1"
+      name: "\u6253\u51FB"
+      description: "\u9020\u6210\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3"
+      numberRange: 1-6
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 85
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD2"
+      name: "\u9632\u5FA1"
+      description: "\u83B7\u5F97\u57FA\u7840\u653B\u51FB\u503C-5\u7684\u62A4\u76FE"
+      numberRange: 2-5
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 80
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: -5
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD3"
+      name: "\u6495\u54AC"
+      description: "\u65BD\u52A06\u5C42\u6D41\u8840\u3002"
+      numberRange: 1-4
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 75
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 9
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 6
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u7279\u6B8A\u6280\u80FD1"
+      name: "\u5543\u98DF"
+      description: "\u9020\u62101.5\u500D\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3\uFF0C\u65BD\u52A08\u5C42\u6D41\u8840"
+      numberRange: 1-6
+      conditionLabel: "\u89E6\u53D1\u6761\u4EF6"
+      condition: "\u8840\u91CF\u7B2C\u4E00\u6B21\u8FBE\u5230\u531D\u503C"
+      notes: 
+      weight: 35
+      special: 1
+      trigger: 1
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 1.5
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+      - operation: 9
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 8
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    sequences:
+    - slot: "\u724C\u5E8F\u6548\u679C1"
+      name: "\u6495\u88C26"
+      description: "\u65BD\u52A06\u5C42\u6D41\u8840\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 9
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 6
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C2"
+      name: "\u586B\u5145X"
+      description: "\u5728\u724C\u5E8F\u6700\u540E\u586B\u5145\u6570\u5B57X\u3002(X\u7531\u5F53\u573A\u6218\u6597\u968F\u673A\u51B3\u5B9A)"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 14
+        target: 2
+        amountSource: 0
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 3
+        numberMin: 1
+        numberMax: 6
+        notes: "\u672C\u573A\u6218\u6597\u968F\u673A\u51B3\u5B9AX\u5E76\u56FA\u5B9A\uFF0C\u724C\u5E8F\u6700\u540E\u586B\u5145X\u3002"
+    - slot: "\u724C\u5E8F\u6548\u679C3"
+      name: "\u518D\u751F3"
+      description: "\u83B7\u5F973\u5C42\u518D\u751F\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 12
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 3
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    rewards:
+    - slot: "\u5956\u52B11"
+      name: "\u91D1\u5E01"
+      amount: 10-18
+      notes: 
+      probability: 100
+      kind: 1
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B12"
+      name: "\u83B7\u5F97\u5361\u724C"
+      amount: 1
+      notes: "\u83B7\u5F97\u5361\u724C\u65F6\uFF0C\u4ECE3\u5F20\u5361\u724C\u4E2D\u9009\u62E9\u4E00\u5F20\uFF0C\u53EF\u8DF3\u8FC7\u3002"
+      probability: 100
+      kind: 2
+      choiceCount: 3
+      canSkip: 1
+    - slot: "\u5956\u52B13"
+      name: "\u83B7\u5F97\u5361\u5E8F\u6548\u679C"
+      amount: 1
+      notes: 
+      probability: 5
+      kind: 3
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B14"
+      name: "\u83B7\u5F97\u94ED\u523B"
+      amount: 1
+      notes: 
+      probability: 5
+      kind: 4
+      choiceCount: 0
+      canSkip: 0
+  - id: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
+    sheetName: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
+    title: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1\uFF1A\u590D\u5236\u7C98\u8D34"
+    enabled: 1
+    configured: 1
+    health: 60
+    healthThresholdPercent: 50
+    skillCount: 5
+    sequenceCount: 3
+    actions: 2-3
+    attack: 4-7
+    initialEffects: "\u65E0"
+    skills:
+    - slot: "\u57FA\u7840\u6280\u80FD1"
+      name: "\u6253\u51FB"
+      description: "\u9020\u6210\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3"
+      numberRange: 1-6
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 80
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD2"
+      name: "\u9632\u5FA1"
+      description: "\u83B7\u5F97\u57FA\u7840\u653B\u51FB\u503C\u7684\u62A4\u76FE"
+      numberRange: 2-5
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 80
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD3"
+      name: "\u968F\u673A"
+      description: "\u6BCF\u6B21\u81EA\u5DF1\u884C\u52A8\u540E\uFF0C\u968F\u673A\u62BD\u53D62\u4E2A\u6570\u5B57\u3002"
+      numberRange: 3-6
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 70
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 16
+        target: 2
+        amountSource: 0
+        multiplier: 1
+        amount: 2
+        offset: 0
+        numberMode: 1
+        numberMin: 1
+        numberMax: 6
+        notes: "\u6BCF\u6B21\u81EA\u8EAB\u884C\u52A8\u540E\u968F\u673A\u62BD\u53D62\u4E2A\u6570\u5B57\uFF1B\u6301\u7EED\u8303\u56F4\u6309\u8FD0\u884C\u65F6\u89C4\u5219\u786E\u8BA4\uFF0C\u4E0D\u53EA\u6267\u884C\u4E00\u6B21\u3002"
+    - slot: "\u7279\u6B8A\u6280\u80FD1"
+      name: "\u590D\u5236"
+      description: "\u9020\u62102\u500D\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3\uFF0C\u751F\u6210\u8BE5\u5361\u724C\u6570\u5B57\u8FDB\u884C1\u6B21\u586B\u5145\u3002"
+      numberRange: 1-6
+      conditionLabel: "\u89E6\u53D1\u6761\u4EF6"
+      condition: "\u8840\u91CF\u7B2C\u4E00\u6B21\u8FBE\u5230\u531D\u503C"
+      notes: 
+      weight: 35
+      special: 1
+      trigger: 1
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 2
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+      - operation: 14
+        target: 2
+        amountSource: 0
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 2
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u7279\u6B8A\u6280\u80FD2"
+      name: "\u7C98\u8D34"
+      description: "\u83B7\u5F972\u500D\u57FA\u7840\u653B\u51FB\u503C\u7684\u62A4\u76FE\uFF0C\u6B64\u5361\u540E\u7684\u81EA\u5DF1\u884C\u4E3A\u989D\u5916\u89E6\u53D1\u4E00\u6B21\u3002"
+      numberRange: 1-7
+      conditionLabel: "\u89E6\u53D1\u6761\u4EF6"
+      condition: "\u4F7F\u7528\u8FC7\u4E00\u6B21\u201C\u590D\u5236\u201D"
+      notes: 
+      weight: 35
+      special: 1
+      trigger: 2
+      requiredSkill: "\u590D\u5236"
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 1
+        multiplier: 2
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+      - operation: 17
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: "\u6B64\u5361\u4E4B\u540E\u81EA\u8EAB\u884C\u4E3A\u989D\u5916\u89E6\u53D11\u6B21\uFF1B\u4E0D\u8981\u91CD\u590D\u5BF9\u624B\u884C\u52A8\u6216\u65E0\u9650\u9012\u5F52\u3002"
+    sequences:
+    - slot: "\u724C\u5E8F\u6548\u679C1"
+      name: "\u91CD\u67843"
+      description: "\u6DFB\u52A03\u4E2A\u968F\u673A\u6570\u5B57\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 14
+        target: 2
+        amountSource: 0
+        multiplier: 1
+        amount: 3
+        offset: 0
+        numberMode: 1
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C2"
+      name: "\u4F24\u5BB315"
+      description: "\u9020\u621015\u70B9\u4F24\u5BB3\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 15
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C3"
+      name: "\u6DF7\u4E712"
+      description: "\u89E6\u53D1X\u6B21\u968F\u673A\u5361\u724C\u6548\u679C\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 20
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 2
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: "\u7528\u6237\u786E\u8BA4\u6DF7\u4E712\u53D62\u6B21\uFF1B\u539F\u6587X\u4FDD\u7559\u4EE5\u4FBF\u6838\u5BF9\u3002"
+    rewards:
+    - slot: "\u5956\u52B11"
+      name: "\u91D1\u5E01"
+      amount: 12-24
+      notes: 
+      probability: 100
+      kind: 1
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B12"
+      name: "\u83B7\u5F97\u5361\u724C"
+      amount: 1
+      notes: "\u83B7\u5F97\u5361\u724C\u65F6\uFF0C\u4ECE3\u5F20\u5361\u724C\u4E2D\u9009\u62E9\u4E00\u5F20\uFF0C\u53EF\u8DF3\u8FC7\u3002"
+      probability: 100
+      kind: 2
+      choiceCount: 3
+      canSkip: 1
+    - slot: "\u5956\u52B13"
+      name: "\u83B7\u5F97\u5361\u5E8F\u6548\u679C"
+      amount: 1
+      notes: 
+      probability: 10
+      kind: 3
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B14"
+      name: "\u83B7\u5F97\u94ED\u523B"
+      amount: 1
+      notes: 
+      probability: 10
+      kind: 4
+      choiceCount: 0
+      canSkip: 0
+  - id: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
+    sheetName: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
+    title: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2\uFF1A\u4E71\u7801"
+    enabled: 1
+    configured: 1
+    health: 60
+    healthThresholdPercent: 50
+    skillCount: 5
+    sequenceCount: 3
+    actions: 2-3
+    attack: 4-7
+    initialEffects: "\u65E0"
+    skills:
+    - slot: "\u57FA\u7840\u6280\u80FD1"
+      name: "\u6253\u51FB"
+      description: "\u9020\u6210\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3"
+      numberRange: 1-6
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 80
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD2"
+      name: "\u9632\u5FA1"
+      description: "\u83B7\u5F97\u57FA\u7840\u653B\u51FB\u503C\u7684\u62A4\u76FE"
+      numberRange: 2-6
+      conditionLabel: 
+      condition: 
+      notes: 
+      weight: 80
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 2
+        target: 0
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u57FA\u7840\u6280\u80FD3"
+      name: "\u53D8\u52A8"
+      description: "\u63A5\u4E0B\u6765\u586B\u5165\u76842\u4E2A\u6570\u5B57\u5C06\u4F1A\u968F\u673A\u53D8\u5316\u3002\uFF081-6\uFF09"
+      numberRange: 1-5
+      conditionLabel: "\u53D8\u5316\u8303\u56F4"
+      condition: 1-6
+      notes: 
+      weight: 70
+      special: 0
+      trigger: 0
+      requiredSkill: 
+      effects:
+      - operation: 18
+        target: 2
+        amountSource: 0
+        multiplier: 1
+        amount: 2
+        offset: 0
+        numberMode: 1
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u7279\u6B8A\u6280\u80FD1"
+      name: "\u6DF7\u4E71\u611F"
+      description: "\u9020\u6210\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3\uFF0C\u63A5\u4E0B\u6765\u586B\u5165\u76843\u4E2A\u6570\u5B57\u5C06\u4F1A\u968F\u673A\u53D8\u5316\uFF081-6\uFF09"
+      numberRange: 1-6
+      conditionLabel: "\u89E6\u53D1\u6761\u4EF6"
+      condition: "\u8840\u91CF\u7B2C\u4E00\u6B21\u8FBE\u5230\u531D\u503C"
+      notes: 
+      weight: 35
+      special: 1
+      trigger: 1
+      requiredSkill: 
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+      - operation: 18
+        target: 2
+        amountSource: 0
+        multiplier: 1
+        amount: 3
+        offset: 0
+        numberMode: 1
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u7279\u6B8A\u6280\u80FD2"
+      name: "\u65E0\u5E8F"
+      description: "\u9020\u62101.5\u500D\u57FA\u7840\u653B\u51FB\u503C\u7684\u4F24\u5BB3\uFF0C\u6240\u6709\u6570\u5B57\u586B\u5165\u6539\u4E3A\u968F\u673A\u586B\u5165\u3002"
+      numberRange: 1-6
+      conditionLabel: "\u89E6\u53D1\u6761\u4EF6"
+      condition: "\u4F7F\u7528\u8FC7\u4E00\u6B21\u201C\u6DF7\u4E71\u611F\u201D"
+      notes: 
+      weight: 35
+      special: 1
+      trigger: 2
+      requiredSkill: "\u6DF7\u4E71\u611F"
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 1
+        multiplier: 1.5
+        amount: 1
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+      - operation: 19
+        target: 2
+        amountSource: 0
+        multiplier: 1
+        amount: 1
+        offset: 0
+        numberMode: 1
+        numberMin: 1
+        numberMax: 6
+        notes: "\u6240\u6709\u6570\u5B57\u586B\u5165\u6539\u4E3A\u968F\u673A\u586B\u5165\uFF1B\u8303\u56F41-6\u3002"
+    sequences:
+    - slot: "\u724C\u5E8F\u6548\u679C1"
+      name: "\u91CD\u67846"
+      description: "\u6DFB\u52A06\u4E2A\u968F\u673A\u6570\u5B57\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 14
+        target: 2
+        amountSource: 0
+        multiplier: 1
+        amount: 6
+        offset: 0
+        numberMode: 1
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C2"
+      name: "\u4F24\u5BB315"
+      description: "\u9020\u621015\u70B9\u4F24\u5BB3\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 1
+        target: 1
+        amountSource: 0
+        multiplier: 1
+        amount: 15
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    - slot: "\u724C\u5E8F\u6548\u679C3"
+      name: "\u6DF7\u4E715"
+      description: "\u89E6\u53D15\u6B21\u968F\u673A\u5361\u724C\u6548\u679C\u3002"
+      numbers: "\u968F\u673A"
+      effects:
+      - operation: 20
+        target: 0
+        amountSource: 0
+        multiplier: 1
+        amount: 5
+        offset: 0
+        numberMode: 0
+        numberMin: 1
+        numberMax: 6
+        notes: 
+    rewards:
+    - slot: "\u5956\u52B11"
+      name: "\u91D1\u5E01"
+      amount: 13-23
+      notes: 
+      probability: 100
+      kind: 1
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B12"
+      name: "\u83B7\u5F97\u5361\u724C"
+      amount: 1
+      notes: "\u83B7\u5F97\u5361\u724C\u65F6\uFF0C\u4ECE3\u5F20\u5361\u724C\u4E2D\u9009\u62E9\u4E00\u5F20\uFF0C\u53EF\u8DF3\u8FC7\u3002"
+      probability: 100
+      kind: 2
+      choiceCount: 3
+      canSkip: 1
+    - slot: "\u5956\u52B13"
+      name: "\u83B7\u5F97\u5361\u5E8F\u6548\u679C"
+      amount: 1
+      notes: 
+      probability: 10
+      kind: 3
+      choiceCount: 0
+      canSkip: 0
+    - slot: "\u5956\u52B14"
+      name: "\u83B7\u5F97\u94ED\u523B"
+      amount: 1
+      notes: 
+      probability: 10
+      kind: 4
+      choiceCount: 0
+      canSkip: 0
