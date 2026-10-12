@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -225,10 +225,22 @@ public sealed class CardMotionController : MonoBehaviour {
   for(int i=casts.Count-1;i>=0;i--){var c=casts[i];float age=Now-c.start;
    float charge=Mathf.Clamp01(age/c.charge),travel=Mathf.Clamp01((age-c.charge)/c.travel),hit=Mathf.Clamp01((age-c.charge-c.travel)/c.impact);
    var ring=c.sourceRing.rectTransform;ring.anchoredPosition=c.origin.point;ring.sizeDelta=Vector2.one*(45+charge*95*c.gain);c.sourceRing.color=Alpha(c.color,(1-travel)*.8f);
-   if(c.ghost!=null){var r=(RectTransform)c.ghost.transform;float lunge=travel<.5f?travel*2:(1-travel)*2;r.anchoredPosition=c.origin.point+(c.target-c.origin.point)*attackLunge*lunge;r.localScale=new Vector3(c.origin.size.x/r.rect.width,c.origin.size.y/r.rect.height,1)*(1+Mathf.Sin(charge*Mathf.PI)*.12f);c.ghost.face.color=Color.Lerp(c.origin.enemy?c.ghost.enemyFace:c.ghost.playerFace,Color.white,Mathf.Sin(charge*Mathf.PI)*.6f);}
-   bool moving=age>=c.charge&&travel<1;c.head.gameObject.SetActive(moving);
-   if(moving){c.head.rectTransform.anchoredPosition=Curve(c.origin.point,c.target,travel,flightArc*.25f);c.head.rectTransform.sizeDelta=Vector2.one*(12+12*c.strength)*c.gain;c.head.rectTransform.localRotation=Quaternion.Euler(0,0,age*900);}
-   Trail(c.trails,c.origin.point,c.target,travel,flightArc*.25f,c.color,c.gain,moving?1:0);
+   bool moving=age>=c.charge&&travel<1;
+   float recoil=(profile==null?38:profile.cardRecoil)*(1+c.strength*.5f)*Mathf.Min(c.gain,1.5f);
+   var contact=Vector2.Lerp(c.origin.point,c.target,attackLunge);
+   var back=c.origin.point-(c.target-c.origin.point).normalized*recoil*attackLunge;
+   if(c.ghost!=null){
+    var r=(RectTransform)c.ghost.transform;
+    r.anchoredPosition=DuelCardPosition(c.origin.point,c.target,charge,travel,hit,attackLunge,recoil,flightArc*.25f);
+    float enlarge=1+(profile==null?.18f:profile.cardChargeScale)*(1+c.strength)*Mathf.Min(c.gain,1.6f)*Mathf.Sin(charge*Mathf.PI*.5f)*(1-hit);
+    r.localScale=new Vector3(c.origin.size.x/r.rect.width,c.origin.size.y/r.rect.height,1)*enlarge;
+    float tilt=(profile==null?18:profile.cardTilt)*Mathf.Sign(c.target.x-c.origin.point.x);
+    r.localRotation=Quaternion.Euler(0,0,c.origin.angle+tilt*(moving?Mathf.Sin(travel*Mathf.PI):-.4f*charge*(1-hit)));
+    c.ghost.face.color=Color.Lerp(c.origin.enemy?c.ghost.enemyFace:c.ghost.playerFace,Color.white,(1-travel)*charge*.5f);
+   }
+   c.head.gameObject.SetActive(moving&&c.ghost==null);
+   if(moving&&c.ghost==null){c.head.rectTransform.anchoredPosition=Curve(c.origin.point,c.target,travel,flightArc*.25f);c.head.rectTransform.sizeDelta=Vector2.one*(12+12*c.strength)*c.gain;c.head.rectTransform.localRotation=Quaternion.Euler(0,0,age*900);}
+   Trail(c.trails,c.ghost==null?c.origin.point:back,c.ghost==null?c.target:contact,c.ghost==null?travel:travel*travel,flightArc*.25f,c.color,c.gain,moving?1:0);
    if(travel>=1&&!c.hit){c.hit=true;waitingForImpact=false;displayedVitals=c.after;ShowVitals(displayedVitals);if(effects!=null)effects.PlayResolution(c.resolution,true);}
    c.targetRing.gameObject.SetActive(c.hit);c.targetRing.rectTransform.anchoredPosition=c.target;c.targetRing.rectTransform.sizeDelta=Vector2.one*(30+hit*(150+100*c.strength)*c.gain);c.targetRing.color=Alpha(c.color,1-hit);
    if(c.label!=null){c.label.gameObject.SetActive(c.hit&&(c.statusReaction||c.resolution.EnemyDamage+c.resolution.PlayerDamage+c.resolution.EnemyBlocked+c.resolution.PlayerBlocked==0));c.label.rectTransform.anchoredPosition=c.target+Vector2.up*(24+hit*40);c.label.fontSize=Mathf.RoundToInt(23+Mathf.Min(8,chain)*2);c.label.color=Alpha(c.color,1-hit);}
@@ -238,6 +250,12 @@ public sealed class CardMotionController : MonoBehaviour {
   if(KeepBattleVisible&&Now>=closeAt&&transfers.Count==0&&casts.Count==0&&(effects==null||effects.ActiveBursts==0)){KeepBattleVisible=false;view.Refresh();}
  }
  private static Color Alpha(Color c,float a){c.a=Mathf.Clamp01(a);return c;}
+ public static Vector2 DuelCardPosition(Vector2 origin,Vector2 target,float charge,float travel,float hit,float lunge,float recoil,float arc){
+  var contact=Vector2.Lerp(origin,target,Mathf.Clamp01(lunge));var back=origin-(target-origin).normalized*Mathf.Max(0,recoil)*Mathf.Clamp01(lunge);
+  if(hit>0)return Vector2.Lerp(contact,origin,1-Mathf.Pow(1-Mathf.Clamp01(hit),3));
+  if(travel>0){float p=Mathf.Clamp01(travel);return Vector2.Lerp(back,contact,p*p)+Vector2.up*Mathf.Sin(p*Mathf.PI)*arc;}
+  return Vector2.Lerp(origin,back,Mathf.SmoothStep(0,1,Mathf.Clamp01(charge)));
+ }
  private static Vitals VitalsFor(ContainmentGame g)=>new Vitals{hp=g.Health,enemyHp=g.EnemyHealth,hpLimit=g.HealthLimit,enemyLimit=g.EnemyMaxHealth,
   playerText="玩家   "+g.Health+" / "+g.HealthLimit+"    增伤 "+g.Power,enemyText=g.EnemyHealth+" / "+g.EnemyMaxHealth+"    增伤 "+g.EnemyPower,playerShield="护盾\n"+g.Shield,enemyShield="护盾\n"+g.EnemyShield};
  private void ShowVitals(Vitals v){view.playerHealth.maxValue=v.hpLimit;view.playerHealth.value=v.hp;view.enemyHealth.maxValue=Mathf.Max(1,v.enemyLimit);view.enemyHealth.value=v.enemyHp;view.playerStats.text=v.playerText;view.enemyStats.text=v.enemyText;if(view.battleHud!=null){view.battleHud.playerShield.text=v.playerShield;view.battleHud.enemyShield.text=v.enemyShield;}}

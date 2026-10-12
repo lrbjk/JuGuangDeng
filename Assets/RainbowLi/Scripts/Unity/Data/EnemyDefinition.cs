@@ -14,6 +14,11 @@ namespace RainbowLi.UnityGame {
   [System.Serializable] public sealed class ConditionalRuleDefinition {public ActivationCondition condition;public int threshold=3;public SequenceDefinition sequence;}
   public ConditionalRuleDefinition[] conditionalSequences;
   public EnemyCardTable cardTable;
+  [Header("BOSS策划表（新运行时接入入口）")]
+  [Tooltip("完整阶段、被动与技能配置，通过CreateBossContentSnapshot读取；旧Apply不执行新表。")]
+  public BossContentTable bossTable;
+  public string bossId;
+  public BossContentRow CreateBossContentSnapshot()=>bossTable==null?null:bossTable.GetConfiguredSnapshot(bossId);
   [Header("普通敌人策划表（新运行时接入入口）")]
   [Tooltip("原Excel完整配置；当前Apply仍使用旧配置。完整结算由运行时读取CreateContentSnapshot后实现。")]
   public NormalEnemyTable contentTable;

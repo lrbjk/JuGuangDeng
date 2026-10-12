@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05d61edf08835a68ab35c6420f31c6cd, type: 3}
+  m_Name: MO166
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.EnemyDefinition
+  maxHealth: 36
+  bossHealth: 110
+  healthGrowth: 12
+  attack: 5
+  shield: 6
+  bossAttack: 9
+  actionCount: 2
+  bossActionCount: 3
+  shieldSlot: 1
+  shieldEveryRounds: 2
+  actionNumbers: 
+  sequence: {fileID: 0}
+  skills: []
+  conditionalSequences: []
+  cardTable: {fileID: 0}
+  bossTable: {fileID: 11400000, guid: 7ae6a82746ec1544d9d025486b116c0a, type: 2}
+  bossId: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1ABOSS"
+  contentTable: {fileID: 0}
+  contentEnemyId: 

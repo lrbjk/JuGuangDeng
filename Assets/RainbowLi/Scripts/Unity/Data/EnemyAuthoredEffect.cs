@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 namespace RainbowLi.UnityGame {
- public enum EnemyContentOperation { 未配置,伤害,护盾,治疗,强壮,烧伤,坚固,铁壁,招架,流血,易伤,中毒,再生,弱化,填入数字,卡牌效果加成,行动后随机数字,后续自身行动重复,后续数字随机变化,全部数字随机填入,随机卡牌效果 }
+ public enum EnemyContentOperation { 未配置,伤害,护盾,治疗,强壮,烧伤,坚固,铁壁,招架,流血,易伤,中毒,再生,弱化,填入数字,卡牌效果加成,行动后随机数字,后续自身行动重复,后续数字随机变化,全部数字随机填入,随机卡牌效果,触发自身随机牌序,直接扣血,随机一种负面层数减半,触发基础技能效果,触发任意技能效果,本回合免伤,抽取数字 }
  public enum EnemyContentTarget { 自身,对手,公共牌序 }
  public enum EnemyContentAmount { 固定值,基础攻击 }
- public enum EnemyContentNumber { 无,每次随机,当前卡牌数字,本场固定随机,任意数字 }
+ public enum EnemyContentNumber { 无,每次随机,当前卡牌数字,本场固定随机,任意数字,固定数字,顺序数字 }
  public enum EnemyContentTrigger { 无,血量首次达到阈值,使用过指定技能 }
  public enum EnemyContentReward { 未配置,金币,卡牌,牌序效果,铭刻 }
  [Serializable] public sealed class EnemyAuthoredEffect {
@@ -32,7 +32,7 @@ namespace RainbowLi.UnityGame {
    foreach(var r in row.rewards??Array.Empty<EnemyRewardContent>())if(r!=null){if(r.kind==EnemyContentReward.未配置)issues.Add(r.name+"：奖励类型未配置。");if(r.kind==EnemyContentReward.卡牌&&r.choiceCount<1)issues.Add(r.name+"：卡牌候选数至少为1。");}
    return issues.ToArray();
   }
-  static void CheckEffects(EnemyAuthoredEffect[] effects,string name,List<string> issues){
+  public static void CheckEffects(EnemyAuthoredEffect[] effects,string name,List<string> issues){
    if(effects==null||effects.Length==0){issues.Add(name+"：缺少数值效果。");return;}
    foreach(var e in effects){
     if(e==null||e.operation==EnemyContentOperation.未配置){issues.Add(name+"：效果类型未配置。");continue;}

@@ -2,6 +2,14 @@ using UnityEngine;
 namespace RainbowLi.UnityGame {
 [CreateAssetMenu(menuName="RainbowLi/战斗动效配置")]
 public sealed class BattlePresentationProfile:ScriptableObject {
+ [Header("所有卡牌的悬停查看")]
+ [Range(1,1.8f)]public float hoverScale=1.25f;
+ [Min(.01f)]public float hoverDuration=.12f;
+ [Range(0,80)]public float hoverLift=22;
+ [Header("卡牌本体冲击")]
+ [Range(0,160)]public float cardRecoil=38;
+ [Range(0,45)]public float cardTilt=18;
+ [Range(0,.5f)]public float cardChargeScale=.18f;
  [Header("卡牌飞行：时长单位为秒，距离单位为 UI 像素")]
  [Min(.05f)] public float drawDuration=.46f,placeDuration=.34f,discardDuration=.38f;
  [Tooltip("每张牌依次飞出的间隔。越大，发牌越慢。")][Range(0,.3f)]public float dealStagger=.065f;
@@ -9,7 +17,7 @@ public sealed class BattlePresentationProfile:ScriptableObject {
  [Range(0,45)]public float flightRotation=14;
  [Header("攻击过程")]
  [Min(.01f)]public float chargeDuration=.18f,projectileDuration=.22f,impactDuration=.3f;
- [Tooltip("卡牌向目标突进的距离占比，0 为不突进。")][Range(0,1)]public float attackLunge=.3f;
+ [Tooltip("卡牌本体冲向效果对象的距离占比；1抵达目标，0留在原位。")][Range(0,1)]public float attackLunge=.94f;
  [Tooltip("横轴为伤害数值，纵轴为视觉强度 0～1。只影响表现，不修改伤害。")]
  public AnimationCurve damageIntensity=DefaultDamageCurve();
  [Header("连续效果的夸张程度")]

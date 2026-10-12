@@ -21,7 +21,7 @@ public sealed class HandCardDrag : MonoBehaviour,IBeginDragHandler,IDragHandler,
   var canvas=GetComponentInParent<Canvas>();if(canvas==null)return;canvas=canvas.rootCanvas;canvasRect=canvas.transform as RectTransform;if(canvasRect==null)return;
   game=panel.view.session.Game;round=game.Round;pointer=e.pointerId;
   if(panel.view.tooltip!=null)panel.view.tooltip.HideAll();
-  var source=GetComponent<CardView>();var preview=Instantiate(source,canvasRect);preview.name=action==null?"DraggedHandCard":"DraggedActionCard";
+  var source=GetComponent<CardView>();source.CancelHover();var preview=Instantiate(source,canvasRect);preview.name=action==null?"DraggedHandCard":"DraggedActionCard";
   var drag=preview.GetComponent<HandCardDrag>();if(drag!=null)drag.enabled=false;
   preview.SetPresentationOnly();ghost=(RectTransform)preview.transform;
   ghost.localScale=new Vector3(transform.lossyScale.x/canvasRect.lossyScale.x,transform.lossyScale.y/canvasRect.lossyScale.y,1);ghost.localRotation=Quaternion.identity;
