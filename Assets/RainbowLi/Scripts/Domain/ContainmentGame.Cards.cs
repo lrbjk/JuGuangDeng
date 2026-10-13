@@ -9,6 +9,10 @@ namespace RainbowLi
         private void GenerateInitialDeck(){
             if(setup!=null&&!setup.RandomStartingDeck&&setup.InitialDeck.Count>0)return;
             if(setup!=null&&setup.CardEffects.Count>0){
+                if(setup.CardEffectPools.Count>0){
+                    for(int group=0;group<3;group++)for(int number=1;number<=6;number++)Deck.Add(FromSpec(DrawCardEffect(true),number));
+                    return;
+                }
                 var pool=setup.CardEffects.Where(e=>e.StartingEnabled&&e.Weight>0&&!float.IsNaN(e.Weight)&&!float.IsInfinity(e.Weight)).ToArray();
                 if(pool.Length==0)throw new ArgumentException("起始牌效果池至少需要启用一种效果");
                 for(int group=0;group<3;group++){var weights=pool.Select(e=>(double)e.Weight).ToArray();for(int number=1;number<=6;number++){int at=WeightedChoice(weights);Deck.Add(FromSpec(pool[at],number));weights[at]*=Math.Max(.01,Math.Min(1,setup.RepeatWeightMultiplier));}}
@@ -32,7 +36,7 @@ namespace RainbowLi
 
         public Card GenerateCard(int number = 0)
         {
-            if(setup!=null&&setup.CardEffects.Count>0){var pool=setup.CardEffects.Where(e=>e.Weight>0&&!float.IsNaN(e.Weight)&&!float.IsInfinity(e.Weight)).ToArray();if(pool.Length==0)throw new InvalidOperationException("Empty card effect pool");var weights=pool.Select(e=>(double)e.Weight).ToArray();return FromSpec(pool[WeightedChoice(weights)],number==0?random.Next(1,7):number);}
+            if(setup!=null&&setup.CardEffects.Count>0)return FromSpec(DrawCardEffect(false),number==0?random.Next(1,7):number);
             if (setup != null && setup.CardPool.Count > 0)
             {
                 var candidates = setup.CardPool.Where(c => number == 0 || c.Number == number).ToList();
@@ -41,7 +45,21 @@ namespace RainbowLi
             return new Card { AttackBase=BaseAttack, Number = number == 0 ? random.Next(1, 7) : number, Effect = (CardEffect)random.Next(0, 3) };
         }
 
-        private int WeightedChoice(double[] weights){double total=weights.Sum(),pick=random.NextDouble()*total;for(int i=0;i<weights.Length;i++){pick-=weights[i];if(pick<0)return i;}return weights.Length-1;}
+        private CardEffectSpec DrawCardEffect(bool starting){
+            var candidates=setup.CardEffects.Where(e=>(!starting||e.StartingEnabled)&&ValidWeight(e.Weight)).ToArray();
+            string pool=DrawPool(setup.CardEffectPools);
+            candidates=candidates.Where(e=>e.InPool(pool)).ToArray();
+            if(candidates.Length==0)throw new InvalidOperationException("Empty card effect pool: "+pool);
+            return candidates[WeightedChoice(candidates.Select(e=>(double)e.Weight).ToArray())];
+        }
+        private static bool ValidWeight(float weight)=>weight>0&&!float.IsNaN(weight)&&!float.IsInfinity(weight);
+        private string DrawPool(List<EffectPoolWeight> pools){
+            if(pools.Count==0)return null;
+            var candidates=pools.Where(p=>p!=null&&ValidWeight(p.Weight)).ToArray();
+            if(candidates.Length==0)throw new InvalidOperationException("No positive effect pool weights");
+            return candidates[WeightedChoice(candidates.Select(p=>(double)p.Weight).ToArray())].Name;
+        }
+        private int WeightedChoice(double[] weights){double total=weights.Sum();if(weights.Length==0||total<=0||double.IsNaN(total)||double.IsInfinity(total)||weights.Any(w=>w<0||double.IsNaN(w)||double.IsInfinity(w)))throw new InvalidOperationException("Invalid draw weights");double pick=random.NextDouble()*total;for(int i=0;i<weights.Length;i++){pick-=weights[i];if(pick<0)return i;}return weights.Length-1;}
 
         private Card GenerateStartingCard(int number,CardEffect effect){var c=setup==null?null:setup.CardPool.FirstOrDefault(t=>t.Number==number&&t.Effect==effect);if(c==null&&setup!=null)c=setup.CardPool.FirstOrDefault(t=>t.Effect==effect);var result=c==null?new Card {Number=number,Effect=effect}:c.CopyAsNewInstance();result.Number=number;result.AttackBase=BaseAttack;return result;}
 

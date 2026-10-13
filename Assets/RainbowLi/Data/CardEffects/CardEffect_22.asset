@@ -11,9 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_22
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   effectId: "卡效_22"
   displayName: "淬毒X"
+  pools: "增益效果池"
+  sourceSheet: Sheet1
+  sourceRange: 2
+  sourceRow: 23
   effect: 21
   lifetime: 1
   polarity: 0
@@ -22,7 +26,4 @@ MonoBehaviour:
   includeInStartingDeck: 1
   minValue: 2
   maxValue: 2
-  weight: 10
-  sourceSheet: Sheet1
-  sourceRow: 23
-  sourceRange: "2"
+  weight: 15

@@ -11,18 +11,19 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_17
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   effectId: "卡效_17"
   displayName: "随机X"
+  pools: "特殊效果池"
+  sourceSheet: Sheet1
+  sourceRange: 1-2
+  sourceRow: 18
   effect: 16
   lifetime: 1
   polarity: 2
-  description: "每次行动后，随机抽取X个数字。"
+  description: "每次自己行动后，随机抽取X个数字。"
   usesCardNumber: 0
   includeInStartingDeck: 1
   minValue: 1
   maxValue: 2
   weight: 10
-  sourceSheet: Sheet1
-  sourceRow: 18
-  sourceRange: "1-2"

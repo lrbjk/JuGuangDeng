@@ -11,9 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_19
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   effectId: "卡效_19"
   displayName: "往复"
+  pools: "特殊效果池"
+  sourceSheet: Sheet1
+  sourceRange: 1
+  sourceRow: 20
   effect: 18
   lifetime: 1
   polarity: 2
@@ -22,7 +26,4 @@ MonoBehaviour:
   includeInStartingDeck: 1
   minValue: 1
   maxValue: 1
-  weight: 10
-  sourceSheet: Sheet1
-  sourceRow: 20
-  sourceRange: "1"
+  weight: 5

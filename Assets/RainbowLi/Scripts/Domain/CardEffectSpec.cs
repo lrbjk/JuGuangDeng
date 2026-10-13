@@ -14,14 +14,15 @@ namespace RainbowLi {
  }
  [Serializable]
  public sealed class CardEffectSpec {
-  public string Code,Name,Text;
+  public string Code,Name,Text,Pools;
   public CardEffect Effect;
   public EffectLifetime Lifetime;
   public EffectPolarity Polarity;
   public bool UsesNumber,StartingEnabled=true;
   public int Min=1,Max=1;
   public float Weight=10;
-  public CardEffectSpec Copy()=>new CardEffectSpec {Code=Code,Name=Name,Text=Text,Effect=Effect,Lifetime=Lifetime,Polarity=Polarity,UsesNumber=UsesNumber,StartingEnabled=StartingEnabled,Min=Min,Max=Max,Weight=Weight};
+  public bool InPool(string pool)=>EffectPoolNames.Contains(Pools,pool);
+  public CardEffectSpec Copy()=>new CardEffectSpec {Code=Code,Name=Name,Text=Text,Pools=Pools,Effect=Effect,Lifetime=Lifetime,Polarity=Polarity,UsesNumber=UsesNumber,StartingEnabled=StartingEnabled,Min=Min,Max=Max,Weight=Weight};
  }
 
  // A generated effect stores its rolled X; execution and preview never reroll it.

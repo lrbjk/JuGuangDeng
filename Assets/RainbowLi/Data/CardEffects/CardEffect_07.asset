@@ -11,9 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_07
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   effectId: "卡效_07"
   displayName: "易伤X"
+  pools: "默认卡池,减益效果池,临时状态效果池"
+  sourceSheet: Sheet1
+  sourceRange: 1-2
+  sourceRow: 8
   effect: 6
   lifetime: 1
   polarity: 1
@@ -22,7 +26,4 @@ MonoBehaviour:
   includeInStartingDeck: 1
   minValue: 1
   maxValue: 2
-  weight: 10
-  sourceSheet: Sheet1
-  sourceRow: 8
-  sourceRange: "1-2"
+  weight: 35

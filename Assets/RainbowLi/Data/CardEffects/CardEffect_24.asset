@@ -11,9 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_24
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   effectId: "卡效_24"
   displayName: "变动X"
+  pools: "特殊效果池,临时状态效果池"
+  sourceSheet: Sheet1
+  sourceRange: 1-2
+  sourceRow: 25
   effect: 23
   lifetime: 1
   polarity: 2
@@ -23,6 +27,3 @@ MonoBehaviour:
   minValue: 1
   maxValue: 2
   weight: 10
-  sourceSheet: Sheet1
-  sourceRow: 25
-  sourceRange: "1-2"

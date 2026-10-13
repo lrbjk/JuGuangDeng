@@ -60,6 +60,63 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f347d1ac70ff18647ac374676e30fd4b, type: 2}
   - {fileID: 11400000, guid: 0558b911d4088bd4aae1824c17b913fd, type: 2}
   - {fileID: 11400000, guid: 69d2b33dffe5fa840a98a47648cca6d4, type: 2}
+  cardEffects: {fileID: 11400000, guid: 089d7196ae0f535c90370e8322908b11, type: 2}
+  cardEffectPools:
+  - Id: "卡效池_01"
+    Name: "默认卡池"
+    Weight: 80
+  - Id: "卡效池_02"
+    Name: "伤害卡池"
+    Weight: 50
+  - Id: "卡效池_03"
+    Name: "增益效果池"
+    Weight: 40
+  - Id: "卡效池_04"
+    Name: "减益效果池"
+    Weight: 40
+  - Id: "卡效池_05"
+    Name: "特殊效果池"
+    Weight: 20
+  - Id: "卡效池_06"
+    Name: "持续效果池"
+    Weight: 40
+  - Id: "卡效池_07"
+    Name: "临时效果池"
+    Weight: 40
+  sequenceEffectPools:
+  - Id: "卡序池_01"
+    Name: "默认卡池"
+    Weight: 80
+  - Id: "卡序池_02"
+    Name: "伤害卡池"
+    Weight: 50
+  - Id: "卡序池_03"
+    Name: "增益效果池"
+    Weight: 40
+  - Id: "卡序池_04"
+    Name: "减益效果池"
+    Weight: 40
+  - Id: "卡序池_05"
+    Name: "特殊效果池"
+    Weight: 20
+  - Id: "卡序池_06"
+    Name: "数字效果池"
+    Weight: 30
+  rewardCount: 3
+  cardPrice: 15
+  upgradePrice: 12
+  engravingPrice: 20
+  rulePrice: 18
+  restHealing: 24
+  sequenceEffects: {fileID: 11400000, guid: ba1ba1b1c46d5e03b646ba91c02d48e7, type: 2}
+  engravingEffects: {fileID: 11400000, guid: 13ec4584d6cd5cf1845f0c17465c5d4e, type: 2}
+  randomPlayerSequenceEffects: 0
+  randomEnemySequenceEffects: 0
+  playerSequencePool:
+  enemySequencePool:
+  rewardSequencePool:
+  shopSequencePool:
+  engravingPool:
   playerRules:
   - {fileID: 11400000, guid: 445e852bceccedd4c9d95882df586360, type: 2}
   - {fileID: 11400000, guid: 119c0859e61547742862496368c3f378, type: 2}
@@ -69,11 +126,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c1402528ee8933e4c9a866c817c548a4, type: 2}
   - {fileID: 11400000, guid: 4447df1d913c48747a5c29f6bb75f162, type: 2}
   enemyRule: {fileID: 11400000, guid: 2fb20cce62759c341b4d517e25ff54f7, type: 2}
-  cardEffects: {fileID: 11400000, guid: 089d7196ae0f535c90370e8322908b11, type: 2}
-  sequenceEffects: {fileID: 11400000, guid: ba1ba1b1c46d5e03b646ba91c02d48e7, type: 2}
-  engravingEffects: {fileID: 11400000, guid: 13ec4584d6cd5cf1845f0c17465c5d4e, type: 2}
-  playerSequencePool: "默认池"
-  enemySequencePool: "默认池"
-  rewardSequencePool: "默认池"
-  shopSequencePool: "默认池"
-  engravingPool: ""

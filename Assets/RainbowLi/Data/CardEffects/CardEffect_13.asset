@@ -11,9 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_13
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   effectId: "卡效_13"
   displayName: "铁壁X"
+  pools: "增益效果池,持续状态效果池"
+  sourceSheet: Sheet1
+  sourceRange: 1-2
+  sourceRow: 14
   effect: 12
   lifetime: 2
   polarity: 0
@@ -22,7 +26,4 @@ MonoBehaviour:
   includeInStartingDeck: 1
   minValue: 1
   maxValue: 2
-  weight: 10
-  sourceSheet: Sheet1
-  sourceRow: 14
-  sourceRange: "1-2"
+  weight: 25

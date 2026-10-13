@@ -18,6 +18,7 @@ $project = @"
     <Compile Include="$sourceRoot/Assets/RainbowLi/Verification~/CardInstanceChecks.cs" />
     <Compile Include="$sourceRoot/Assets/RainbowLi/Verification~/SettlementChecks.cs" />
     <Compile Include="$sourceRoot/Assets/RainbowLi/Tests/EditMode/AdvancedRuntimeChecks.cs" />
+    <Compile Include="$sourceRoot/Assets/RainbowLi/Tests/EditMode/EffectPoolRuntimeChecks.cs" />
     <Compile Include="Runner.cs" />
   </ItemGroup>
 </Project>
@@ -27,7 +28,7 @@ using System;
 public static class RuntimeChecksRunner {
     public static void Main() {
         int failures = 0;
-        foreach (Action suite in new Action[] { RuleChecks.Main, ContentChecks.Main, TableEffectChecks.Main, CardInstanceChecks.Main, SettlementChecks.Main, AdvancedRuntimeChecks.Main }) {
+        foreach (Action suite in new Action[] { RuleChecks.Main, ContentChecks.Main, TableEffectChecks.Main, CardInstanceChecks.Main, SettlementChecks.Main, AdvancedRuntimeChecks.Main, EffectPoolRuntimeChecks.Main }) {
             try { suite(); }
             catch (Exception error) { Console.WriteLine(error); failures++; }
         }

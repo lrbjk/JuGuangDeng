@@ -10,6 +10,7 @@ namespace RainbowLi.EditorTools {
   static int Int(string s,int fallback){if(string.IsNullOrWhiteSpace(s))return fallback;if(int.TryParse(s,NumberStyles.Integer,CultureInfo.InvariantCulture,out int n))return n;throw new FormatException("不是整数："+s);}
   static bool Bool(string s,bool fallback){if(string.IsNullOrWhiteSpace(s))return fallback;if(s=="1"||s=="是"||s.Equals("true",StringComparison.OrdinalIgnoreCase))return true;if(s=="0"||s=="否"||s.Equals("false",StringComparison.OrdinalIgnoreCase))return false;throw new FormatException("启用请填 1/0 或 是/否。");}
   public static EffectTableRow[] Parse(IEnumerable<string[]> cells,bool sequence,IEnumerable<EffectTableRow> known){
+   cells=CanonicalRows(cells,sequence);
    var lookup=(known??Array.Empty<EffectTableRow>()).Where(r=>r!=null).GroupBy(r=>r.id).ToDictionary(g=>g.Key,g=>g.First());var result=new List<EffectTableRow>();int line=0,baseCols=sequence?6:5;
    foreach(var c in cells){line++;if(c.All(string.IsNullOrWhiteSpace))continue;
     if(Cell(c,0)=="效果编号"){var header=Headers(sequence);for(int i=0;i<baseCols;i++)if(Cell(c,i)!=header[i])throw new FormatException("表头第 "+(i+1)+" 列应为："+header[i]);continue;}
@@ -23,6 +24,11 @@ namespace RainbowLi.EditorTools {
     }catch(Exception e){throw new FormatException("Excel 第 "+line+" 行："+e.Message,e);}
    }
    return result.ToArray();
+  }
+  static string[][] CanonicalRows(IEnumerable<string[]> source,bool sequence){
+   var rows=source.ToArray();var header=rows.FirstOrDefault(r=>Cell(r,0)=="效果编号");int weightColumn=sequence?5:4;
+   if(header==null||Cell(header,weightColumn)!="权重")return rows;
+   return rows.Select(r=>{if(Cell(r,0)=="效果编号")return Headers(sequence);if(r.All(string.IsNullOrWhiteSpace))return r;int baseCols=sequence?6:5;var c=new string[baseCols+5];for(int i=0;i<4;i++)c[i]=Cell(r,i);if(sequence)c[4]=Cell(r,4);c[baseCols-1]=Cell(r,weightColumn+1);c[baseCols+1]=Cell(r,weightColumn);return c;}).ToArray();
   }
   public static string[] Cells(EffectTableRow r,bool sequence)=>new[]{r.id,r.name,r.description,r.range}.Concat(sequence?new[]{r.pools,r.notes}:new[]{r.notes}).Concat(new[]{r.enabled?"1":"0",r.weight.ToString(CultureInfo.InvariantCulture),r.behavior,r.multiplier.ToString(CultureInfo.InvariantCulture),r.fixedValue.ToString(CultureInfo.InvariantCulture)}).ToArray();
   public static void Write(string path,EffectTableDefinition table){table.ValidateTable();CardTableWorkbook.WriteRows(path,Headers(table.IsSequence),table.rows.Select(r=>Cells(r,table.IsSequence)));}
