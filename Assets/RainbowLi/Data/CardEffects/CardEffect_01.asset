@@ -11,9 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_01
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   effectId: "卡效_01"
   displayName: "伤害X"
+  pools: "默认卡池,伤害卡池"
+  sourceSheet: Sheet1
+  sourceRange: "为卡牌对应数字"
+  sourceRow: 2
   effect: 0
   lifetime: 0
   polarity: 1
@@ -22,7 +26,4 @@ MonoBehaviour:
   includeInStartingDeck: 1
   minValue: 1
   maxValue: 6
-  weight: 10
-  sourceSheet: Sheet1
-  sourceRow: 2
-  sourceRange: "为卡牌对应数字"
+  weight: 50

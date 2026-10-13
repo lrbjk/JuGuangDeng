@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 namespace RainbowLi.UnityGame {
  public enum EngravingBehavior { Poison,Burn,FollowUpDamage,Growth,ExtraNumber,Wildcard,SequenceTailBonus,SequenceHeadBonus,BlockSequence,Bridge,Inherit,RandomizeFollowing,Roulette,OnlyPlayerCard,LastActionBonus,FirstActionBonus,Charge,PoisonExplosion,BurnExplosion }
- public enum SequenceBehavior { Damage,InsertNumber,Shield,Heal,Boost,Burn,Poison,Strength,Bleed,RandomNumbers,LastStand,RandomCardEffects,Vulnerable,Parry,RepeatSequenceCards }
+ public enum SequenceBehavior { Damage,InsertNumber,Shield,Heal,Boost,Burn,Poison,Strength,Bleed,RandomNumbers,LastStand,RandomCardEffects,Vulnerable,Parry,RepeatSequenceCards,IronWall,Regeneration }
  [Serializable] public sealed class EffectTableRow {
   public string id,name,description,range,pools,notes,behavior;
   public bool enabled=true;

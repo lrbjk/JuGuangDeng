@@ -22,7 +22,7 @@ namespace RainbowLi.UnityGame {
    }
   }
   public EffectTableRow Find(string id){ValidateTable();return rows.FirstOrDefault(r=>r.id==id)??throw new InvalidOperationException("找不到效果编号："+id);}
-  public EffectTableRow[] GetPool(string pool)=>rows.Where(r=>r!=null&&r.enabled&&(string.IsNullOrWhiteSpace(pool)||(r.pools??"").Split(new[]{',','，','、'},StringSplitOptions.RemoveEmptyEntries).Any(p=>p.Trim()==pool))).ToArray();
+  public EffectTableRow[] GetPool(string pool)=>rows.Where(r=>r!=null&&r.enabled&&EffectPoolNames.Contains(r.pools,pool)).ToArray();
   public void RequireSupported(EffectTableRow row){if(!row.enabled)throw new InvalidOperationException(row.id+" 已禁用。");if(!IsRuntimeSupported(row))throw new InvalidOperationException(row.id+"（"+row.name+"）配表已就绪，核心程序尚未实现结算，不能绑定运行。");}
  }
 }

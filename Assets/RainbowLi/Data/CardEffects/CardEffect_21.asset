@@ -11,18 +11,19 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_21
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   effectId: "卡效_21"
   displayName: "点燃X"
+  pools: "增益效果池"
+  sourceSheet: Sheet1
+  sourceRange: 1
+  sourceRow: 22
   effect: 20
   lifetime: 1
   polarity: 0
-  description: "自身获得X层点燃增益。本回合内，自身每次行动后，对对方施加X层烧伤。点燃增益不会使自身受到烧伤。"
+  description: "进行任意行动后，施加X层烧伤。"
   usesCardNumber: 0
   includeInStartingDeck: 1
   minValue: 1
   maxValue: 1
-  weight: 10
-  sourceSheet: Sheet1
-  sourceRow: 22
-  sourceRange: "1"
+  weight: 15

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.PlayerDefinition
   maxHealth: 70
   attack: 5
+  handSize: 6
   handLimit: 9
   randomStartingDeck: 1
   repeatWeightMultiplier: 0.5
-  handSize: 6
   maxActions: 4
   startingCoins: 0
   startingDeck:
@@ -39,8 +39,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f347d1ac70ff18647ac374676e30fd4b, type: 2}
   - {fileID: 11400000, guid: 0558b911d4088bd4aae1824c17b913fd, type: 2}
   - {fileID: 11400000, guid: 69d2b33dffe5fa840a98a47648cca6d4, type: 2}
+  cardTable: {fileID: 11400000, guid: 249b73b61a965f4b925cb85d3277c23a, type: 2}
   sequences:
   - {fileID: 11400000, guid: 445e852bceccedd4c9d95882df586360, type: 2}
   - {fileID: 11400000, guid: 119c0859e61547742862496368c3f378, type: 2}
   - {fileID: 11400000, guid: bb57d92bef281424fbd8700f136ef964, type: 2}
-  cardTable: {fileID: 11400000, guid: 249b73b61a965f4b925cb85d3277c23a, type: 2}
+  availableSequenceEffects: []

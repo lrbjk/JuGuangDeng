@@ -11,9 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_05
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   effectId: "卡效_05"
   displayName: "恢复X"
+  pools: "默认卡池,增益效果池"
+  sourceSheet: Sheet1
+  sourceRange: "为卡牌对应数字"
+  sourceRow: 6
   effect: 2
   lifetime: 0
   polarity: 0
@@ -22,7 +26,4 @@ MonoBehaviour:
   includeInStartingDeck: 1
   minValue: 1
   maxValue: 6
-  weight: 10
-  sourceSheet: Sheet1
-  sourceRow: 6
-  sourceRange: "为卡牌对应数字"
+  weight: 40

@@ -13,7 +13,25 @@ namespace RainbowLi {
  [Serializable] public sealed class EffectPoolEntry {
   public string Code,Pools; public bool Enabled=true; public float Weight=10;
   public int Min,Max,Multiplier=1,FixedValue; public RuleEffect Sequence; public EngravingEffect Engraving;
-  public bool InPool(string pool)=>string.IsNullOrWhiteSpace(pool)||(Pools??"").Split(new[]{',','，','、'},StringSplitOptions.RemoveEmptyEntries).Any(p=>p.Trim()==pool);
+  public bool InPool(string pool)=>EffectPoolNames.Contains(Pools,pool);
+ }
+ [Serializable] public sealed class EffectPoolWeight {
+  public string Id,Name; public float Weight;
+  public EffectPoolWeight Copy()=>(EffectPoolWeight)MemberwiseClone();
+ }
+ public static class EffectPoolNames {
+  public static string Normalize(string name){
+   switch((name??"").Trim()){
+    case "默认卡池":return "默认池";
+    case "伤害卡池":return "伤害池";
+    case "增益效果池":return "增益池";
+    case "减益效果池":return "减益池";
+    case "持续状态效果池":return "持续效果池";
+    case "临时状态效果池":return "临时效果池";
+    default:return (name??"").Trim();
+   }
+  }
+  public static bool Contains(string names,string pool)=>string.IsNullOrWhiteSpace(pool)||(names??"").Split(new[]{',','，','、'},StringSplitOptions.RemoveEmptyEntries).Any(p=>Normalize(p)==Normalize(pool));
  }
  [Serializable] public sealed class NumberEntry {
   public int Number; public bool Enemy,Blocked; public int[] Candidates; public BattleAction Action;

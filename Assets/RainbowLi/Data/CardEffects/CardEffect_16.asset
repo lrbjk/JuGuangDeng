@@ -11,18 +11,19 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_16
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   effectId: "卡效_16"
   displayName: "限制伤害X"
+  pools: "特殊效果池"
+  sourceSheet: Sheet1
+  sourceRange: 7-13
+  sourceRow: 17
   effect: 15
-  lifetime: 2
+  lifetime: 1
   polarity: 0
-  description: "每次只会受到X点伤害。"
+  description: "每次只会受到X点伤害。回合结束时失去该效果。"
   usesCardNumber: 0
   includeInStartingDeck: 1
-  minValue: 9
-  maxValue: 15
-  weight: 10
-  sourceSheet: Sheet1
-  sourceRow: 17
-  sourceRange: "9-15"
+  minValue: 7
+  maxValue: 13
+  weight: 5

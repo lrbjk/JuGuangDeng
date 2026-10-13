@@ -17,6 +17,7 @@ namespace RainbowLi.EditorTools {
   public event Action Applied;
   readonly string snapshot;readonly CardTableRow[] before;readonly bool enemy;
   public CardTableImportPlan(CardTableDefinition target,string[][] cells,bool replace,IEnumerable<CardTableRow> known,string[][] compound=null){
+   cells=CardTableWorkbook.CanonicalRows(cells);
    Target=target;Replace=replace;enemy=target is EnemyCardTable;snapshot=EditorJsonUtility.ToJson(target);before=(target.rows??Array.Empty<CardTableRow>()).Select(r=>r?.Copy()).ToArray();
    var imported=new List<CardTableRow>();var lines=new List<int>();var catalog=before.Concat(known??Array.Empty<CardTableRow>()).Where(r=>r!=null).ToArray();
    for(int i=0;i<cells.Length;i++){

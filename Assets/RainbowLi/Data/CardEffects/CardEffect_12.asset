@@ -11,9 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_12
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   effectId: "卡效_12"
   displayName: "流血X"
+  pools: "伤害卡池,减益效果池,持续状态效果池"
+  sourceSheet: Sheet1
+  sourceRange: 1-4
+  sourceRow: 13
   effect: 11
   lifetime: 2
   polarity: 1
@@ -22,7 +26,4 @@ MonoBehaviour:
   includeInStartingDeck: 1
   minValue: 1
   maxValue: 4
-  weight: 10
-  sourceSheet: Sheet1
-  sourceRow: 13
-  sourceRange: "1-4"
+  weight: 35

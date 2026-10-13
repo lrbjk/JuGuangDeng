@@ -35,7 +35,7 @@ namespace RainbowLi.EditorTools {
   void Action(System.Action action){try{action();message="完成。";}catch(Exception e){message=e.Message;}Repaint();}
   protected void OnGUI(){
    EditorGUILayout.LabelField(Enemy?"敌人卡牌配表":"玩家卡牌配表",EditorStyles.boldLabel);
-   EditorGUILayout.HelpBox("前七列与《卡牌效果.xlsx》一致；第五列保存效果描述。启用决定是否进入效果池。"+(Enemy?"敌人使用数字列；特殊技能按条件首次额外触发。":"玩家随机起始牌保留三组 1–6 的数字规则。")+" 正负面列用于分类；作用对象由程序效果标识决定：伤害/减益给对手，防御/恢复/增益给自身。修改后保存，重新开始游戏生效。",MessageType.Info);
+   EditorGUILayout.HelpBox("支持九列卡效设计表与编辑器导出表；第五列保存效果描述。启用决定是否进入效果池。"+(Enemy?"敌人使用数字列；特殊技能按条件首次额外触发。":"玩家随机起始牌保留三组 1–6 的数字规则；配置池权重后先抽池，再按池内权重抽效果。")+" 正负面列用于分类；作用对象由程序效果标识决定：伤害/减益给对手，防御/恢复/增益给自身。修改后保存，重新开始游戏生效。",MessageType.Info);
    EditorGUILayout.BeginHorizontal();var type=Enemy?typeof(EnemyCardTable):typeof(PlayerCardTable);var next=(CardTableDefinition)EditorGUILayout.ObjectField("配表资产",table,type,false);if(next!=table)SetTable(next);
    if(GUILayout.Button("新建配表",GUILayout.Width(85)))Action(CreateTable);EditorGUILayout.EndHorizontal();
    actor=EditorGUILayout.ObjectField(Enemy?"敌人配置":"玩家配置",actor,Enemy?typeof(EnemyDefinition):typeof(PlayerDefinition),false);
@@ -59,7 +59,7 @@ namespace RainbowLi.EditorTools {
    EditorGUILayout.LabelField("共 "+table.rows.Length+" 行，启用 "+table.rows.Count(r=>r!=null&&r.enabled)+" 行"+(EditorUtility.IsDirty(table)?" · 有未保存修改":""));
    DrawBulk();
    scroll=EditorGUILayout.BeginScrollView(scroll);
-   EditorGUILayout.BeginHorizontal();GUILayout.Label("行",EditorStyles.boldLabel,GUILayout.Width(35));for(int c=0;c<Widths.Length;c++)if(Enemy||c<11||c==15)GUILayout.Label(c==2?"效果类型（持续）":c==3?"效果类型（性质）":CardTableWorkbook.Headers[c],EditorStyles.boldLabel,GUILayout.Width(Widths[c]));EditorGUILayout.EndHorizontal();
+   EditorGUILayout.BeginHorizontal();GUILayout.Label("行",EditorStyles.boldLabel,GUILayout.Width(35));for(int c=0;c<Widths.Length;c++)if(Enemy||c<11||c==15)GUILayout.Label(c==2?"效果类型（持续）":c==3?"效果类型（性质）":CardTableWorkbook.Headers[c],EditorStyles.boldLabel,GUILayout.Width(Widths[c]));GUILayout.Label("卡效所属池",EditorStyles.boldLabel,GUILayout.Width(240));EditorGUILayout.EndHorizontal();
    Undo.RecordObject(table,"编辑卡牌配表");EditorGUI.BeginChangeCheck();
    for(int i=0;i<table.rows.Length;i++){
     var r=table.rows[i];if(r==null){EditorGUILayout.HelpBox("第 "+(i+1)+" 行对象为空，请在 Inspector 删除或补齐。",MessageType.Error);continue;}if(enabledOnly&&!r.enabled||!string.IsNullOrEmpty(search)&&!((r.id??"")+" "+r.name+" "+r.description).Contains(search))continue;
@@ -72,7 +72,7 @@ namespace RainbowLi.EditorTools {
     string range=EditorGUILayout.TextField(r.range,GUILayout.Width(Widths[5]));if(range!=r.range){r.range=range;try{CardTableWorkbook.SetRange(r,range);}catch(FormatException){}}
     r.notes=EditorGUILayout.TextArea(r.notes,GUILayout.Width(Widths[6]),GUILayout.Height(48));r.enabled=EditorGUILayout.Toggle(r.enabled,GUILayout.Width(Widths[7]));r.number=EditorGUILayout.IntField(r.number,GUILayout.Width(Widths[8]));r.weight=EditorGUILayout.FloatField(r.weight,GUILayout.Width(Widths[9]));r.starting=EditorGUILayout.Toggle(r.starting,GUILayout.Width(Widths[10]));
     if(Enemy){r.special=EditorGUILayout.Toggle(r.special,GUILayout.Width(Widths[11]));r.condition=(ActivationCondition)EditorGUILayout.Popup((int)r.condition,new[]{"回合","生命百分比"},GUILayout.Width(Widths[12]));r.threshold=EditorGUILayout.IntField(r.threshold,GUILayout.Width(Widths[13]));r.specialWeightRatio=EditorGUILayout.FloatField(r.specialWeightRatio,GUILayout.Width(Widths[14]));}
-    r.effect=(CardEffect)EditorGUILayout.Popup((int)r.effect,Effects,GUILayout.Width(Widths[15]));EditorGUILayout.EndHorizontal();GUI.backgroundColor=color;
+    r.effect=(CardEffect)EditorGUILayout.Popup((int)r.effect,Effects,GUILayout.Width(Widths[15]));r.pools=EditorGUILayout.TextField(r.pools,GUILayout.Width(240));EditorGUILayout.EndHorizontal();GUI.backgroundColor=color;
     foreach(var issue in issues.Where(e=>e.Row==i+1))EditorGUILayout.HelpBox(issue.Field+"："+issue.Message,MessageType.Error);
    }
    if(EditorGUI.EndChangeCheck())EditorUtility.SetDirty(table);EditorGUILayout.EndScrollView();DrawCompound();

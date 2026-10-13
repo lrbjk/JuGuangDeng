@@ -5,7 +5,7 @@ namespace RainbowLi
 {
     public enum CardEffect { Strike, Guard, Mend, IncreasedStrike, InverseStrike, Strength, Vulnerable, Weaken, Regeneration, Fortify, Poison, Bleed, IronWall, Parry, Barrier, DamageCap, RandomNumbers, Chant, Reciprocity, Burn, Ignite, Envenom, Disorder, Mutation, AddNumber, SubtractNumber }
     public enum GamePhase { Map, Planning, Resolving, Reward, Rest, Shop, Lost, Won, Event }
-    public enum RuleEffect { Damage, Shield, Power, Insert, Heal, Burn, Poison, Strength, Bleed, RandomNumbers, LastStand, RandomCardEffects, Vulnerable, Parry, RepeatSequenceCards }
+    public enum RuleEffect { Damage, Shield, Power, Insert, Heal, Burn, Poison, Strength, Bleed, RandomNumbers, LastStand, RandomCardEffects, Vulnerable, Parry, RepeatSequenceCards, IronWall, Regeneration }
     public enum EngravingEffect { Poison, Burn, FollowUpDamage, Growth, ExtraNumber, Wildcard, SequenceTailBonus, SequenceHeadBonus, BlockSequence, Bridge, Inherit, RandomizeFollowing, Roulette, OnlyPlayerCard, LastActionBonus, FirstActionBonus, Charge, PoisonExplosion, BurnExplosion }
 
     [Serializable]
@@ -75,7 +75,7 @@ namespace RainbowLi
         public string Description => Describe(Effect,Value,InsertsTwo)+(AdditionalEffect==null?"":" / "+Describe(AdditionalEffect.Effect,AdditionalEffect.Value,AdditionalEffect.InsertsTwo))+(Requirement==PatternRequirement.Any?"":" · "+RequirementName(Requirement))+(AdditionalEffect==null||AdditionalEffect.Requirement==PatternRequirement.Any?"":" · 效果2 "+RequirementName(AdditionalEffect.Requirement));
         private static string RequirementName(PatternRequirement requirement)=>requirement==PatternRequirement.Straight?"顺子":"三同号";
         private static string Describe(RuleEffect effect,int value,bool insertsTwo) {
-            string[] names={"伤害","护盾","后续卡效 +","插入数字","恢复","烧伤","中毒","力量","流血","随机数字","生命降至百分比","随机卡效次数","易伤","招架","参与卡牌重放次数"};
+            string[] names={"伤害","护盾","后续卡效 +","插入数字","恢复","烧伤","中毒","力量","流血","随机数字","生命降至百分比","随机卡效次数","易伤","招架","参与卡牌重放次数","铁壁","再生"};
             return names[(int)effect]+" "+value+(insertsTwo?"，插入数字 2":"");
         }
     }

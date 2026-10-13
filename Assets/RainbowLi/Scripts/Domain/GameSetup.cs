@@ -16,6 +16,7 @@ namespace RainbowLi
         public int[] EnemyNumbers;
         public int EnemyAttack = 5, EnemyGuard = 6, BossHealth = 110, BossAttack = 9;
         public readonly List<CardEffectSpec> CardEffects=new List<CardEffectSpec>();
+        public readonly List<EffectPoolWeight> CardEffectPools=new List<EffectPoolWeight>(), SequenceEffectPools=new List<EffectPoolWeight>();
         public readonly List<Card> InitialDeck = new List<Card>(), CardPool = new List<Card>();
         public readonly List<SequenceRule> PlayerRules = new List<SequenceRule>(), ArenaRules = new List<SequenceRule>();
         public readonly List<SequenceEffect> AvailablePlayerEffects=new List<SequenceEffect>();
