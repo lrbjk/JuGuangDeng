@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 namespace RainbowLi.UnityGame {
 [CreateAssetMenu(menuName="RainbowLi/游戏配置")]
 public sealed class GameDefinition : ScriptableObject {
@@ -12,6 +12,10 @@ public sealed class GameDefinition : ScriptableObject {
  [Tooltip("未配置卡牌效果池时使用的兼容卡牌池")] public CardDefinition[] cardPool;
  public CardEffectCatalog cardEffects;
  [Min(1)] public int rewardCount=3;[Min(0)] public int cardPrice=15,upgradePrice=12,engravingPrice=20,rulePrice=18,restHealing=24;
+ [Header("效果池之间的抽取权重（配表入口）")]
+ public EffectPoolWeightTable cardPoolWeights,sequencePoolWeights;
+ public EffectPoolWeightRow[] CreateCardPoolWeightSnapshot()=>cardPoolWeights==null?System.Array.Empty<EffectPoolWeightRow>():cardPoolWeights.GetSnapshot(EffectPoolKind.Card);
+ public EffectPoolWeightRow[] CreateSequencePoolWeightSnapshot()=>sequencePoolWeights==null?System.Array.Empty<EffectPoolWeightRow>():sequencePoolWeights.GetSnapshot(EffectPoolKind.Sequence);
  public SequenceEffectTable sequenceEffects; public EngravingEffectTable engravingEffects;
  public bool randomPlayerSequenceEffects,randomEnemySequenceEffects;
  public string playerSequencePool,enemySequencePool,rewardSequencePool,shopSequencePool,engravingPool;
