@@ -37,7 +37,20 @@ namespace RainbowLi
         public int EliteAttackBonus {get=>Enemy.EliteAttackBonus;set=>Enemy.EliteAttackBonus=value;}
         public int EliteGold=40;
         public bool RestAvailable = true;
-        public string EnemyName => Boss ? "失控档案 · BOSS" : Elite ? "精英档案 " + (Victories + 1) : "逸散实体 " + (Victories + 1);
+        public string EnemyName => Enemy.Encounter!=null?EnemyDisplayName(Enemy.Encounter.Definition.Title)+(Boss?" · BOSS":"")+(Enemy.Encounter.PhaseIndex>0?" · 阶段 "+Enemy.Encounter.PhaseIndex:""):Boss ? "失控档案 · BOSS" : Elite ? "精英档案 " + (Victories + 1) : "逸散实体 " + (Victories + 1);
+        private static string EnemyDisplayName(string title)
+        {
+            if (string.IsNullOrWhiteSpace(title)) return "未知敌人";
+            var separator = Math.Max(title.LastIndexOf('：'), title.LastIndexOf(':'));
+            var name = title.Substring(separator + 1).Trim();
+            return name.Length > 0 ? name : title.Trim();
+        }
+        public int AdventureLayer {get;private set;}=1;
+        private int completedRoomsBeforeLayer;
+        public int CompletedRoomCount=>completedRoomsBeforeLayer+(Route?.Completed.Count??0);
+        private readonly List<EncounterRewardBatch> rewardBatches=new List<EncounterRewardBatch>();
+        private int nextAdventureLayer;private bool finalBossReward;
+        public bool CanSkipReward=>Phase==GamePhase.Reward&&rewardBatches.Count>0&&rewardBatches[0].CanSkip;
         public string Message = "选择收容任务。可在此调整三组基础牌序。";
         public string LastAction = "等待行动";
         public BattleAction LastResolvedAction { get; private set; }
@@ -120,7 +133,7 @@ namespace RainbowLi
             return copy;
         }
         private static SequenceRule CloneRule(SequenceRule rule) => rule == null ? null : new SequenceRule
-        { Name = rule.Name, Code=rule.Code, BaseX=rule.BaseX, Multiplier=rule.Multiplier, FixedValue=rule.FixedValue,MinX=rule.MinX,MaxX=rule.MaxX,RollX=rule.RollX, Numbers = (int[])rule.Numbers.Clone(), Effect = rule.Effect,
+        { Name = rule.Name, EncounterEffects=EncounterEffect.Copies(rule.EncounterEffects),EncounterDescription=rule.EncounterDescription,Code=rule.Code, BaseX=rule.BaseX, Multiplier=rule.Multiplier, FixedValue=rule.FixedValue,MinX=rule.MinX,MaxX=rule.MaxX,RollX=rule.RollX, Numbers = (int[])rule.Numbers.Clone(), Effect = rule.Effect,
             Value = rule.Value, InsertsTwo = rule.InsertsTwo, Triggers = rule.Triggers, Requirement=rule.Requirement, AdditionalEffect=rule.AdditionalEffect==null?null:CopyEffect(rule.AdditionalEffect) };
     }
 }

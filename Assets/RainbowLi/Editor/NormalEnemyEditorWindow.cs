@@ -12,7 +12,7 @@ namespace RainbowLi.EditorTools {
   void OnGUI(){
    var next=(NormalEnemyTable)EditorGUILayout.ObjectField("普通敌人内容表",table,typeof(NormalEnemyTable),false);
    if(next!=table){table=next;pending=null;selected=0;}
-   EditorGUILayout.HelpBox("按Excel工作表配置一种敌人，技能权重与奖励概率分别独立填写。这里保存完整策划数据；复合技能、技能前置触发、随机行动数与奖励分发等待运行时接入，旧EnemyDefinition.Apply不会执行本表。",MessageType.Info);
+   EditorGUILayout.HelpBox("按Excel工作表配置一种敌人，技能权重与奖励概率分别独立填写。绑定到EnemyDefinition后，启用且已配置的敌人会进入战斗随机池；复合技能、前置触发、行动范围、牌序及奖励均由运行时执行。保存后重新开始游戏生效。",MessageType.Info);
    using(new EditorGUILayout.HorizontalScope()){
     if(GUILayout.Button("新建内容表"))Create();
     GUI.enabled=table!=null;

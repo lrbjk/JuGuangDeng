@@ -12,6 +12,8 @@ namespace RainbowLi.UnityGame {
   private void Track(){
    if(session.Game==null)return;
    if(observed!=session.Game){observed=session.Game;int seed=session.seed==0?System.Environment.TickCount:session.seed;if(definition==null)session.Game.ConfigureGeneratedRoute();else if(definition.randomizeEachRun&&definition.seed==0)session.Game.ConfigureGeneratedRoute(definition.floors,definition.lanes);else session.Game.ConfigureRoute(definition.CreateGraph(seed));Run=session.Game.Route;if(!Run.BossUnlockByBattles)Run.ConfigureBossUnlock(definition==null?1:definition.adventureLayer);}
+   session.Game.EnsureBossRouteBattles();Run=session.Game.Route;
+   if(session.Game.Phase==GamePhase.Map&&Run.ActiveId>=0&&(Run.Graph.Find(Run.ActiveId)?.kind==LevelKind.Combat||Run.Graph.Find(Run.ActiveId)?.kind==LevelKind.Elite||Run.Graph.Find(Run.ActiveId)?.kind==LevelKind.Boss))Run.Complete();
    if(session.Game.Phase==GamePhase.Lost)Run.Fail();
    if(session.Game.Phase==GamePhase.Won&&Run.ActiveId>=0)Run.Complete();
   }
@@ -23,7 +25,7 @@ namespace RainbowLi.UnityGame {
    if(node.kind==LevelKind.Rest){g.RestAvailable=true;g.OpenService(false);}
    else if(node.kind==LevelKind.Shop)g.OpenService(true);
    else if(node.kind==LevelKind.Event)g.OpenRouteEvent();
-   else{g.StartBattle(node.kind==LevelKind.Boss,node.kind==LevelKind.Elite,true);if(node.kind==LevelKind.Elite){g.EnemyMaxHealth=g.EnemyHealth=Mathf.CeilToInt(g.EnemyHealth*(definition==null?1.5f:definition.eliteHealthMultiplier));g.EliteAttackBonus=definition==null?3:definition.eliteAttackBonus;g.EliteGold=definition==null?40:definition.eliteGold;foreach(var a in g.Timeline)if(a.Effect==CardEffect.Strike)a.Value+=g.EliteAttackBonus;}}
+   else{g.StartBattle(node.kind==LevelKind.Boss,node.kind==LevelKind.Elite,true);if(node.kind==LevelKind.Elite){g.EnemyMaxHealth=g.EnemyHealth=Mathf.CeilToInt(g.EnemyHealth*(definition==null?1.5f:definition.eliteHealthMultiplier));g.EliteAttackBonus=definition==null?3:definition.eliteAttackBonus;g.EliteGold=definition==null?40:definition.eliteGold;foreach(var a in g.Timeline){if(g.Enemy.Encounter!=null&&a.EncounterEffects.Length>0)a.Value=a.EncounterEffects[0].Resolve(CombatResolver.Clamp((long)g.Enemy.Encounter.BaseAttack+g.EliteAttackBonus));else if(a.Effect==CardEffect.Strike)a.Value+=g.EliteAttackBonus;}}}
    session.Notify();
   }
   public void CompleteNode(){if(session.Game.Phase==GamePhase.Map&&Run!=null&&Run.ActiveId>=0){Run.Complete();session.Notify();}}

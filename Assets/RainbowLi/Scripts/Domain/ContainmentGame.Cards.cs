@@ -78,6 +78,7 @@ namespace RainbowLi
 
         public bool InsertCard(Card card, int index)
         {
+            if(Timeline.Select((a,i)=>new{a,i}).Any(p=>p.a.LockedPosition&&p.i>=index)){Message="此BOSS阶段有锁定的行动位置。";return false;}
             if (index < 0 || index > Timeline.Count || !AddCard(card)) return false;
             var action = Timeline[Timeline.Count - 1];
             Timeline.RemoveAt(Timeline.Count - 1); Timeline.Insert(index, action);
@@ -88,12 +89,13 @@ namespace RainbowLi
         {
             int target = index + offset;
             if (Phase != GamePhase.Planning || index < 0 || index >= Timeline.Count || target < 0 || target >= Timeline.Count) return;
+            if(Timeline.Skip(Math.Min(index,target)).Take(Math.Abs(target-index)+1).Any(a=>a.LockedPosition)){Message="此BOSS阶段有锁定的行动位置。";return;}
             var action = Timeline[index]; Timeline.RemoveAt(index); Timeline.Insert(target, action);
         }
 
         public void RemoveAction(int index)
         {
-            if (Phase == GamePhase.Planning && index >= 0 && index < Timeline.Count && Timeline[index].Card != null) Timeline.RemoveAt(index);
+            if (Phase == GamePhase.Planning && index >= 0 && index < Timeline.Count && Timeline[index].Card != null&&!Timeline.Skip(index).Any(a=>a.LockedPosition)) Timeline.RemoveAt(index);
         }
     }
 }

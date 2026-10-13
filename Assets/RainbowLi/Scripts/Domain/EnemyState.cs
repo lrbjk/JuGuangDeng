@@ -11,16 +11,18 @@ namespace RainbowLi {
   public ActivationCondition Condition;public int Threshold=3;public SequenceRule Rule;
  }
  public sealed class EnemyState : CombatantState {
+  public EnemyEncounterState Encounter;
+  public readonly List<SequenceRule> EncounterRules=new List<SequenceRule>();
   public bool Boss,Elite;public int EliteAttackBonus;public SequenceRule Rule;
   public readonly List<ConditionalSequence> ConditionalRules=new List<ConditionalSequence>();
   private readonly HashSet<int> unlocked=new HashSet<int>();
   private readonly HashSet<int> activeRules=new HashSet<int>();
-  public IEnumerable<SequenceRule> ActiveRules {get {if(Rule!=null)yield return Rule;for(int i=0;i<ConditionalRules.Count;i++)if(activeRules.Contains(i))yield return ConditionalRules[i].Rule;}}
+  public IEnumerable<SequenceRule> ActiveRules {get {if(Encounter!=null){foreach(var rule in EncounterRules)yield return rule;yield break;}if(Rule!=null)yield return Rule;for(int i=0;i<ConditionalRules.Count;i++)if(activeRules.Contains(i))yield return ConditionalRules[i].Rule;}}
   public bool Meets(ActivationCondition condition,int threshold,int round)=>condition==ActivationCondition.RoundAtLeast?round>=threshold:(long)Health*100<=(long)MaxHealth*threshold;
   public int[] UnlockedIndices=>unlocked.ToArray();public int[] ActiveRuleIndices=>activeRules.ToArray();
   public void RestoreActivation(int[] skills,int[] rules){unlocked.Clear();activeRules.Clear();unlocked.UnionWith(skills??Array.Empty<int>());activeRules.UnionWith(rules??Array.Empty<int>());}
   public void CopyActivationFrom(EnemyState source){unlocked.UnionWith(source.unlocked);activeRules.UnionWith(source.activeRules);}
-  public void StartEncounter(int maxHealth,bool boss,bool elite=false){MaxHealth=Health=maxHealth;Boss=boss;Elite=elite;EliteAttackBonus=0;unlocked.Clear();activeRules.Clear();ConditionalRules.Clear();Statuses.Clear();ResetRound();}
+  public void StartEncounter(int maxHealth,bool boss,bool elite=false){Encounter=null;EncounterRules.Clear();MaxHealth=Health=maxHealth;Boss=boss;Elite=elite;EliteAttackBonus=0;unlocked.Clear();activeRules.Clear();ConditionalRules.Clear();Statuses.Clear();ResetRound();}
   private BattleAction Action(EnemySkill skill,GameSetup setup,Random random){
    int attack=setup==null?(Boss?9:5):(Boss?setup.BossAttack:setup.EnemyAttack);
    var spec=skill.Spec;var card=spec==null?null:new Card {Number=skill.Number,Effect=skill.Effect,Spec=spec.Copy(),EffectAmount=random.Next(spec.Min,spec.Max+1),UpgradeBonus=0};

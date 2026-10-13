@@ -7,7 +7,10 @@ namespace RainbowLi {
   public static bool TargetsOpponent(CardEffect effect)=>effect==CardEffect.Strike||effect==CardEffect.IncreasedStrike||effect==CardEffect.InverseStrike||
    effect==CardEffect.Vulnerable||effect==CardEffect.Weaken||effect==CardEffect.Poison||effect==CardEffect.Bleed||effect==CardEffect.Burn||effect==CardEffect.Disorder;
   public static bool TargetsEnemy(BattleAction action){
+   if(action.ContentCompletion&&action.SourceAction!=null)return TargetsEnemy(action.SourceAction);
    if(action.IsStatusTick||action.IsNumberOnly)return action.Enemy;
+   var authored=action.Rule?.EncounterEffects??action.EncounterEffects;
+   if(authored!=null&&authored.Length>0){foreach(var effect in authored)if(effect.Target!=EncounterTarget.Numbers)return effect.Target==EncounterTarget.Opponent?!action.Enemy:action.Enemy;return action.Enemy;}
    if(action.Rule!=null){var effect=action.Rule.Effect;bool opponent=effect==RuleEffect.Damage||effect==RuleEffect.Burn||effect==RuleEffect.Poison||effect==RuleEffect.Bleed||effect==RuleEffect.Vulnerable||effect==RuleEffect.LastStand;return opponent?!action.Enemy:action.Enemy;}
    return TargetsOpponent(action.Effect)?!action.Enemy:action.Enemy;
   }

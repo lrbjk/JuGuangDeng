@@ -28,7 +28,7 @@ namespace RainbowLi {
   }
   private void AddNumberEntry(BattleAction action,int number){
    var card=action.Card;var e=card?.Engraving;
-   var entry=new NumberEntry {Number=number,Enemy=action.Enemy,Action=action};
+   var entry=new NumberEntry {Number=number,Enemy=action.Enemy,Action=action,Candidates=action.NumberCandidates==null?null:(int[])action.NumberCandidates.Clone()};
    if(e?.Effect==EngravingEffect.Wildcard)entry.Candidates=new[]{1,2,3,4,5,6};
    else if(e?.Effect==EngravingEffect.ExtraNumber)entry.Candidates=new[]{number,e.Value};
    int index=Timeline.IndexOf(action.SourceAction??action);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 namespace RainbowLi
 {
-    public enum CardEffect { Strike, Guard, Mend, IncreasedStrike, InverseStrike, Strength, Vulnerable, Weaken, Regeneration, Fortify, Poison, Bleed, IronWall, Parry, Barrier, DamageCap, RandomNumbers, Chant, Reciprocity, Burn, Ignite, Envenom, Disorder, Mutation, AddNumber, SubtractNumber }
+    public enum CardEffect { Strike, Guard, Mend, IncreasedStrike, InverseStrike, Strength, Vulnerable, Weaken, Regeneration, Fortify, Poison, Bleed, IronWall, Parry, Barrier, DamageCap, RandomNumbers, Chant, Reciprocity, Burn, Ignite, Envenom, Disorder, Mutation, AddNumber, SubtractNumber, Invulnerable }
     public enum GamePhase { Map, Planning, Resolving, Reward, Rest, Shop, Lost, Won, Event }
     public enum RuleEffect { Damage, Shield, Power, Insert, Heal, Burn, Poison, Strength, Bleed, RandomNumbers, LastStand, RandomCardEffects, Vulnerable, Parry, RepeatSequenceCards, IronWall, Regeneration }
     public enum EngravingEffect { Poison, Burn, FollowUpDamage, Growth, ExtraNumber, Wildcard, SequenceTailBonus, SequenceHeadBonus, BlockSequence, Bridge, Inherit, RandomizeFollowing, Roulette, OnlyPlayerCard, LastActionBonus, FirstActionBonus, Charge, PoisonExplosion, BurnExplosion }
@@ -61,6 +61,7 @@ namespace RainbowLi
 
     [Serializable] public sealed class SequenceRule
     {
+        public EncounterEffect[] EncounterEffects=Array.Empty<EncounterEffect>();public string EncounterDescription;
         public string Name;
         public string Code; public int BaseX, Multiplier=1, FixedValue, MinX,MaxX; public bool RollX;
         public int[] Numbers;
@@ -72,7 +73,7 @@ namespace RainbowLi
         public SequenceEffect AdditionalEffect;
         public bool Accepts(PatternRequirement requirement) => Numbers!=null && Numbers.Length==3 && Numbers.All(n=>n>=1&&n<=6) && (requirement==PatternRequirement.Any || requirement==PatternRequirement.Triple && Numbers[0]==Numbers[1] && Numbers[1]==Numbers[2] || requirement==PatternRequirement.Straight && Math.Abs(Numbers[1]-Numbers[0])==1 && Numbers[2]-Numbers[1]==Numbers[1]-Numbers[0]);
         public string Pattern => string.Join(" → ", Numbers.Select(n => n.ToString()).ToArray());
-        public string Description => Describe(Effect,Value,InsertsTwo)+(AdditionalEffect==null?"":" / "+Describe(AdditionalEffect.Effect,AdditionalEffect.Value,AdditionalEffect.InsertsTwo))+(Requirement==PatternRequirement.Any?"":" · "+RequirementName(Requirement))+(AdditionalEffect==null||AdditionalEffect.Requirement==PatternRequirement.Any?"":" · 效果2 "+RequirementName(AdditionalEffect.Requirement));
+        public string Description => EncounterEffects!=null&&EncounterEffects.Length>0?EncounterDescription:Describe(Effect,Value,InsertsTwo)+(AdditionalEffect==null?"":" / "+Describe(AdditionalEffect.Effect,AdditionalEffect.Value,AdditionalEffect.InsertsTwo))+(Requirement==PatternRequirement.Any?"":" · "+RequirementName(Requirement))+(AdditionalEffect==null||AdditionalEffect.Requirement==PatternRequirement.Any?"":" · 效果2 "+RequirementName(AdditionalEffect.Requirement));
         private static string RequirementName(PatternRequirement requirement)=>requirement==PatternRequirement.Straight?"顺子":"三同号";
         private static string Describe(RuleEffect effect,int value,bool insertsTwo) {
             string[] names={"伤害","护盾","后续卡效 +","插入数字","恢复","烧伤","中毒","力量","流血","随机数字","生命降至百分比","随机卡效次数","易伤","招架","参与卡牌重放次数","铁壁","再生"};
@@ -82,6 +83,9 @@ namespace RainbowLi
 
     public sealed class BattleAction
     {
+        public EncounterEffect[] EncounterEffects=Array.Empty<EncounterEffect>();public string EncounterSlot,EncounterDescription;
+        public bool PassiveAction,AppearanceApplied,LockedPosition,ContentNumberExempt;public int[] NumberCandidates;
+        public bool ContentDeferred,ContentCompletion,EncounterContinuation;public int PriorContentRepeat;public BattleEventSource EncounterSource=BattleEventSource.EnemySkill;
         public Card Card;
         public bool Enemy;
         public int Number;
@@ -97,8 +101,8 @@ namespace RainbowLi
         public int EffectBonus, EffectMultiplier=1;
         public List<BattleAction> Participants=new List<BattleAction>();
         public BattleAction SourceAction;
-        public string Label => IsStatusTick?(Enemy?"敌方":"玩家")+" / 回合结束中毒结算":Rule != null ? Rule.Name + (Enemy ? "（敌人触发）" : "（玩家触发）") + "：" + Rule.Description :
-            IsNumberOnly ? "插入数字 " + Number : Enemy ? (Special?"特殊 / ":"")+(string.IsNullOrEmpty(SkillName)?"实体":SkillName)+" " + Number + " · " + CombatStatuses.Name(Effect)+" " + Value :
+        public string Label => ContentCompletion?SourceAction.Label:IsStatusTick?(Enemy?"敌方":"玩家")+" / 回合结束中毒结算":Rule != null ? Rule.Name + (Enemy ? "（敌人触发）" : "（玩家触发）") + "：" + Rule.Description :
+            IsNumberOnly ? "插入数字 " + Number : Enemy ? (Special?"特殊 / ":"")+(string.IsNullOrEmpty(SkillName)?"实体":SkillName)+" " + Number + " · " + (EncounterEffects!=null&&EncounterEffects.Length>0?EncounterDescription:CombatStatuses.Name(Effect)+" "+Value) :
             "卡牌 " + Card.Number + " · " + Card.Description;
     }
 

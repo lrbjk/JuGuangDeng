@@ -5,6 +5,7 @@ namespace RainbowLi {
   private CombatantState Actor(bool enemy)=>enemy?(CombatantState)Enemy:Player;
   private int NextBattleNumber()=>random.Next(1,7);
   private void ApplyCardEffect(BattleAction action){
+   if(action.EncounterEffects!=null&&action.EncounterEffects.Length>0){if(!action.AppearanceApplied)ApplyEncounterEffects(action,action.EncounterEffects,action.EncounterSource);return;}
    var card=action.Card;if(action.EffectMultiplier==0)return;int adventureBonus=CardEffectGrowthFor(action);
    if(card!=null&&card.HasOrderedEffects){
     for(int i=0;i<card.Effects.Count;i++){
@@ -33,13 +34,14 @@ namespace RainbowLi {
    ApplyStatus(action.Enemy,!action.Enemy,CardEffect.Burn,owner.Statuses[CardEffect.Ignite],"Ignite",BattleEventSource.Status);
    ApplyStatus(action.Enemy,!action.Enemy,CardEffect.Poison,owner.Statuses[CardEffect.Envenom],"Envenom",BattleEventSource.Status);
    var added=new List<BattleAction>();
-   if(owner.Statuses[CardEffect.Reciprocity]>0&&!action.IsRepeat)added.Add(new BattleAction {Card=action.Card,Enemy=action.Enemy,Number=action.Number,Effect=action.Effect,EffectSpec=action.EffectSpec,Value=action.Value,Rule=action.Rule,Participants=new List<BattleAction>(action.Participants),SequenceTrigger=action.SequenceTrigger,SourceAction=action.SourceAction??action,IsRepeat=true,EffectBonus=action.EffectBonus,EffectMultiplier=action.EffectMultiplier,SkillName=action.SkillName,Special=action.Special});
+   if(owner.Statuses[CardEffect.Reciprocity]>0&&!action.IsRepeat)added.Add(new BattleAction {Card=action.Card,Enemy=action.Enemy,Number=action.Number,Effect=action.Effect,EffectSpec=action.EffectSpec,Value=action.Value,Rule=action.Rule,Participants=new List<BattleAction>(action.Participants),SequenceTrigger=action.SequenceTrigger,SourceAction=action.SourceAction??action,IsRepeat=true,EffectBonus=action.EffectBonus,EffectMultiplier=action.EffectMultiplier,SkillName=action.SkillName,Special=action.Special,EncounterEffects=EncounterEffect.Copies(action.EncounterEffects),EncounterSlot=action.EncounterSlot,EncounterDescription=action.EncounterDescription});
    for(int i=0;i<Math.Min(4096,owner.Statuses[CardEffect.RandomNumbers]);i++)added.Add(new BattleAction {IsNumberOnly=true,Enemy=action.Enemy,Number=NextBattleNumber()});
    pending.InsertRange(0,added);
   }
   private void FillNumber(BattleAction action){
    settlingTiming=BattleEventTiming.Action;settlingEffectIndex=-1;
    var status=Actor(action.Enemy).Statuses;int number=action.Number;
+   if(Enemy.Encounter!=null){var state=Enemy.Encounter;if(state.RandomizeAllNumbers||state.MutationRemaining>0&&!action.ContentNumberExempt){number=NextBattleNumber();if(state.MutationRemaining>0&&!action.ContentNumberExempt)state.MutationRemaining--;}}
    if(status[CardEffect.Disorder]>0||status[CardEffect.Mutation]>0)number=NextBattleNumber();
    if(status[CardEffect.Mutation]>0)ChangeStatus(action.Enemy,CardEffect.Mutation,status[CardEffect.Mutation]-1,"Mutation");
    number+=status[CardEffect.AddNumber]-status[CardEffect.SubtractNumber];if(randomizeFollowing)number=NextBattleNumber();NumberStream.Add(number);AddNumberEntry(action,number);LastAction=action.Label+" · 填入 "+number;Log("填入数字 "+number+(action.Enemy?" / 敌方":" / 玩家"));
@@ -59,6 +61,6 @@ namespace RainbowLi {
    return pending.Count>0;
   }
   private void ApplyStatusTick(BattleAction action){settlingTiming=BattleEventTiming.RoundEnd;int amount=Actor(action.Enemy).Statuses[CardEffect.Poison];action.Value=amount;SettleDamage(action.Enemy,action.Enemy,amount,"Poison",BattleEventSource.Status,false);ChangeStatus(action.Enemy,CardEffect.Poison,amount/2,"Poison");}
-  private bool CheckBattleEnd(){if(Phase!=GamePhase.Planning&&Phase!=GamePhase.Resolving)return Phase==GamePhase.Lost||Phase==GamePhase.Won||Phase==GamePhase.Reward;if(Health<=0){Phase=GamePhase.Lost;Message="收容失败。重新开始可生成一副新卡组。";pending.Clear();return true;}if(EnemyHealth<=0){FinishBattle();return true;}return false;}
+  private bool CheckBattleEnd(){if(Phase!=GamePhase.Planning&&Phase!=GamePhase.Resolving)return true;if(Health<=0){Phase=GamePhase.Lost;Message="收容失败。重新开始可生成一副新卡组。";pending.Clear();return true;}if(EnemyHealth<=0){FinishBattle();return true;}return false;}
  }
 }
