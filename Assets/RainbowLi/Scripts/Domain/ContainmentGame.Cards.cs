@@ -5,17 +5,26 @@ namespace RainbowLi
 {
     public sealed partial class ContainmentGame
     {
-        private Card FromSpec(CardEffectSpec spec,int number)=>new Card {Number=number,Effect=spec.Effect,Spec=spec.Copy(),EffectAmount=random.Next(spec.Min,spec.Max+1),AttackBase=BaseAttack,BaseBonus=0,UpgradeBonus=spec.Effect==CardEffect.DamageCap||spec.Effect==CardEffect.Reciprocity||spec.Effect==CardEffect.Disorder?0:2};
+        private static bool ModifiesNumber(CardEffect effect)=>effect==CardEffect.AddNumber||effect==CardEffect.SubtractNumber;
+        private static int MaximumNumberChange(int number)=>Math.Min(number-1,5-number);
+        private static bool SupportsCardNumber(CardEffectSpec spec,int number)=>!ModifiesNumber(spec.Effect)||spec.Min>=1&&spec.Min<=Math.Min(2,number==0?2:MaximumNumberChange(number));
+        private Card FromSpec(CardEffectSpec spec,int number){
+            if(!SupportsCardNumber(spec,number))throw new InvalidOperationException("Card effect is incompatible with original number: "+number);
+            int maximum=ModifiesNumber(spec.Effect)?Math.Min(spec.Max,number==0?2:MaximumNumberChange(number)):spec.Max;
+            int amount=random.Next(spec.Min,maximum+1);
+            if(number==0)number=ModifiesNumber(spec.Effect)?random.Next(amount+1,6-amount):random.Next(1,7);
+            return new Card {Number=number,Effect=spec.Effect,Spec=spec.Copy(),EffectAmount=amount,AttackBase=BaseAttack,BaseBonus=0,UpgradeBonus=spec.Effect==CardEffect.DamageCap||spec.Effect==CardEffect.Reciprocity||spec.Effect==CardEffect.Disorder?0:2};
+        }
         private void GenerateInitialDeck(){
             if(setup!=null&&!setup.RandomStartingDeck&&setup.InitialDeck.Count>0)return;
             if(setup!=null&&setup.CardEffects.Count>0){
                 if(setup.CardEffectPools.Count>0){
-                    for(int group=0;group<3;group++)for(int number=1;number<=6;number++)Deck.Add(FromSpec(DrawCardEffect(true),number));
+                    for(int group=0;group<3;group++)for(int number=1;number<=6;number++)Deck.Add(FromSpec(DrawCardEffect(true,number),number));
                     return;
                 }
                 var pool=setup.CardEffects.Where(e=>e.StartingEnabled&&e.Weight>0&&!float.IsNaN(e.Weight)&&!float.IsInfinity(e.Weight)).ToArray();
                 if(pool.Length==0)throw new ArgumentException("起始牌效果池至少需要启用一种效果");
-                for(int group=0;group<3;group++){var weights=pool.Select(e=>(double)e.Weight).ToArray();for(int number=1;number<=6;number++){int at=WeightedChoice(weights);Deck.Add(FromSpec(pool[at],number));weights[at]*=Math.Max(.01,Math.Min(1,setup.RepeatWeightMultiplier));}}
+                for(int group=0;group<3;group++){var weights=pool.Select(e=>(double)e.Weight).ToArray();for(int number=1;number<=6;number++){int at=WeightedChoice(pool.Select((e,i)=>SupportsCardNumber(e,number)?weights[i]:0).ToArray());Deck.Add(FromSpec(pool[at],number));weights[at]*=Math.Max(.01,Math.Min(1,setup.RepeatWeightMultiplier));}}
                 return;
             }
             for(int group=0;group<3;group++){
@@ -36,7 +45,7 @@ namespace RainbowLi
 
         public Card GenerateCard(int number = 0)
         {
-            if(setup!=null&&setup.CardEffects.Count>0)return FromSpec(DrawCardEffect(false),number==0?random.Next(1,7):number);
+            if(setup!=null&&setup.CardEffects.Count>0)return FromSpec(DrawCardEffect(false,number),number);
             if (setup != null && setup.CardPool.Count > 0)
             {
                 var candidates = setup.CardPool.Where(c => number == 0 || c.Number == number).ToList();
@@ -45,9 +54,10 @@ namespace RainbowLi
             return new Card { AttackBase=BaseAttack, Number = number == 0 ? random.Next(1, 7) : number, Effect = (CardEffect)random.Next(0, 3) };
         }
 
-        private CardEffectSpec DrawCardEffect(bool starting){
-            var candidates=setup.CardEffects.Where(e=>(!starting||e.StartingEnabled)&&ValidWeight(e.Weight)).ToArray();
-            string pool=DrawPool(setup.CardEffectPools);
+        private CardEffectSpec DrawCardEffect(bool starting,int number=0){
+            var candidates=setup.CardEffects.Where(e=>(!starting||e.StartingEnabled)&&ValidWeight(e.Weight)&&SupportsCardNumber(e,number)).ToArray();
+            string pool=DrawPool(setup.CardEffectPools.Where(p=>p!=null&&candidates.Any(e=>e.InPool(p.Name))).ToList());
+            if(setup.CardEffectPools.Count>0&&pool==null)throw new InvalidOperationException("No card effect pool supports original number: "+number);
             candidates=candidates.Where(e=>e.InPool(pool)).ToArray();
             if(candidates.Length==0)throw new InvalidOperationException("Empty card effect pool: "+pool);
             return candidates[WeightedChoice(candidates.Select(e=>(double)e.Weight).ToArray())];
