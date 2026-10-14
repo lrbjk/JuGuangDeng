@@ -13,7 +13,7 @@ namespace RainbowLi.EditorTools {
   public static void ApplyCurrent(){if(Application.isPlaying)return;var scene=EditorSceneManager.GetActiveScene();if(!scene.path.StartsWith(Root+"/",StringComparison.Ordinal))throw new InvalidOperationException("请打开 RainbowLi 场景。");Apply();EditorSceneManager.MarkSceneDirty(scene);}
   public static void Run(){var scene=EditorSceneManager.OpenScene(Root+"/Scenes/RainbowLiGame.unity");Apply();EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();}
   public static void Apply(){
-   var view=UnityEngine.Object.FindFirstObjectByType<GameView>();font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");
+   var view=UnityEngine.Object.FindFirstObjectByType<GameView>();font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");
    var menu=view.GetComponent<StartMenuView>();if(menu==null)menu=view.gameObject.AddComponent<StartMenuView>();menu.view=view;
    var existing=view.transform.Find("StartMenuPanel");if(existing!=null){SettingsSceneMigration.Apply();return;} // 保留已填写的策划文案和布局。
    var panel=Panel("StartMenuPanel",view.transform,0,0,1920,1080,Surface);menu.panel=panel.gameObject;panel.SetAsLastSibling();

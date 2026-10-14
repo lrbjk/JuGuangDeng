@@ -95,6 +95,10 @@ namespace RainbowLi
         public bool IsNumberOnly;
         public string SkillName; public bool Special;
         public CardEffectSpec EffectSpec;
+        public List<CardEffectInstance> OrderedEffects=new List<CardEffectInstance>();
+        public string OrderedDescription(int bonus=0)=>string.Join(" / ",(OrderedEffects??new List<CardEffectInstance>()).Select(e=>CombatStatuses.Name(e.Spec.Effect)+" "+CombatResolver.Clamp((long)e.ResolveValue(Number,0)+bonus)));
+        public string OrderedRules(int bonus=0)=>string.Join("\n",(OrderedEffects??new List<CardEffectInstance>()).Select((e,i)=>(i+1)+". "+(string.IsNullOrEmpty(e.Spec.Text)?CombatStatuses.Name(e.Spec.Effect):e.Spec.Text.Replace("X",CombatResolver.Clamp((long)e.ResolveValue(Number,0)+bonus).ToString()))));
+
         public bool IsRepeat,IsStatusTick,EndTick;
         public int SequenceTrigger;
         public bool EffectOnly, BonusOnly;
@@ -102,7 +106,7 @@ namespace RainbowLi
         public List<BattleAction> Participants=new List<BattleAction>();
         public BattleAction SourceAction;
         public string Label => ContentCompletion?SourceAction.Label:IsStatusTick?(Enemy?"敌方":"玩家")+" / 回合结束中毒结算":Rule != null ? Rule.Name + (Enemy ? "（敌人触发）" : "（玩家触发）") + "：" + Rule.Description :
-            IsNumberOnly ? "插入数字 " + Number : Enemy ? (Special?"特殊 / ":"")+(string.IsNullOrEmpty(SkillName)?"实体":SkillName)+" " + Number + " · " + (EncounterEffects!=null&&EncounterEffects.Length>0?EncounterDescription:CombatStatuses.Name(Effect)+" "+Value) :
+            IsNumberOnly ? "插入数字 " + Number : Enemy ? (Special?"特殊 / ":"")+(string.IsNullOrEmpty(SkillName)?"实体":SkillName)+" " + Number + " · " + (EncounterEffects!=null&&EncounterEffects.Length>0?EncounterDescription:OrderedEffects.Count>0?OrderedDescription():CombatStatuses.Name(Effect)+" "+Value) :
             "卡牌 " + Card.Number + " · " + Card.Description;
     }
 

@@ -20,7 +20,7 @@ public static class BuildEditableGame {
    if(File.Exists(Root+"/Scenes/RainbowLiGame.unity")&&!EditorUtility.DisplayDialog("重新生成场景", "这会覆盖 RainbowLiGame 的场景布局和默认配置。日常编辑请直接修改场景、Prefab 与 Data 资产。", "重新生成", "取消"))return;
   }
   foreach(string dir in new[]{"Data/Cards","Data/Sequences","Prefabs","Art","Scenes"})Directory.CreateDirectory(Root+"/"+dir);
-  AssetDatabase.Refresh();font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");MakeSprites();
+  AssetDatabase.Refresh();font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");MakeSprites();
   var engraving=Asset<EngravingDefinition>("Data/DefaultEngraving.asset");
   var definitions=new System.Collections.Generic.List<CardDefinition>();
   foreach(CardEffect effect in Enum.GetValues(typeof(CardEffect)))for(int n=1;n<=6;n++){

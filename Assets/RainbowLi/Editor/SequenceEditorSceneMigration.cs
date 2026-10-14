@@ -16,7 +16,7 @@ namespace RainbowLi.EditorTools {
   public static void Apply(){
    var view=UnityEngine.Object.FindFirstObjectByType<GameView>();var map=view.GetComponent<RouteMapView>();var hud=view.GetComponent<AdventureMapHudView>();
    map.mapRoot.GetComponent<Image>().raycastTarget=true;
-   font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");
+   font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");
    var editor=view.GetComponent<SequenceEditorView>();if(editor==null)editor=view.gameObject.AddComponent<SequenceEditorView>();editor.session=view.session;editor.sequences=view.sequences;view.sequences.editor=editor;
    var old=map.mapRoot.transform.Find("SequenceAdjustmentPanel");if(old!=null)UnityEngine.Object.DestroyImmediate(old.gameObject);
    var panel=Panel("SequenceAdjustmentPanel",map.mapRoot.transform,450,20,1450,1032,Surface);panel.GetComponent<Image>().raycastTarget=true;editor.panel=panel.gameObject;editor.mapRoot=map.mapRoot;editor.mapPanel=view.mapPanel;editor.selectedColor=new Color(.28f,.27f,.105f);

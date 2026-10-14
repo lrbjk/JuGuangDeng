@@ -23,6 +23,18 @@ public sealed class BattleHudView : MonoBehaviour {
  [Range(.1f,1.2f)] public float handScale=.88f,actionScale=.57f;
  [Min(0)] public float cardGap=12;
  private int displayedPile=-1;
+ private Sprite initialPortrait;
+ private bool portraitInitialized;
+ public void RefreshEnemyPortrait(ContainmentGame game){
+  if(enemyPortrait==null)return;
+  if(!portraitInitialized){initialPortrait=enemyPortrait.sprite;portraitInitialized=true;}
+  var encounter=game?.Enemy.Encounter?.Definition;
+  var definition=view?.session?.enemy?.definition??view?.session?.definition?.enemy;
+  enemyPortrait.sprite=encounter==null?initialPortrait:definition?.GetPortrait(encounter.Id,encounter.Boss);
+  enemyPortrait.preserveAspect=true;enemyPortrait.raycastTarget=false;
+  enemyPortrait.enabled=enemyPortrait.sprite!=null;
+  if(portraitPlaceholder!=null)portraitPlaceholder.gameObject.SetActive(enemyPortrait.sprite==null);
+ }
  private ScrollRect enemySequenceScroll;
  private void EnsureEnemySequences(int count){
   if(enemySequenceViews==null||enemySequenceViews.Length==0||enemySequenceViews[0]==null||count<=enemySequenceViews.Length)return;
@@ -43,8 +55,7 @@ public sealed class BattleHudView : MonoBehaviour {
   if(enemyStatuses!=null)enemyStatuses.Refresh(g.Enemy.Statuses);
   if(speedLabel!=null)speedLabel.text="播放速度  "+view.battle.PlaybackSpeed.ToString("0.#")+"×";
   enemyName.text=g.EnemyName;
-  enemyPortrait.enabled=enemyPortrait.sprite!=null;
-  portraitPlaceholder.gameObject.SetActive(enemyPortrait.sprite==null);
+  RefreshEnemyPortrait(g);
   playerShield.text="护盾\n"+g.Shield;enemyShield.text="护盾\n"+g.EnemyShield;
   view.playerStats.text="玩家   "+g.Health+" / "+g.HealthLimit+"    增伤 "+g.Power;
   view.enemyStats.text=g.EnemyHealth+" / "+g.EnemyMaxHealth+"    增伤 "+g.EnemyPower;
@@ -70,7 +81,7 @@ public sealed class BattleHudView : MonoBehaviour {
    bool valid=configured!=null?i<configured.Length:rows!=null?i<rows.Length:skills!=null&&i<skills.Length;
    enemySkills[i].gameObject.SetActive(valid);if(!valid)continue;
    if(configured!=null){var s=configured[i];enemySkills[i].Bind(s.NumberMin,CardEffect.Strike,s.Name+(s.Special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+s.Name,s.Description+"\n数字范围："+s.NumberMin+"～"+s.NumberMax+"\n基础攻击："+CombatResolver.Clamp((long)g.Enemy.Encounter.BaseAttack+g.EliteAttackBonus)+" · 抽取权重："+s.Weight+(s.FixedTrigger?"\n按固定回合触发":""));}
-   else if(rows!=null){var r=rows[i];int bonus=g.EnemyCardEffectBonus;enemySkills[i].Bind(r.number,r.effect,r.name+(r.special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+r.name,r.description+"\n效果数值："+CombatResolver.Clamp((long)r.min+bonus)+"～"+CombatResolver.Clamp((long)r.max+bonus)+(bonus>0?"\n全局敌人卡牌效果 +"+bonus:""));}
+   else if(rows!=null){var r=rows[i];int bonus=g.EnemyCardEffectBonus;enemySkills[i].Bind(r.number,r.effect,r.name+(r.special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+r.name,string.Join("\n",r.EffectSpecs().Select((spec,n)=>(n+1)+". "+spec.Text+" ["+spec.Min+"～"+spec.Max+"]"))+"\n主效果数值："+CombatResolver.Clamp((long)r.min+bonus)+"～"+CombatResolver.Clamp((long)r.max+bonus)+(bonus>0?"\n全局敌人卡牌效果 +"+bonus:""));}
    else {var s=skills[i];enemySkills[i].Bind(s.Number,s.Effect,s.Name+(s.Special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+s.Name,CombatStatuses.Name(s.Effect)+" · 数字 "+s.Number+" · 修正 "+s.Modifier);}
   }
   LayoutCards(g);

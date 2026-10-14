@@ -12,7 +12,7 @@ public static class BuffUiSceneMigration {
  public static void Run(){var scene=EditorSceneManager.OpenScene(Root+"/Scenes/RainbowLiGame.unity");Apply();EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();}
  static void Apply(){
   var hud=UnityEngine.Object.FindFirstObjectByType<BattleHudView>();if(hud==null)throw new InvalidOperationException("缺少 BattleHudView");
-  font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");var parent=hud.view.battlePanel.transform;
+  font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");var parent=hud.view.battlePanel.transform;
   if(hud.view.statusSummary!=null)hud.view.statusSummary.gameObject.SetActive(false);
   if(hud.playerStatuses==null)hud.playerStatuses=Panel(parent,false,238);if(hud.enemyStatuses==null)hud.enemyStatuses=Panel(parent,true,342);
   MovePlayerAboveHealth(hud);EditorUtility.SetDirty(hud);

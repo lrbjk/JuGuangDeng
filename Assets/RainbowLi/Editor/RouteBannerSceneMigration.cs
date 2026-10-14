@@ -25,7 +25,7 @@ public static class RouteBannerSceneMigration {
  public static void Apply(){
   var map=UnityEngine.Object.FindFirstObjectByType<RouteMapView>();var view=UnityEngine.Object.FindFirstObjectByType<GameView>();if(map==null||view==null)throw new InvalidOperationException("场景缺少 RouteMapView / GameView。");
   if(map.perspectiveLayout&&map.mapRoot!=null&&map.mapRoot.name=="BannerRoute")return;
-  font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");Undo.RecordObject(map,"旗帜选关");
+  font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");Undo.RecordObject(map,"旗帜选关");
   if(map.mapRoot!=null)Undo.DestroyObjectImmediate(map.mapRoot);map.nodes.Clear();
   var panel=(RectTransform)view.mapPanel.transform;Undo.RecordObject(panel,"全屏选关");panel.anchorMin=panel.anchorMax=panel.pivot=new Vector2(0,1);panel.anchoredPosition=Vector2.zero;panel.sizeDelta=new Vector2(1920,1080);panel.SetAsLastSibling();
   var root=Rect("BannerRoute",panel,0,0,1920,1080);map.mapRoot=root.gameObject;Fill(root,new Color(.025f,.03f,.036f));

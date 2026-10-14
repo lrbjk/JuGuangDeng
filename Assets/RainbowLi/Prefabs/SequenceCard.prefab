@@ -95,6 +95,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.SequenceView
   title: {fileID: 2813632060889671167}
   description: {fileID: 2697465956732730944}
+  primaryEffect: {fileID: 0}
+  secondaryEffect: {fileID: 0}
   digits:
   - {fileID: 7024541098575854315}
   - {fileID: 4887274034478012837}
@@ -169,7 +171,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 2774ce5e7ae94caf837623c127f8d0d7, type: 3}
+    m_Font: {fileID: 12800000, guid: 47296ca1f9a32cf46a69066f61f6eb9a, type: 3}
     m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 1
@@ -248,7 +250,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 2774ce5e7ae94caf837623c127f8d0d7, type: 3}
+    m_Font: {fileID: 12800000, guid: a7a591b508f41584284b4e4375a2263a, type: 3}
     m_FontSize: 18
     m_FontStyle: 0
     m_BestFit: 1
@@ -464,7 +466,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 2774ce5e7ae94caf837623c127f8d0d7, type: 3}
+    m_Font: {fileID: 12800000, guid: 47296ca1f9a32cf46a69066f61f6eb9a, type: 3}
     m_FontSize: 18
     m_FontStyle: 0
     m_BestFit: 1
@@ -680,7 +682,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 2774ce5e7ae94caf837623c127f8d0d7, type: 3}
+    m_Font: {fileID: 12800000, guid: 47296ca1f9a32cf46a69066f61f6eb9a, type: 3}
     m_FontSize: 18
     m_FontStyle: 0
     m_BestFit: 1
@@ -896,7 +898,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 2774ce5e7ae94caf837623c127f8d0d7, type: 3}
+    m_Font: {fileID: 12800000, guid: 47296ca1f9a32cf46a69066f61f6eb9a, type: 3}
     m_FontSize: 18
     m_FontStyle: 0
     m_BestFit: 1

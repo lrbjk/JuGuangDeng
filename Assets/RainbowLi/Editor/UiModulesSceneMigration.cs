@@ -26,6 +26,6 @@ public static class UiModulesSceneMigration {
  static T Get<T>(GameObject root)where T:Component{var c=root.GetComponent<T>();return c==null?root.AddComponent<T>():c;}
  static ScrollRect Scroll(GameObject root,RectTransform viewport,RectTransform content){var sr=Get<ScrollRect>(root);sr.viewport=viewport;sr.content=content;sr.horizontal=true;sr.vertical=false;sr.scrollSensitivity=50;sr.movementType=ScrollRect.MovementType.Clamped;return sr;}
  static RectTransform Rect(string name,Transform parent,float w,float h){var go=new GameObject(name,typeof(RectTransform));var r=(RectTransform)go.transform;r.SetParent(parent,false);r.anchorMin=r.anchorMax=r.pivot=new Vector2(0,1);r.sizeDelta=new Vector2(w,h);return r;}
- static Text Label(string name,Transform parent,float x,float y,float w,float h,int size){var r=Rect(name,parent,w,h);r.anchoredPosition=new Vector2(x,-y);var text=r.gameObject.AddComponent<Text>();text.font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");text.fontSize=size;text.color=new Color(.95f,.88f,.7f);text.alignment=TextAnchor.UpperLeft;text.raycastTarget=false;return text;}
+ static Text Label(string name,Transform parent,float x,float y,float w,float h,int size){var r=Rect(name,parent,w,h);r.anchoredPosition=new Vector2(x,-y);var text=r.gameObject.AddComponent<Text>();text.font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");text.fontSize=size;text.color=new Color(.95f,.88f,.7f);text.alignment=TextAnchor.UpperLeft;text.raycastTarget=false;return text;}
 }
 }

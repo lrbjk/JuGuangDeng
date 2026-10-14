@@ -16,7 +16,7 @@ namespace RainbowLi.EditorTools {
    var view=UnityEngine.Object.FindFirstObjectByType<GameView>();var menu=view.GetComponent<StartMenuView>();var existing=view.transform.Find("SettingsOverlay");SettingsPanelView ui;
    if(existing!=null)ui=existing.GetComponent<SettingsPanelView>();
    else{
-    font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");
+    font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");
     var overlay=Panel("SettingsOverlay",view.transform,0,0,1920,1080,new Color(0,0,0,.75f));overlay.GetComponent<Outline>().enabled=false;ui=overlay.gameObject.AddComponent<SettingsPanelView>();ui.view=view;
     var dialog=Panel("Dialog",overlay,480,260,960,560,Surface);Label("Caption",dialog,40,24,880,60,"设置",32,TextAnchor.MiddleCenter);
     Label("VolumeLabel",dialog,60,120,600,48,"战斗音量",26,TextAnchor.MiddleLeft);ui.volumeValue=Label("VolumeValue",dialog,720,120,180,48,"30%",26,TextAnchor.MiddleRight);

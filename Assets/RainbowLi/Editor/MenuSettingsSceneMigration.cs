@@ -13,7 +13,7 @@ namespace RainbowLi.EditorTools {
   public static void ApplyCurrent(){if(Application.isPlaying)return;var scene=EditorSceneManager.GetActiveScene();if(!scene.path.StartsWith(Root+"/",StringComparison.Ordinal))throw new InvalidOperationException("请打开 RainbowLi 场景。");Apply();EditorSceneManager.MarkSceneDirty(scene);}
   public static void Run(){var scene=EditorSceneManager.OpenScene(Root+"/Scenes/RainbowLiGame.unity");Apply();EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();}
   public static void Apply(){
-   var view=UnityEngine.Object.FindFirstObjectByType<GameView>();var menu=view.GetComponent<StartMenuView>();var ui=view.battleHud.settingsPanel.GetComponent<SettingsPanelView>();font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");
+   var view=UnityEngine.Object.FindFirstObjectByType<GameView>();var menu=view.GetComponent<StartMenuView>();var ui=view.battleHud.settingsPanel.GetComponent<SettingsPanelView>();font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");
    var prefs=view.GetComponent<GameSettings>();if(prefs==null)prefs=view.gameObject.AddComponent<GameSettings>();prefs.view=view;ui.preferences=prefs;
    if(menu.continueGame==null){
     var actions=menu.panel.transform.Find("Actions");Place(menu.settings.transform,44,28,260,90);Place(menu.start.transform,390,28,260,90);Place(menu.quit.transform,1082,28,260,90);

@@ -4,7 +4,7 @@ using System.Linq;
 namespace RainbowLi {
  public enum ActivationCondition { RoundAtLeast, HealthPercentAtMost }
  [Serializable] public sealed class EnemySkill {
-  public string Name="攻击";public int Number=1;public CardEffect Effect;public int Modifier;public float Weight=10;public CardEffectSpec Spec;
+  public string Name="攻击";public int Number=1;public CardEffect Effect;public int Modifier;public float Weight=10;public CardEffectSpec Spec;public CardEffectSpec[] Specs=Array.Empty<CardEffectSpec>();
   public bool Special;public float SpecialWeightRatio=.5f;public ActivationCondition Condition;public int Threshold=3;
  }
  [Serializable] public sealed class ConditionalSequence {
@@ -25,6 +25,7 @@ namespace RainbowLi {
   public void StartEncounter(int maxHealth,bool boss,bool elite=false){Encounter=null;EncounterRules.Clear();MaxHealth=Health=maxHealth;Boss=boss;Elite=elite;EliteAttackBonus=0;unlocked.Clear();activeRules.Clear();ConditionalRules.Clear();Statuses.Clear();ResetRound();}
   private BattleAction Action(EnemySkill skill,GameSetup setup,Random random){
    int attack=setup==null?(Boss?9:5):(Boss?setup.BossAttack:setup.EnemyAttack);
+   if(skill.Specs!=null&&skill.Specs.Length>1){var effects=CardEffectGroup.CreateEffects(skill.Specs,random,false);return new BattleAction{Enemy=true,Number=skill.Number,Effect=effects[0].Spec.Effect,EffectSpec=effects[0].Spec.Copy(),Value=effects[0].ResolveValue(skill.Number,0),OrderedEffects=effects,SkillName=skill.Name,Special=skill.Special};}
    var spec=skill.Spec;var card=spec==null?null:new Card {Number=skill.Number,Effect=skill.Effect,Spec=spec.Copy(),EffectAmount=random.Next(spec.Min,spec.Max+1),UpgradeBonus=0};
    return new BattleAction {Enemy=true,Number=skill.Number,Effect=skill.Effect,EffectSpec=card?.Spec,Value=card==null?Math.Max(0,attack+skill.Modifier+(Elite?EliteAttackBonus:0)):card.Value,SkillName=skill.Name,Special=skill.Special};
   }

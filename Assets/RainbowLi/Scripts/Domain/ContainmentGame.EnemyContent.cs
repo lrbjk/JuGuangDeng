@@ -191,7 +191,7 @@ namespace RainbowLi {
    Phase=finalBossReward?GamePhase.Won:GamePhase.Map;
    if(nextAdventureLayer>0){
     AdventureLayer=nextAdventureLayer;nextAdventureLayer=0;
-    if(Route!=null){if(Route.ActiveId>=0&&Route.Graph.Find(Route.ActiveId)?.kind==LevelKind.Boss)Route.Complete();completedRoomsBeforeLayer+=Route.Completed.Count;var graph=Route.Graph;int lanes=Math.Max(2,graph.Nodes.Max(n=>n.lane)+1);var generated=RouteGenerator.Generate(random,Math.Min(16,Math.Max(4,graph.Floors)),lanes);Route=new RouteRun(new RouteGraph(generated.Nodes,graph.Stacked,graph.CardDungeon,graph.StartLane));Route.ConfigureBossUnlock(AdventureLayer);EnsureBossRouteBattles();}
+    if(Route!=null){if(Route.ActiveId>=0&&Route.Graph.Find(Route.ActiveId)?.kind==LevelKind.Boss)Route.Complete();completedRoomsBeforeLayer+=Route.Completed.Count;var graph=Route.Graph;int lanes=Math.Max(2,graph.Nodes.Max(n=>n.lane)+1);var generated=RouteGenerator.Generate(random,Math.Min(16,Math.Max(4,graph.Floors)),lanes);Route=new RouteRun(new RouteGraph(generated.Nodes,graph.Stacked,graph.CardDungeon,graph.StartLane,graph.IndependentStacks));Route.ConfigureBossUnlock(AdventureLayer);EnsureBossRouteBattles();}
     Message="BOSS已收容，进入第 "+AdventureLayer+" 层。";
    }else Message=Phase==GamePhase.Won?"全部BOSS已收容！":"奖励已结算，继续选择任务。";
   }
@@ -214,7 +214,7 @@ namespace RainbowLi {
     var node=new LevelNodeData {id=firstId+row*lanes+lane,floor=oldFloor+row,lane=lane,kind=LevelKind.Combat};
     if(!graph.Stacked){if(row==missing-1)node.next.Add(boss.id);else{node.next.Add(firstId+(row+1)*lanes+lane);node.next.Add(firstId+(row+1)*lanes+(lane==0?1:lane-1));}}nodes.Add(node);
    }
-   var updated=new RouteRun(new RouteGraph(nodes,graph.Stacked,graph.CardDungeon,graph.StartLane));updated.ConfigureBossUnlock(Route.AdventureLayer);Route=updated;
+   var updated=new RouteRun(new RouteGraph(nodes,graph.Stacked,graph.CardDungeon,graph.StartLane,graph.IndependentStacks));updated.ConfigureBossUnlock(Route.AdventureLayer);Route=updated;
   }
  }
 }

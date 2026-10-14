@@ -35,6 +35,8 @@ namespace RainbowLi.UnityGame {
  }
  [Serializable] public sealed class NormalEnemyRow {
   public string id,sheetName,title;
+  [Tooltip("该敌人的战斗立绘。拖入 Sprite；不配置时显示占位。此图片绑定在 Unity 中维护，Excel 导入保留现有绑定。")]
+  public Sprite portrait;
   public bool enabled=true;
   public bool configured;
   public int health=50,healthThresholdPercent=50,skillCount=4,sequenceCount=3;

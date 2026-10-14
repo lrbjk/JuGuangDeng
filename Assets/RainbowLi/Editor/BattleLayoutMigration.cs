@@ -16,7 +16,7 @@ public static class BattleLayoutMigration {
  public static void Apply(){
   var v=UnityEngine.Object.FindFirstObjectByType<GameView>();if(v==null)throw new InvalidOperationException("请先打开 RainbowLiGame 场景");
   if(v.battleHud!=null){Debug.Log("布局已应用，直接编辑场景中的 BattleHudView。");return;}
-  font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");
+  font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");
   var canvas=v.GetComponent<CanvasScaler>();canvas.referenceResolution=new Vector2(1920,1080);canvas.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;
   var table=(RectTransform)v.transform.Find("Table");table.sizeDelta=new Vector2(1920,1080);
   var oldHud=table.Find("HUD");oldHud.gameObject.SetActive(false);

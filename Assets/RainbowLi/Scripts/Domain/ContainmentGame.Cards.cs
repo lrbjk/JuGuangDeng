@@ -15,8 +15,26 @@ namespace RainbowLi
             if(number==0)number=ModifiesNumber(spec.Effect)?random.Next(amount+1,6-amount):random.Next(1,7);
             return new Card {Number=number,Effect=spec.Effect,Spec=spec.Copy(),EffectAmount=amount,AttackBase=BaseAttack,BaseBonus=0,UpgradeBonus=spec.Effect==CardEffect.DamageCap||spec.Effect==CardEffect.Reciprocity||spec.Effect==CardEffect.Disorder?0:2};
         }
+        private static bool SupportsGroupNumber(CardEffectGroup group,int number)=>number==0?Enumerable.Range(1,6).Any(n=>SupportsGroupNumber(group,n)):group.Specs.All(e=>SupportsCardNumber(e,number));
+        private Card FromGroup(CardEffectGroup group,int number){
+            if(number==0){var numbers=Enumerable.Range(1,6).Where(n=>SupportsGroupNumber(group,n)).ToArray();number=numbers[random.Next(numbers.Length)];}
+            var copy=group.Copy();foreach(var spec in copy.Specs)if(ModifiesNumber(spec.Effect))spec.Max=Math.Min(spec.Max,MaximumNumberChange(number));
+            return copy.CreateCard(number,random,BaseAttack);
+        }
+        private CardEffectGroup DrawCardGroup(bool starting,int number){
+            var candidates=setup.CardEffectGroups.Where(g=>(!starting||g.Primary.StartingEnabled)&&ValidWeight(g.Primary.Weight)&&SupportsGroupNumber(g,number)).ToArray();
+            string pool=DrawPool(setup.CardEffectPools.Where(p=>p!=null&&candidates.Any(g=>g.Primary.InPool(p.Name))).ToList());
+            if(setup.CardEffectPools.Count>0&&pool==null)throw new InvalidOperationException("No card effect group pool supports original number: "+number);
+            candidates=candidates.Where(g=>g.Primary.InPool(pool)).ToArray();if(candidates.Length==0)throw new InvalidOperationException("Empty card effect group pool: "+pool);
+            return candidates[WeightedChoice(candidates.Select(g=>(double)g.Primary.Weight).ToArray())];
+        }
         private void GenerateInitialDeck(){
             if(setup!=null&&!setup.RandomStartingDeck&&setup.InitialDeck.Count>0)return;
+            if(setup!=null&&setup.CardEffectGroups.Count>0){
+                if(setup.CardEffectPools.Count>0){for(int round=0;round<3;round++)for(int number=1;number<=6;number++)Deck.Add(FromGroup(DrawCardGroup(true,number),number));return;}
+                var groups=setup.CardEffectGroups.Where(g=>g.Primary.StartingEnabled&&ValidWeight(g.Primary.Weight)).ToArray();
+                for(int round=0;round<3;round++){var weights=groups.Select(g=>(double)g.Primary.Weight).ToArray();for(int number=1;number<=6;number++){int at=WeightedChoice(groups.Select((g,i)=>SupportsGroupNumber(g,number)?weights[i]:0).ToArray());Deck.Add(FromGroup(groups[at],number));weights[at]*=Math.Max(.01,Math.Min(1,setup.RepeatWeightMultiplier));}}return;
+            }
             if(setup!=null&&setup.CardEffects.Count>0){
                 if(setup.CardEffectPools.Count>0){
                     for(int group=0;group<3;group++)for(int number=1;number<=6;number++)Deck.Add(FromSpec(DrawCardEffect(true,number),number));
@@ -45,6 +63,7 @@ namespace RainbowLi
 
         public Card GenerateCard(int number = 0)
         {
+            if(setup!=null&&setup.CardEffectGroups.Count>0)return FromGroup(DrawCardGroup(false,number),number);
             if(setup!=null&&setup.CardEffects.Count>0)return FromSpec(DrawCardEffect(false,number),number);
             if (setup != null && setup.CardPool.Count > 0)
             {

@@ -14,7 +14,7 @@ public static class UnifiedSequenceSceneMigration {
  public static void Run(){var scene=EditorSceneManager.OpenScene(Root+"/Scenes/RainbowLiGame.unity");Apply();EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();}
  public static void Apply(){
   var view=UnityEngine.Object.FindFirstObjectByType<GameView>();if(view==null||view.battleHud==null)throw new InvalidOperationException("缺少 BattleHudView。");
-  var hud=view.battleHud;font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");
+  var hud=view.battleHud;font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");
   var table=view.transform.Find("Table");var sidebar=table.Find("Sidebar");
   var enemy=sidebar.Find("EnemySequenceGroup");var player=sidebar.Find("PlayerSequenceGroup");var arena=table.Find("ArenaSequence");
   Set(enemy,12,332,368,306);Set(player,12,748,368,306);

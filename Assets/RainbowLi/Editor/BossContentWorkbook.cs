@@ -34,7 +34,8 @@ namespace RainbowLi.EditorTools {
    var result=rows.ToArray();var errors=BossContentTable.Check(result);if(errors.Length>0)throw new FormatException(string.Join("\n",errors));if(result.Any(r=>r.content.configured)){errors=BossContentTable.Check(result.Where(r=>r.content.configured).ToArray(),true);if(errors.Length>0)throw new FormatException(string.Join("\n",errors));}return result;
   }
   public static bool SameGrid(BossContentRow a,BossContentRow b)=>Grid(a).SelectMany(r=>r.Select(c=>c??"")).SequenceEqual(Grid(b).SelectMany(r=>r.Select(c=>c??"")));
-  public static BossContentRow[] PreserveUnchanged(BossContentRow[] imported,BossContentRow[] existing)=>imported.Select(r=>{var prior=(existing??Array.Empty<BossContentRow>()).SingleOrDefault(p=>p?.content.sheetName==r.content.sheetName);return !r.content.configured&&prior!=null&&prior.content.configured&&SameGrid(r,prior)?prior.Copy():r;}).ToArray();
+  static string ExportConfiguration(BossContentRow row){var copy=row.Copy();copy.content.portrait=null;return JsonUtility.ToJson(copy);}
+  public static BossContentRow[] PreserveUnchanged(BossContentRow[] imported,BossContentRow[] existing)=>imported.Select(r=>{var prior=(existing??Array.Empty<BossContentRow>()).SingleOrDefault(p=>p?.content.sheetName==r.content.sheetName);var result=!r.content.configured&&prior!=null&&prior.content.configured&&SameGrid(r,prior)?prior.Copy():r;result.content.portrait=prior?.content.portrait;return result;}).ToArray();
   public static string[][] Grid(BossContentRow r){
    var c=r.content;var grid=new List<string[]>();Action<string[]> add=data=>{var line=new string[12];Array.Copy(data,line,data.Length);grid.Add(line);};Action blank=()=>add(Array.Empty<string>());
    add(new[]{c.title});blank();add(new[]{"基础数值"});add(new[]{"血量",c.health.ToString(),"回合技能使用数",c.actions,"血量匝值",r.thresholdText,"牌序效果数",c.sequenceCount.ToString(),"出没关卡层数",r.spawnLayers});add(new[]{"基础攻击值",c.attack,"技能总数",c.skillCount.ToString(),"初始效果",c.initialEffects});
@@ -44,7 +45,7 @@ namespace RainbowLi.EditorTools {
   }
   public static void Write(string path,BossContentRow[] rows){
    var issues=BossContentTable.Check(rows);if(issues.Length>0)throw new FormatException(string.Join("\n",issues));if(rows.Any(r=>r.content.sheetName==ConfigSheet))throw new FormatException("工作表名保留给数值配置。");foreach(var r in rows.Where(r=>r.content.configured)){issues=BossContentTable.Check(new[]{r},true);if(issues.Length>0)throw new FormatException(string.Join("\n",issues));}
-   var grids=rows.Select(Grid).ToArray();string temp=Path.Combine(Path.GetDirectoryName(Path.GetFullPath(path)),Guid.NewGuid()+".xlsx");try{CardTableWorkbook.WriteSheets(temp,rows.Select(r=>r.content.sheetName).Concat(new[]{ConfigSheet}).ToArray(),grids.Select(g=>g[0]).Concat(new[]{new[]{"工作表名","版本","配置JSON（由Unity编辑）"}}).ToArray(),grids.Select(g=>g.Skip(1).ToArray()).Concat(new[]{rows.Select(r=>new[]{r.content.sheetName,"1",JsonUtility.ToJson(r)}).ToArray()}).ToArray());File.Copy(temp,path,true);}finally{if(File.Exists(temp))File.Delete(temp);}
+   var grids=rows.Select(Grid).ToArray();string temp=Path.Combine(Path.GetDirectoryName(Path.GetFullPath(path)),Guid.NewGuid()+".xlsx");try{CardTableWorkbook.WriteSheets(temp,rows.Select(r=>r.content.sheetName).Concat(new[]{ConfigSheet}).ToArray(),grids.Select(g=>g[0]).Concat(new[]{new[]{"工作表名","版本","配置JSON（由Unity编辑）"}}).ToArray(),grids.Select(g=>g.Skip(1).ToArray()).Concat(new[]{rows.Select(r=>new[]{r.content.sheetName,"1",ExportConfiguration(r)}).ToArray()}).ToArray());File.Copy(temp,path,true);}finally{if(File.Exists(temp))File.Delete(temp);}
   }
  }
 }

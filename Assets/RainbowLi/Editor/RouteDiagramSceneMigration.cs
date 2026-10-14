@@ -16,7 +16,7 @@ namespace RainbowLi.EditorTools {
   public static void Run(){var scene=EditorSceneManager.OpenScene(Root+"/Scenes/RainbowLiGame.unity");Apply();EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();}
   public static void Apply(){
    var view=UnityEngine.Object.FindFirstObjectByType<GameView>();var map=view.GetComponent<RouteMapView>();var root=map.mapRoot.transform;
-   font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");
+   font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");
    var growth=view.session.GetComponent<EnemyGrowthModule>();if(growth==null)growth=view.session.gameObject.AddComponent<EnemyGrowthModule>();view.session.enemyGrowth=growth;
    var hud=view.GetComponent<AdventureMapHudView>();if(hud==null)hud=view.gameObject.AddComponent<AdventureMapHudView>();hud.session=view.session;hud.levels=map.levels;hud.sequences=view.sequences;hud.growth=growth;
    if(root.Find("AdventureSidebar")!=null){EditorUtility.SetDirty(hud);EditorUtility.SetDirty(view.session);return;}

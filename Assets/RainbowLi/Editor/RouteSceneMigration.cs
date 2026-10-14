@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEditor;
 using UnityEditor.Events;
 using UnityEditor.SceneManagement;
@@ -11,7 +11,7 @@ namespace RainbowLi.EditorTools {
   static Font font;
   public static void Run(){var scene=EditorSceneManager.OpenScene(Root+"/Scenes/RainbowLiGame.unity");Apply();AssetDatabase.SaveAssets();EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);Debug.Log("ROUTE MIGRATION PASS: branch graph and level module saved.");}
   public static void Apply(){
-   var session=Object.FindFirstObjectByType<GameSession>();var gameView=Object.FindFirstObjectByType<GameView>();font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");
+   var session=Object.FindFirstObjectByType<GameSession>();var gameView=Object.FindFirstObjectByType<GameView>();font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");
    var def=AssetDatabase.LoadAssetAtPath<LevelDefinition>(Root+"/Data/DefaultLevels.asset");if(def==null){def=ScriptableObject.CreateInstance<LevelDefinition>();def.authoredNodes=RouteGenerator.Generate(104729,def.floors,def.lanes).Nodes;AssetDatabase.CreateAsset(def,Root+"/Data/DefaultLevels.asset");}
    var levels=session.GetComponentInChildren<LevelModule>(true);if(levels==null){var go=new GameObject("LevelSystem");go.transform.SetParent(session.transform,false);levels=go.AddComponent<LevelModule>();}levels.session=session;levels.definition=def;gameView.progression.levels=levels;
    var controller=gameView.GetComponent<RouteMapView>();if(controller==null)controller=gameView.gameObject.AddComponent<RouteMapView>();controller.levels=levels;

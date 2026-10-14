@@ -62,6 +62,7 @@ namespace RainbowLi.UnityGame {
    mapRoot.SetActive(levels.session.Game.Phase==GamePhase.Map);
    if(!mapRoot.activeSelf)HideTooltip();
    var graph=run.Graph;bool regenerate=shown!=graph;
+   if(legend!=null)legend.gameObject.SetActive(!diagramLayout&&!graph.IndependentStacks);
    content.sizeDelta=new Vector2(contentWidth,perspectiveLayout?MapHeight(graph):graph.Floors*verticalSpacing+110);
    foreach(var v in nodes)v.gameObject.SetActive(graph.Find(v.nodeId)!=null);
    foreach(var n in graph.Nodes){

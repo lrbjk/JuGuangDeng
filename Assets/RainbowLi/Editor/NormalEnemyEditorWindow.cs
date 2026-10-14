@@ -41,7 +41,7 @@ namespace RainbowLi.EditorTools {
    if(rows.arraySize==0)return;selected=Mathf.Clamp(selected,0,rows.arraySize-1);
    selected=EditorGUILayout.Popup("选择敌人",selected,table.rows.Select(r=>r?.title??"空行").ToArray());
    scroll=EditorGUILayout.BeginScrollView(scroll);var row=rows.GetArrayElementAtIndex(selected);
-   Field(row,"id","敌人ID（程序引用）");Field(row,"sheetName","Excel工作表名");Field(row,"title","敌人标题");Field(row,"enabled","启用（Unity内配置）");
+   Field(row,"id","敌人ID（程序引用）");Field(row,"sheetName","Excel工作表名");Field(row,"title","敌人标题");Field(row,"portrait","敌人立绘（Sprite）");Field(row,"enabled","启用（Unity内配置）");
    Field(row,"configured","已完成数值配置");
    Header("基础数值");Field(row,"health","血量");Field(row,"actions","回合技能使用数");Field(row,"attack","基础攻击值");Field(row,"healthThresholdPercent","血量阈值（%）");Field(row,"skillCount","技能总数");Field(row,"sequenceCount","牌序效果数");Field(row,"initialEffects","初始效果");
    Header("基础技能与特殊技能");

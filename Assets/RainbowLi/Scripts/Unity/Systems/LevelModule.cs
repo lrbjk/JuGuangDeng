@@ -11,7 +11,7 @@ namespace RainbowLi.UnityGame {
   private void Start(){Track();session.Notify();}
   private void Track(){
    if(session.Game==null)return;
-   if(observed!=session.Game){observed=session.Game;int seed=session.seed==0?System.Environment.TickCount:session.seed;if(definition==null)session.Game.ConfigureGeneratedRoute();else if(definition.randomizeEachRun&&definition.seed==0)session.Game.ConfigureGeneratedRoute(definition.floors,definition.lanes);else session.Game.ConfigureRoute(definition.CreateGraph(seed));Run=session.Game.Route;if(!Run.BossUnlockByBattles)Run.ConfigureBossUnlock(definition==null?1:definition.adventureLayer);}
+   if(observed!=session.Game){observed=session.Game;int seed=session.seed==0?System.Environment.TickCount:session.seed;if(definition==null)session.Game.ConfigureGeneratedRoute(independentStacks:true);else if(definition.randomizeEachRun&&definition.seed==0)session.Game.ConfigureGeneratedRoute(definition.floors,definition.lanes,definition.independentStacks);else session.Game.ConfigureRoute(definition.CreateGraph(seed));Run=session.Game.Route;if(!Run.BossUnlockByBattles)Run.ConfigureBossUnlock(definition==null?1:definition.adventureLayer);}
    session.Game.EnsureBossRouteBattles();Run=session.Game.Route;
    if(session.Game.Phase==GamePhase.Map&&Run.ActiveId>=0&&(Run.Graph.Find(Run.ActiveId)?.kind==LevelKind.Combat||Run.Graph.Find(Run.ActiveId)?.kind==LevelKind.Elite||Run.Graph.Find(Run.ActiveId)?.kind==LevelKind.Boss))Run.Complete();
    if(session.Game.Phase==GamePhase.Lost)Run.Fail();

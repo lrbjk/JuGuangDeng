@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using UnityEngine;
 
 namespace RainbowLi
@@ -18,6 +18,7 @@ namespace RainbowLi
         private Vector2 deckScroll;
         private GUIStyle title, heading, body, muted, button, bigNumber;
         private Texture2D pixel;
+        [Header("界面字体")] public Font bodyFont, titleFont;
         private Font font;
         private bool ownsFont;
         private readonly Color ink = new Color(0.035f, 0.065f, 0.055f);
@@ -49,14 +50,14 @@ namespace RainbowLi
         {
             if (pixel != null) return;
             pixel = new Texture2D(1, 1); pixel.SetPixel(0, 0, Color.white); pixel.Apply();
-            font = Resources.Load<Font>("RainbowLiChinese");
+            font = bodyFont != null ? bodyFont : Resources.Load<Font>("RainbowLiChinese");
             ownsFont = font == null;
             if (ownsFont) font = Font.CreateDynamicFontFromOSFont(new[] { "Microsoft YaHei", "SimHei", "Noto Sans CJK SC", "Arial" }, 20);
             body = new GUIStyle(GUI.skin.label) { font = font, fontSize = 17, wordWrap = true };
             body.normal.textColor = new Color(0.88f, 0.9f, 0.93f);
             muted = new GUIStyle(body) { fontSize = 14 }; muted.normal.textColor = new Color(0.59f, 0.66f, 0.73f);
-            title = new GUIStyle(body) { fontSize = 32, fontStyle = FontStyle.Bold }; title.normal.textColor = gold;
-            heading = new GUIStyle(body) { fontSize = 20, fontStyle = FontStyle.Bold };
+            title = new GUIStyle(body) { font = titleFont != null ? titleFont : font, fontSize = 32, fontStyle = FontStyle.Normal }; title.normal.textColor = gold;
+            heading = new GUIStyle(body) { font = titleFont != null ? titleFont : font, fontSize = 20, fontStyle = FontStyle.Normal };
             bigNumber = new GUIStyle(title) { fontSize = 40, alignment = TextAnchor.MiddleCenter };
             button = new GUIStyle(GUI.skin.button) { font = font, fontSize = 16, wordWrap = true };
             button.normal.background = pixel; button.hover.background = pixel; button.active.background = pixel;

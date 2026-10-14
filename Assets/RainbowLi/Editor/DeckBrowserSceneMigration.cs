@@ -32,7 +32,7 @@ public static class DeckBrowserSceneMigration {
    var scroll=panel.gameObject.AddComponent<ScrollRect>();scroll.horizontal=false;scroll.vertical=true;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=32;
    var viewport=Rect("Viewport",panel,0,0,712,682);var background=viewport.gameObject.AddComponent<Image>();background.color=new Color(.055f,.12f,.11f);viewport.gameObject.AddComponent<RectMask2D>();
    var content=Rect("CardGrid",viewport,0,0,712,682);scroll.viewport=viewport;scroll.content=content;
-   var empty=Rect("Empty",viewport,20,20,672,80).gameObject.AddComponent<Text>();empty.font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");empty.fontSize=22;empty.color=new Color(.93f,.78f,.47f);empty.alignment=TextAnchor.MiddleCenter;empty.text="当前牌组暂无卡牌";empty.raycastTarget=false;
+   var empty=Rect("Empty",viewport,20,20,672,80).gameObject.AddComponent<Text>();empty.font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");empty.fontSize=22;empty.color=new Color(.93f,.78f,.47f);empty.alignment=TextAnchor.MiddleCenter;empty.text="当前牌组暂无卡牌";empty.raycastTarget=false;
    browser.content=content;browser.scroll=scroll;browser.emptyLabel=empty;browser.tooltip=hud.view.tooltip;browser.textPileScroll=hud.pilePanel.transform.Find("Scroll").gameObject;browser.cardPrefab=AssetDatabase.LoadAssetAtPath<GameObject>(Root+"/Prefabs/PokerCard.prefab").GetComponent<CardView>();hud.deckBrowser=browser;panel.gameObject.SetActive(false);
   }else hud.deckBrowser=existingBrowser.GetComponent<DeckBrowserView>();
   EditorUtility.SetDirty(hud);EditorUtility.SetDirty(button);EditorUtility.SetDirty(hud.deckCount);

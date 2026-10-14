@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Linq;
 namespace RainbowLi.UnityGame {
  [CreateAssetMenu(menuName="RainbowLi/敌人定义")]
@@ -25,6 +25,11 @@ namespace RainbowLi.UnityGame {
   public string contentEnemyId;
   public NormalEnemyRow CreateContentSnapshot()=>contentTable==null?null:contentTable.GetSnapshot(contentEnemyId);
   public NormalEnemyRow CreateConfiguredContentSnapshot()=>contentTable==null?null:contentTable.GetConfiguredSnapshot(contentEnemyId);
+  // Presentation looks up the current encounter ID, so saves never embed Unity asset references.
+  public Sprite GetPortrait(string enemyId,bool isBoss){
+   if(string.IsNullOrWhiteSpace(enemyId))return null;
+   return isBoss?bossTable?.rows?.FirstOrDefault(r=>r?.content!=null&&r.content.id==enemyId)?.content.portrait:contentTable?.rows?.FirstOrDefault(r=>r!=null&&r.id==enemyId)?.portrait;
+  }
   public void Apply(GameSetup setup){
    setup.EnemySkills.Clear();
    float baseWeight=skills==null?10:skills.Where(b=>b!=null&&!b.Special).Select(b=>Mathf.Max(.001f,b.Weight)).DefaultIfEmpty(10).Average();

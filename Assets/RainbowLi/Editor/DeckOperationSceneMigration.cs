@@ -14,7 +14,7 @@ namespace RainbowLi.EditorTools {
   public static void ApplyCurrent(){if(Application.isPlaying)return;var scene=EditorSceneManager.GetActiveScene();if(!scene.path.StartsWith(Root+"/",StringComparison.Ordinal))throw new InvalidOperationException("请打开 RainbowLi 场景。");Apply();EditorSceneManager.MarkSceneDirty(scene);}
   public static void Run(){var scene=EditorSceneManager.OpenScene(Root+"/Scenes/RainbowLiGame.unity");Apply();EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();}
   public static void Apply(){
-   var view=UnityEngine.Object.FindFirstObjectByType<GameView>();font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Resources/RainbowLiChinese.ttf");
+   var view=UnityEngine.Object.FindFirstObjectByType<GameView>();font=AssetDatabase.LoadAssetAtPath<Font>(Root+"/Fonts/SourceHanSansCN-Bold.otf");
    var deck=view.GetComponent<DeckOperationView>();if(deck==null)deck=view.gameObject.AddComponent<DeckOperationView>();deck.view=view;view.engravings.deck=deck;view.progression.deck=deck;view.battleHud.deckOperations=deck;view.serviceView.deck=deck;view.rewardView.deck=deck;
    var old=view.transform.Find("DeckManagementPanel");if(old!=null)UnityEngine.Object.DestroyImmediate(old.gameObject);
    var panel=Panel("DeckManagementPanel",view.transform,0,0,1920,1080,Surface);panel.GetComponent<Image>().raycastTarget=true;deck.panel=panel.gameObject;

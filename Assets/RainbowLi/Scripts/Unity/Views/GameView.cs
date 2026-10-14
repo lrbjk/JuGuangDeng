@@ -33,6 +33,7 @@ public sealed class GameView : MonoBehaviour {
   bool planning=g.Phase==GamePhase.Planning, fighting=planning||g.Phase==GamePhase.Resolving;
   bool holdBattle=cardMotion!=null&&cardMotion.KeepBattleVisible;
   mapPanel.SetActive(g.Phase==GamePhase.Map);battlePanel.SetActive(fighting||holdBattle);rewardPanel.SetActive(g.Phase==GamePhase.Reward&&!holdBattle);servicePanel.SetActive(g.Phase==GamePhase.Shop||g.Phase==GamePhase.Rest);endPanel.SetActive((g.Phase==GamePhase.Won||g.Phase==GamePhase.Lost)&&!holdBattle);
+  if(battleHud!=null&&battleHud.arenaSequenceView!=null)battleHud.arenaSequenceView.transform.parent.gameObject.SetActive((fighting||holdBattle)&&!servicePanel.activeSelf);
   if(!fighting&&tooltip!=null)tooltip.HideAll();
   battleView.Refresh(g);rewardView.Refresh(g);serviceView.Refresh(g);endView.Refresh(g);
   if(battleHud!=null)battleHud.Refresh(g);

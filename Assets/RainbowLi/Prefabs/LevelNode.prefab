@@ -66,7 +66,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 2774ce5e7ae94caf837623c127f8d0d7, type: 3}
+    m_Font: {fileID: 12800000, guid: 47296ca1f9a32cf46a69066f61f6eb9a, type: 3}
     m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 1
@@ -138,6 +138,11 @@ MonoBehaviour:
   button: {fileID: 7969550795663623922}
   label: {fileID: 1373172258633600174}
   face: {fileID: 8149877066919505663}
+  banner: {fileID: 0}
+  icon: {fileID: 0}
+  customIcon: {fileID: 0}
+  stateLabel: {fileID: 0}
+  map: {fileID: 0}
 --- !u!222 &1898435664163270696
 CanvasRenderer:
   m_ObjectHideFlags: 0

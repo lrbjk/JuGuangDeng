@@ -13,8 +13,9 @@ namespace RainbowLi.EditorTools {
   static int Integer(string value)=>int.Parse(value,NumberStyles.Integer,CultureInfo.InvariantCulture);
   static float Number(string value)=>float.Parse(value,NumberStyles.Float,CultureInfo.InvariantCulture);
   public static NormalEnemyRow[] PreserveUnchangedConfigurations(NormalEnemyRow[] imported,NormalEnemyRow[] existing){
-   return imported.Select(r=>{if(r.configured)return r;var prior=(existing??Array.Empty<NormalEnemyRow>()).SingleOrDefault(p=>p!=null&&p.sheetName==r.sheetName);return prior!=null&&prior.configured&&Grid(prior).SelectMany(c=>c.Select(v=>v??"")).SequenceEqual(Grid(r).SelectMany(c=>c.Select(v=>v??"")))?prior.Copy():r;}).ToArray();
+   return imported.Select(r=>{var prior=(existing??Array.Empty<NormalEnemyRow>()).SingleOrDefault(p=>p!=null&&p.sheetName==r.sheetName);var result=!r.configured&&prior!=null&&prior.configured&&Grid(prior).SelectMany(c=>c.Select(v=>v??"")).SequenceEqual(Grid(r).SelectMany(c=>c.Select(v=>v??"")))?prior.Copy():r;if(prior!=null)result.portrait=prior.portrait;else result.portrait=null;return result;}).ToArray();
   }
+  static string ExportConfiguration(NormalEnemyRow row){var copy=row.Copy();copy.portrait=null;return UnityEngine.JsonUtility.ToJson(copy);}
   public static NormalEnemyRow[] Read(string path){
    const string configSheet="_数值配置";
    string[] sheets;
@@ -66,7 +67,7 @@ namespace RainbowLi.EditorTools {
    var grids=rows.Select(Grid).ToArray();string temp=Path.Combine(Path.GetDirectoryName(Path.GetFullPath(path)),Guid.NewGuid()+".xlsx");
    if(rows.Any(r=>r.sheetName=="_数值配置"))throw new FormatException("_数值配置是保留工作表名称。");
    foreach(var r in rows.Where(r=>r.configured)){var issues=EnemyConfiguredContent.Check(r);if(issues.Length>0)throw new FormatException(string.Join("\n",issues));}
-   try{CardTableWorkbook.WriteSheets(temp,rows.Select(r=>r.sheetName).Concat(new[]{"_数值配置"}).ToArray(),grids.Select(g=>g[0]).Concat(new[]{new[]{"工作表名","版本","配置JSON（通过Unity编辑器编辑）"}}).ToArray(),grids.Select(g=>g.Skip(1).ToArray()).Concat(new[]{rows.Select(r=>new[]{r.sheetName,"1",UnityEngine.JsonUtility.ToJson(r)}).ToArray()}).ToArray());File.Copy(temp,path,true);}finally{if(File.Exists(temp))File.Delete(temp);}
+   try{CardTableWorkbook.WriteSheets(temp,rows.Select(r=>r.sheetName).Concat(new[]{"_数值配置"}).ToArray(),grids.Select(g=>g[0]).Concat(new[]{new[]{"工作表名","版本","配置JSON（通过Unity编辑器编辑）"}}).ToArray(),grids.Select(g=>g.Skip(1).ToArray()).Concat(new[]{rows.Select(r=>new[]{r.sheetName,"1",ExportConfiguration(r)}).ToArray()}).ToArray());File.Copy(temp,path,true);}finally{if(File.Exists(temp))File.Delete(temp);}
   }
  }
 }
