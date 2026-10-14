@@ -29,6 +29,7 @@ namespace RainbowLi.UnityGame {
   int pendingNumber;
   string pendingState,pendingDetail;
   bool initialized,executing;
+  Button skipReward;
   public DeckOperation Operation {get;private set;}
   public bool IsOpen=>panel!=null&&panel.activeInHierarchy&&openedGame==view.session.Game;
   public bool HasPending=>confirmation!=null&&confirmation.activeSelf&&pendingGame!=null;
@@ -36,7 +37,7 @@ namespace RainbowLi.UnityGame {
   void OnEnable(){view.session.Changed+=Refresh;}
   void OnDisable(){view.session.Changed-=Refresh;Close();}
   void Update(){if(IsOpen){int seconds=Mathf.Max(0,Mathf.FloorToInt(view.session.ElapsedSeconds));elapsedTime.text="已用时间  "+(seconds/3600).ToString("00")+":"+(seconds/60%60).ToString("00")+":"+(seconds%60).ToString("00");}}
-  public void InitializeControls(){if(initialized)return;initialized=true;exit.onClick.AddListener(Close);confirm.onClick.AddListener(Confirm);cancel.onClick.AddListener(Cancel);generate.onClick.AddListener(RequestGeneration);for(int i=0;i<operationButtons.Length;i++){var mode=(DeckOperation)i;operationButtons[i].onClick.AddListener(()=>Open(mode));}}
+  public void InitializeControls(){if(initialized)return;initialized=true;exit.onClick.AddListener(Close);confirm.onClick.AddListener(Confirm);cancel.onClick.AddListener(Cancel);generate.onClick.AddListener(RequestGeneration);skipReward=Instantiate(generate,generate.transform.parent);skipReward.name="SkipReward";skipReward.onClick=new Button.ButtonClickedEvent();skipReward.onClick.AddListener(SkipCurrentReward);skipReward.GetComponentInChildren<Text>().text="跳过本次卡牌奖励";skipReward.gameObject.SetActive(false);for(int i=0;i<operationButtons.Length;i++){var mode=(DeckOperation)i;operationButtons[i].onClick.AddListener(()=>Open(mode));}}
   public void Open(DeckOperation operation){
    var game=view.session.Game;if(game==null||!Allowed(operation,game.Phase))return;
    InitializeControls();view.GetComponent<SequenceEditorView>()?.Close();view.battleHud.ClosePile();Cancel();openedGame=game;openedPhase=game.Phase;Operation=operation;
@@ -47,6 +48,7 @@ namespace RainbowLi.UnityGame {
   public void OpenBuy(int number){if(number<1||number>6)return;Open(DeckOperation.Buy);if(IsOpen&&Operation==DeckOperation.Buy)SelectNumber(number);}
   public void OpenGenerate(){Open(DeckOperation.Generate);if(IsOpen&&Operation==DeckOperation.Generate)RequestGeneration();}
   public void Close(){Cancel();if(panel!=null)panel.SetActive(false);openedGame=null;if(view!=null&&view.tooltip!=null)view.tooltip.HideAll();}
+  public void SkipCurrentReward(){if(view.session.Game?.SkipReward()!=true)return;Cancel();view.session.Notify();if(view.session.Game.Phase==GamePhase.Reward){openedGame=null;Open(DeckOperation.Reward);}else Close();}
   public void Cancel(){if(confirmation!=null)confirmation.SetActive(false);pendingGame=null;pendingCard=null;pendingState=null;pendingDetail=null;pendingNumber=0;}
   public void Select(Card card){if(!IsOpen||Operation==DeckOperation.Generate||card==null||!displayed.Contains(card))return;BeginConfirmation(card,0);}
   public void OpenRewards(){Open(DeckOperation.Reward);}
@@ -75,7 +77,7 @@ namespace RainbowLi.UnityGame {
     else if(operation==DeckOperation.Remove){int before=game.Deck.Count;game.RestRemove(card);changed=game.Deck.Count<before;}
     else if(operation==DeckOperation.Buy)changed=game.BuyCard(number);
     else if(operation==DeckOperation.Generate){int before=game.Deck.Count;game.RestGenerate();changed=game.Deck.Count>before;}
-    else if(operation==DeckOperation.Reward){int index=game.Rewards.IndexOf(card);int before=game.Deck.Count;game.TakeReward(index);changed=game.Deck.Count>before;if(changed&&view.progression.levels!=null)view.progression.levels.CompleteNode();}
+    else if(operation==DeckOperation.Reward){int index=game.Rewards.IndexOf(card);int before=game.Deck.Count;game.TakeReward(index);changed=game.Deck.Count>before;if(changed&&view.progression.levels!=null)view.progression.levels.CompleteNode();if(changed&&game.Phase==GamePhase.Reward)pendingState=null;}
     view.session.Notify();if(IsOpen)result.text=changed?Name(operation)+"完成":"操作未完成，请重新选择";
    }finally{executing=false;}
   }
@@ -101,6 +103,7 @@ namespace RainbowLi.UnityGame {
    instruction.text=IsPile(Operation)?"点击卡牌查看详情。\n此列表仅供查看，不改变抽牌顺序。":ReadOnly(Operation)?"点击卡牌查看详情。\n在商店或休息中选择操作。":"选择卡牌后再次确认。\n取消不会消耗金币或服务。";
    for(int i=0;i<operationButtons.Length;i++){var mode=(DeckOperation)i;operationButtons[i].gameObject.SetActive(!IsPile(Operation)&&Allowed(mode,game.Phase));operationButtons[i].interactable=mode!=Operation;}
    generate.gameObject.SetActive(Operation==DeckOperation.Generate);generate.interactable=!game.ServiceUsed;
+   skipReward.gameObject.SetActive(Operation==DeckOperation.Reward&&game.CanSkipReward);
    displayed.Clear();if(Operation==DeckOperation.Reward)displayed.AddRange(game.Rewards);else if(Operation!=DeckOperation.Buy)displayed.AddRange(Source(game,Operation).OrderBy(c=>c.Number));
    int total=Operation==DeckOperation.Buy?6:displayed.Count;while(cards.Count<total){var card=Instantiate(cardPrefab,content);card.name="DeckChoice_"+cards.Count;cards.Add(card);}
    emptyLabel.text=IsPile(Operation)?Name(Operation)+"暂无卡牌":"暂无卡牌";emptyLabel.gameObject.SetActive(total==0);int count=Mathf.Max(1,columns);float scale=Mathf.Clamp((scroll.viewport.rect.width-padding*2-gap*(count-1))/(130*count),.1f,maximumCardScale);float width=130*scale,height=225*scale;int rowCount=(total+count-1)/count;

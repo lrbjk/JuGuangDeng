@@ -8,7 +8,7 @@ namespace RainbowLi.UnityGame {
   public int levelsPerStack=10;
   [Min(0),Tooltip("每次卡牌效果增加的数值。攻击、防御、恢复和状态层数均增加，牌序效果不受影响。")]
   public int amountPerStack=1;
-  public int CompletedLevels(ContainmentGame game)=>game?.Route?.Completed.Count??0;
+  public int CompletedLevels(ContainmentGame game)=>game?.CompletedRoomCount??0;
   public int Count(ContainmentGame game)=>!enableGrowth?0:CompletedLevels(game)/Mathf.Max(1,levelsPerStack);
   public int Amount(ContainmentGame game)=>CombatResolver.Clamp((long)Count(game)*Mathf.Max(0,amountPerStack));
   public string Description(ContainmentGame game){

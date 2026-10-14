@@ -36,6 +36,22 @@ public static class EffectPoolRuntimeChecks {
   Check(starter.Deck.Count==18&&starter.Deck.Select(c=>c.Spec.Code).SequenceEqual(sameStarter.Deck.Select(c=>c.Spec.Code)),"new table lottery unaffected by legacy repeat penalty");
   for(int number=1;number<=6;number++)Check(starter.Deck.Count(c=>c.Number==number)==3,"starter keeps three copies of each number");
   Check(EffectPoolNames.Contains("持续状态效果池,临时状态效果池","持续效果池")&&EffectPoolNames.Contains("临时状态效果池","临时效果池"),"pool aliases");
+  var limited=Setup();limited.CardEffects.Add(new CardEffectSpec {Code="ordinary",Pools="普通池",Weight=1});
+  foreach(var modifier in new[]{CardEffect.AddNumber,CardEffect.SubtractNumber})limited.CardEffects.Add(new CardEffectSpec {Code=modifier.ToString(),Effect=modifier,Pools="数字池",Min=1,Max=2,Weight=1});
+  limited.CardEffectPools.Add(new EffectPoolWeight {Name="普通池",Weight=1});limited.CardEffectPools.Add(new EffectPoolWeight {Name="数字池",Weight=10});
+  var limitedGame=new ContainmentGame(71,limited);int one=0,two=0;
+  for(int i=0;i<3000;i++){
+   var c=limitedGame.GenerateCard();if(c.Effect==CardEffect.AddNumber||c.Effect==CardEffect.SubtractNumber){
+    Check(c.EffectAmount==1?c.Number>=2&&c.Number<=4:c.EffectAmount==2&&c.Number==3,"modifier amount restricts original card number");
+    if(c.EffectAmount==1)one++;else two++;
+   }
+   for(int number=1;number<=6;number++){
+    c=limitedGame.GenerateCard(number);Check(c.Number==number,"restricted lottery retains requested number");
+    if(c.Effect==CardEffect.AddNumber||c.Effect==CardEffect.SubtractNumber)Check(c.EffectAmount==1?number>=2&&number<=4:c.EffectAmount==2&&number==3,"directed modifier excludes incompatible amount");
+   }
+  }
+  Check(one>0&&two>0,"both modifier amounts remain available");limited.RandomStartingDeck=true;
+  foreach(var c in new ContainmentGame(19,limited).Deck)if(c.Effect==CardEffect.AddNumber||c.Effect==CardEffect.SubtractNumber)Check(c.EffectAmount==1?c.Number>=2&&c.Number<=4:c.EffectAmount==2&&c.Number==3,"starter modifier number limits");
   var battle=new ContainmentGame(5,Setup());battle.StartBattle();var method=typeof(ContainmentGame).GetMethod("ApplyAdvancedRule",BindingFlags.NonPublic|BindingFlags.Instance);
   foreach(bool enemy in new[]{false,true})foreach(var effect in new[]{RuleEffect.IronWall,RuleEffect.Regeneration}){
    method.Invoke(battle,new object[]{new BattleAction {Enemy=enemy,Rule=ContainmentGame.Rule("status",new[]{1,2,3},effect,3)}});

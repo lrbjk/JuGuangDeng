@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 namespace RainbowLi {
@@ -7,7 +7,7 @@ namespace RainbowLi {
   private SequenceRule RollRule(SequenceRule rule){if(rule.RollX){rule.BaseX=random.Next(rule.MinX,rule.MaxX+1);rule.Value=CombatResolver.Clamp((long)rule.BaseX*rule.Multiplier);rule.RollX=false;}if(rule.AdditionalEffect?.RollX==true){var e=rule.AdditionalEffect;e.BaseX=random.Next(e.MinX,e.MaxX+1);e.Value=CombatResolver.Clamp((long)e.BaseX*e.Multiplier);e.RollX=false;}return rule;}
   private Card RollCard(Card card){var e=card.Engraving;if(e?.RollX==true){e.BaseX=random.Next(e.MinX,e.MaxX+1);e.RollX=false;}return card;}
   private void QueueLimited(IEnumerable<BattleAction> actions){pending.InsertRange(0,actions.Take(Math.Max(0,ChainLimit-processedActions-pending.Count)));}
-  private BattleAction EffectReplay(BattleAction source,int bonus=0)=>new BattleAction {Card=source.Card,OrderedEffects=source.OrderedEffects==null?new List<CardEffectInstance>():source.OrderedEffects.Select(e=>e.Copy()).ToList(),Enemy=source.Enemy,Effect=source.Effect,EffectSpec=source.EffectSpec,Value=source.Value,Number=source.Number,SkillName=source.SkillName,EffectOnly=true,IsRepeat=true,SourceAction=source.SourceAction??source,EffectBonus=CombatResolver.Clamp((long)source.EffectBonus+bonus),SequenceTrigger=settlingAction?.SequenceTrigger??source.SequenceTrigger};
+  private BattleAction EffectReplay(BattleAction source,int bonus=0)=>new BattleAction {Card=source.Card,Enemy=source.Enemy,Effect=source.Effect,EffectSpec=source.EffectSpec,Value=source.Value,Number=source.Number,SkillName=source.SkillName,EffectOnly=true,IsRepeat=true,SourceAction=source.SourceAction??source,EffectBonus=CombatResolver.Clamp((long)source.EffectBonus+bonus),SequenceTrigger=settlingAction?.SequenceTrigger??source.SequenceTrigger};
   private void PrepareEngraving(BattleAction action){
    var card=action.Card;var engraving=card?.Engraving;if(card==null||action.EffectOnly||action.IsRepeat)return;
    action.EffectBonus=CombatResolver.Clamp((long)card.PermanentGrowth+card.BattleCharge);
@@ -28,7 +28,7 @@ namespace RainbowLi {
   }
   private void AddNumberEntry(BattleAction action,int number){
    var card=action.Card;var e=card?.Engraving;
-   var entry=new NumberEntry {Number=number,Enemy=action.Enemy,Action=action};
+   var entry=new NumberEntry {Number=number,Enemy=action.Enemy,Action=action,Candidates=action.NumberCandidates==null?null:(int[])action.NumberCandidates.Clone()};
    if(e?.Effect==EngravingEffect.Wildcard)entry.Candidates=new[]{1,2,3,4,5,6};
    else if(e?.Effect==EngravingEffect.ExtraNumber)entry.Candidates=new[]{number,e.Value};
    int index=Timeline.IndexOf(action.SourceAction??action);

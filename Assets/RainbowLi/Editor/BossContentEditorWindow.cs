@@ -11,7 +11,7 @@ namespace RainbowLi.EditorTools {
   public static void Open(BossContentTable asset){Open();var w=GetWindow<BossContentEditorWindow>();w.table=asset;w.pending=null;w.selected=0;}
   void Guard(Action action){try{action();}catch(Exception e){message=e.Message;}}
   void OnGUI(){var next=(BossContentTable)EditorGUILayout.ObjectField("BOSS内容表",table,typeof(BossContentTable),false);if(next!=table){table=next;selected=0;pending=null;}
-   EditorGUILayout.HelpBox("完整BOSS策划配置：阶段替换被动、固定回合触发、牌序次数条件、卡牌出现时优先生效。配置与旧战斗入口独立，运行时需接入新快照接口。",MessageType.Info);
+   EditorGUILayout.HelpBox("绑定到EnemyDefinition后，BOSS按出没层数进入战斗。阶段替换被动、固定回合触发、牌序次数条件、锁定位置与卡牌出现时优先生效均由运行时执行。保存后重新开始游戏生效。",MessageType.Info);
    using(new EditorGUILayout.HorizontalScope()){
     if(GUILayout.Button("新建BOSS表")){var path=EditorUtility.SaveFilePanelInProject("新建BOSS表","BossTable","asset","保存到RainbowLi","Assets/RainbowLi/Data");if(path.StartsWith("Assets/RainbowLi/",StringComparison.Ordinal)){table=CreateInstance<BossContentTable>();AssetDatabase.CreateAsset(table,path);AssetDatabase.SaveAssets();selected=0;pending=null;}}
     GUI.enabled=table!=null;

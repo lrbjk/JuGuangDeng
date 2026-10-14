@@ -1,29 +1,30 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 namespace RainbowLi
 {
     public sealed partial class ContainmentGame
     {
-        private Card FromSpec(CardEffectSpec spec,int number)=>new Card {Number=number,Effect=spec.Effect,Spec=spec.Copy(),EffectAmount=random.Next(spec.Min,spec.Max+1),AttackBase=BaseAttack,BaseBonus=0,UpgradeBonus=spec.Effect==CardEffect.DamageCap||spec.Effect==CardEffect.Reciprocity||spec.Effect==CardEffect.Disorder?0:2};
+        private static bool ModifiesNumber(CardEffect effect)=>effect==CardEffect.AddNumber||effect==CardEffect.SubtractNumber;
+        private static int MaximumNumberChange(int number)=>Math.Min(number-1,5-number);
+        private static bool SupportsCardNumber(CardEffectSpec spec,int number)=>!ModifiesNumber(spec.Effect)||spec.Min>=1&&spec.Min<=Math.Min(2,number==0?2:MaximumNumberChange(number));
+        private Card FromSpec(CardEffectSpec spec,int number){
+            if(!SupportsCardNumber(spec,number))throw new InvalidOperationException("Card effect is incompatible with original number: "+number);
+            int maximum=ModifiesNumber(spec.Effect)?Math.Min(spec.Max,number==0?2:MaximumNumberChange(number)):spec.Max;
+            int amount=random.Next(spec.Min,maximum+1);
+            if(number==0)number=ModifiesNumber(spec.Effect)?random.Next(amount+1,6-amount):random.Next(1,7);
+            return new Card {Number=number,Effect=spec.Effect,Spec=spec.Copy(),EffectAmount=amount,AttackBase=BaseAttack,BaseBonus=0,UpgradeBonus=spec.Effect==CardEffect.DamageCap||spec.Effect==CardEffect.Reciprocity||spec.Effect==CardEffect.Disorder?0:2};
+        }
         private void GenerateInitialDeck(){
             if(setup!=null&&!setup.RandomStartingDeck&&setup.InitialDeck.Count>0)return;
-            if(setup!=null&&setup.CardEffectGroups.Count>0){
-                var groups=setup.CardEffectGroups.Where(g=>g.Primary.StartingEnabled&&ValidWeight(g.Primary.Weight)).ToArray();
-                if(groups.Length==0)throw new ArgumentException("起始牌效果组池为空。");
-                for(int round=0;round<3;round++){var weights=groups.Select(g=>(double)g.Primary.Weight).ToArray();for(int number=1;number<=6;number++){
-                    if(setup.CardEffectPools.Count>0)Deck.Add(DrawCardGroup(true).CreateCard(number,random,BaseAttack));
-                    else {int at=WeightedChoice(weights);Deck.Add(groups[at].CreateCard(number,random,BaseAttack));weights[at]*=Math.Max(.01,Math.Min(1,setup.RepeatWeightMultiplier));}
-                }}return;
-            }
             if(setup!=null&&setup.CardEffects.Count>0){
                 if(setup.CardEffectPools.Count>0){
-                    for(int group=0;group<3;group++)for(int number=1;number<=6;number++)Deck.Add(FromSpec(DrawCardEffect(true),number));
+                    for(int group=0;group<3;group++)for(int number=1;number<=6;number++)Deck.Add(FromSpec(DrawCardEffect(true,number),number));
                     return;
                 }
                 var pool=setup.CardEffects.Where(e=>e.StartingEnabled&&e.Weight>0&&!float.IsNaN(e.Weight)&&!float.IsInfinity(e.Weight)).ToArray();
                 if(pool.Length==0)throw new ArgumentException("起始牌效果池至少需要启用一种效果");
-                for(int group=0;group<3;group++){var weights=pool.Select(e=>(double)e.Weight).ToArray();for(int number=1;number<=6;number++){int at=WeightedChoice(weights);Deck.Add(FromSpec(pool[at],number));weights[at]*=Math.Max(.01,Math.Min(1,setup.RepeatWeightMultiplier));}}
+                for(int group=0;group<3;group++){var weights=pool.Select(e=>(double)e.Weight).ToArray();for(int number=1;number<=6;number++){int at=WeightedChoice(pool.Select((e,i)=>SupportsCardNumber(e,number)?weights[i]:0).ToArray());Deck.Add(FromSpec(pool[at],number));weights[at]*=Math.Max(.01,Math.Min(1,setup.RepeatWeightMultiplier));}}
                 return;
             }
             for(int group=0;group<3;group++){
@@ -44,8 +45,7 @@ namespace RainbowLi
 
         public Card GenerateCard(int number = 0)
         {
-            if(setup!=null&&setup.CardEffectGroups.Count>0)return DrawCardGroup(false).CreateCard(number==0?random.Next(1,7):number,random,BaseAttack);
-            if(setup!=null&&setup.CardEffects.Count>0)return FromSpec(DrawCardEffect(false),number==0?random.Next(1,7):number);
+            if(setup!=null&&setup.CardEffects.Count>0)return FromSpec(DrawCardEffect(false,number),number);
             if (setup != null && setup.CardPool.Count > 0)
             {
                 var candidates = setup.CardPool.Where(c => number == 0 || c.Number == number).ToList();
@@ -54,14 +54,10 @@ namespace RainbowLi
             return new Card { AttackBase=BaseAttack, Number = number == 0 ? random.Next(1, 7) : number, Effect = (CardEffect)random.Next(0, 3) };
         }
 
-        private CardEffectGroup DrawCardGroup(bool starting){
-            string pool=DrawPool(setup.CardEffectPools);var groups=setup.CardEffectGroups.Where(g=>(!starting||g.Primary.StartingEnabled)&&ValidWeight(g.Primary.Weight)&&g.Primary.InPool(pool)).ToArray();
-            if(groups.Length==0)throw new InvalidOperationException("Empty card effect group pool: "+pool);
-            return groups[WeightedChoice(groups.Select(g=>(double)g.Primary.Weight).ToArray())];
-        }
-        private CardEffectSpec DrawCardEffect(bool starting){
-            var candidates=setup.CardEffects.Where(e=>(!starting||e.StartingEnabled)&&ValidWeight(e.Weight)).ToArray();
-            string pool=DrawPool(setup.CardEffectPools);
+        private CardEffectSpec DrawCardEffect(bool starting,int number=0){
+            var candidates=setup.CardEffects.Where(e=>(!starting||e.StartingEnabled)&&ValidWeight(e.Weight)&&SupportsCardNumber(e,number)).ToArray();
+            string pool=DrawPool(setup.CardEffectPools.Where(p=>p!=null&&candidates.Any(e=>e.InPool(p.Name))).ToList());
+            if(setup.CardEffectPools.Count>0&&pool==null)throw new InvalidOperationException("No card effect pool supports original number: "+number);
             candidates=candidates.Where(e=>e.InPool(pool)).ToArray();
             if(candidates.Length==0)throw new InvalidOperationException("Empty card effect pool: "+pool);
             return candidates[WeightedChoice(candidates.Select(e=>(double)e.Weight).ToArray())];
@@ -92,6 +88,7 @@ namespace RainbowLi
 
         public bool InsertCard(Card card, int index)
         {
+            if(Timeline.Select((a,i)=>new{a,i}).Any(p=>p.a.LockedPosition&&p.i>=index)){Message="此BOSS阶段有锁定的行动位置。";return false;}
             if (index < 0 || index > Timeline.Count || !AddCard(card)) return false;
             var action = Timeline[Timeline.Count - 1];
             Timeline.RemoveAt(Timeline.Count - 1); Timeline.Insert(index, action);
@@ -102,12 +99,13 @@ namespace RainbowLi
         {
             int target = index + offset;
             if (Phase != GamePhase.Planning || index < 0 || index >= Timeline.Count || target < 0 || target >= Timeline.Count) return;
+            if(Timeline.Skip(Math.Min(index,target)).Take(Math.Abs(target-index)+1).Any(a=>a.LockedPosition)){Message="此BOSS阶段有锁定的行动位置。";return;}
             var action = Timeline[index]; Timeline.RemoveAt(index); Timeline.Insert(target, action);
         }
 
         public void RemoveAction(int index)
         {
-            if (Phase == GamePhase.Planning && index >= 0 && index < Timeline.Count && Timeline[index].Card != null) Timeline.RemoveAt(index);
+            if (Phase == GamePhase.Planning && index >= 0 && index < Timeline.Count && Timeline[index].Card != null&&!Timeline.Skip(index).Any(a=>a.LockedPosition)) Timeline.RemoveAt(index);
         }
     }
 }

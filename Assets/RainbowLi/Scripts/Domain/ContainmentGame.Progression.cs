@@ -10,6 +10,7 @@ namespace RainbowLi
 
         private void FinishBattle()
         {
+            if(Enemy.Encounter!=null){FinishContentBattle();return;}
             pending.Clear(); Coins += Boss ? 50 : Elite ? EliteGold : 25; Victories++; RestAvailable = true;
             if (Boss) { Phase = GamePhase.Won; Message = "核心实体已收容，原型通关！"; return; }
             Rewards.Clear(); for (int i = 0; i < (setup?.RewardCount??3); i++) Rewards.Add(GenerateCard());
@@ -25,6 +26,7 @@ namespace RainbowLi
         public void TakeReward(int index)
         {
             if (Phase != GamePhase.Reward || index < 0 || index >= Rewards.Count) return;
+            if(rewardBatches.Count>0){Deck.Add(Rewards[index]);rewardBatches.RemoveAt(0);ShowNextContentReward();return;}
             Deck.Add(Rewards[index]); Rewards.Clear(); Phase = GamePhase.Map; Message = "奖励已加入牌组，继续选择任务。";
         }
 

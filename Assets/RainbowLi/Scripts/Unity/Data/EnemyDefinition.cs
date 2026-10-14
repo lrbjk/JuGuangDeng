@@ -15,12 +15,12 @@ namespace RainbowLi.UnityGame {
   public ConditionalRuleDefinition[] conditionalSequences;
   public EnemyCardTable cardTable;
   [Header("BOSS策划表（新运行时接入入口）")]
-  [Tooltip("完整阶段、被动与技能配置，通过CreateBossContentSnapshot读取；旧Apply不执行新表。")]
+  [Tooltip("运行时BOSS来源。按出没层数抽取；填写bossId可指定一种BOSS。")]
   public BossContentTable bossTable;
   public string bossId;
   public BossContentRow CreateBossContentSnapshot()=>bossTable==null?null:bossTable.GetConfiguredSnapshot(bossId);
   [Header("普通敌人策划表（新运行时接入入口）")]
-  [Tooltip("原Excel完整配置；当前Apply仍使用旧配置。完整结算由运行时读取CreateContentSnapshot后实现。")]
+  [Tooltip("运行时普通敌人来源。留空contentEnemyId时随机抽取启用且已配置的敌人。")]
   public NormalEnemyTable contentTable;
   public string contentEnemyId;
   public NormalEnemyRow CreateContentSnapshot()=>contentTable==null?null:contentTable.GetSnapshot(contentEnemyId);
@@ -41,6 +41,9 @@ namespace RainbowLi.UnityGame {
    setup.GuardSlot=shieldSlot;setup.GuardInterval=shieldEveryRounds;setup.EnemyNumbers=actionNumbers==null?null:(int[])actionNumbers.Clone();
    if(sequence!=null)setup.EnemyRule=sequence.CreateRule();
    cardTable?.Apply(setup);
+   setup.NormalEncounters.Clear();setup.BossEncounters.Clear();
+   if(contentTable!=null){contentTable.ValidateConfiguredTable();foreach(var row in contentTable.rows.Where(r=>r.enabled&&(string.IsNullOrWhiteSpace(contentEnemyId)||r.id==contentEnemyId)))setup.NormalEncounters.Add(EnemyEncounterAdapter.Normal(row));if(setup.NormalEncounters.Count==0)throw new System.InvalidOperationException("普通敌人表中没有符合所选ID的启用敌人。");}
+   if(bossTable!=null){bossTable.ValidateTable(true);foreach(var row in bossTable.rows.Where(r=>r.content.enabled&&(string.IsNullOrWhiteSpace(bossId)||r.content.id==bossId)))setup.BossEncounters.Add(EnemyEncounterAdapter.Boss(row));if(setup.BossEncounters.Count==0)throw new System.InvalidOperationException("BOSS表中没有符合所选ID的启用BOSS。");}
   }
  }
 }

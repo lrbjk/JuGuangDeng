@@ -8,14 +8,15 @@ namespace RainbowLi
         public void StartBattle(bool boss = false, bool elite=false, bool routeBoss=false)
         {
             if (Phase != GamePhase.Map || boss && (Route?.BossUnlockByBattles==true?!Route.CanStartBossBattle:!routeBoss&&Victories<6)) return;
+            var encounter=ChooseEncounter(boss);
             BeginSettlement(BattleEventTiming.EncounterStart);Round=0;
             foreach(var card in Deck)card.ResetBattleState();
             Boss = boss;ClearStatuses(false);ClearStatuses(true);
-            EnemyMaxHealth = setup == null ? (boss ? 110 : 36 + Victories * 12) : (boss ? setup.BossHealth : setup.EnemyHealth + Victories * setup.EnemyHealthGrowth);
+            EnemyMaxHealth = encounter?.Health??(setup == null ? (boss ? 110 : 36 + Victories * 12) : (boss ? setup.BossHealth : setup.EnemyHealth + Victories * setup.EnemyHealthGrowth));
             ResetRoundState(true);Enemy.StartEncounter(EnemyMaxHealth,boss,elite);
             if(setup!=null)Enemy.ConditionalRules.AddRange(setup.EnemyConditionalRules.Select(c=>new ConditionalSequence {Condition=c.Condition,Threshold=c.Threshold,Rule=RollRule(CloneRule(c.Rule))}));
             EnemyCardEffectBonus=setup!=null&&setup.EnemyGrowthEnabled
-                ?CombatResolver.Clamp((long)((Route?.Completed.Count??0)/Math.Max(1,setup.EnemyGrowthLevelInterval))*Math.Max(0,setup.EnemyGrowthAmount)):0;
+                ?CombatResolver.Clamp((long)(CompletedRoomCount/Math.Max(1,setup.EnemyGrowthLevelInterval))*Math.Max(0,setup.EnemyGrowthAmount)):0;
             Round = 0; ArenaIndex = 0; ArenaTriggerCount = 0; rotateArena = false;
             ArenaRules.Clear();
             for (int i = 0; i < 3; i++)
@@ -25,6 +26,7 @@ namespace RainbowLi
             EnemyRule = Rule("实体 / 共振", boss ? new[] { 6, 6, 6 } : new[] { 6, 5, 4 }, RuleEffect.Damage, boss ? 12 : 6);
             if (setup != null && setup.EnemyRule != null) EnemyRule = RollRule(CloneRule(setup.EnemyRule));
             if(setup?.RandomEnemySequenceEffects==true)SetRuleEffect(EnemyRule,DrawSequenceEffect(setup.EnemySequencePool));
+            if(encounter!=null)InitializeEncounter(encounter);
             drawPile.Clear(); discard.Clear(); Hand.Clear(); pending.Clear();
             drawPile.AddRange(Deck); Shuffle(drawPile);
             History.Clear(); Log("收容开始：" + EnemyName);
@@ -41,8 +43,11 @@ namespace RainbowLi
             foreach(var r in Enemy.ActiveRules)r.Triggers=0;
             NumberStream.Clear();NumberEntries.Clear();positionBonuses.Clear();roundDiscard.Clear();inheritedEffects.Clear();randomizeFollowing=false; Timeline.Clear(); pending.Clear();
             LastResolvedAction = null; LastAction = "等待行动";
+            if(Enemy.Encounter!=null){Phase=GamePhase.Resolving;BeginContentRound();if(Phase!=GamePhase.Resolving||Health<=0||EnemyHealth<=0)return;}
             DrawRoundHand();
-            Timeline.AddRange(Enemy.GenerateActions(random,Round,setup));
+            Timeline.AddRange(Enemy.Encounter==null?Enemy.GenerateActions(random,Round,setup):GenerateContentActions());
+            if(Enemy.Encounter!=null)foreach(var action in Timeline.ToArray())ApplyAppearance(action);
+            if(Enemy.Encounter!=null&&(Health<=0||EnemyHealth<=0))return;
             requiredEnemyActions.Clear();requiredEnemyActions.AddRange(Timeline);
             Phase = GamePhase.Planning;
             Message = "点击手牌追加行动，再用箭头调整敌我顺序。玩家最多 "+PlayerActionLimit+" 张；实体行动必须全部执行。";
@@ -68,20 +73,24 @@ namespace RainbowLi
             var action=pending[0];pending.RemoveAt(0);LastResolvedAction=action;LastAction=action.Label;Log(LastAction);
             settlingAction=action;
             if(!action.IsStatusTick&&++processedActions>4096){pending.Clear();Message="本回合连锁达到 4096 次，结束剩余连锁。";Log(Message);return false;}
+            if(action.ContentCompletion){CompleteContentAction(action.SourceAction);pending.Budget=Math.Max(0,ChainLimit-processedActions);CheckBattleEnd();return true;}
             if(action.IsStatusTick){ApplyStatusTick(action);ActivateEnemyConditions();CheckBattleEnd();return true;}
             bool behavior=!action.IsNumberOnly;
+            int priorContentRepeat=Enemy.Encounter?.RepeatFollowing??0;
+            action.PriorContentRepeat=priorContentRepeat;
             if(behavior&&!action.EffectOnly&&!BleedBefore(action)){CheckBattleEnd();return true;}
-            if(action.Rule!=null){ApplyRule(action);AfterBehavior(action);ActivateEnemyConditions();}
+            if(action.Rule!=null){ApplyRule(action);if(!action.ContentDeferred)AfterBehavior(action);ActivateEnemyConditions();}
             else{
                 if(behavior){PrepareEngraving(action);if(!action.Enemy&&!action.EffectOnly&&inheritedEffects.Count>0){var inherited=inheritedEffects.ToArray();inheritedEffects.Clear();foreach(var effect in inherited){if(Health<=0||EnemyHealth<=0||++processedActions>ChainLimit)break;settlingAction=effect;ApplyCardEffect(effect);}settlingAction=action;}if(Health>0&&EnemyHealth>0)ApplyCardEffect(action);if(!action.EffectOnly){FinishCardEngraving(action);}}
                 ActivateEnemyConditions();
-                if(Health>0&&EnemyHealth>0){if(behavior&&!action.EffectOnly)AfterBehavior(action);if(!action.EffectOnly)FillNumber(action);}
+                if(Health>0&&EnemyHealth>0&&!action.ContentDeferred){if(behavior&&!action.EffectOnly)AfterBehavior(action);if(!action.EffectOnly)FillNumber(action);}
+                if(Health>0&&EnemyHealth>0&&Enemy.Encounter!=null&&!action.ContentDeferred){AfterContentAction(action,priorContentRepeat);ActivateEnemyConditions();}
             }
             pending.Budget=Math.Max(0,ChainLimit-processedActions);if(pending.Truncated)Message="Action chain budget reached";
             CheckBattleEnd();return true;
         }
 
-        private void ActivateEnemyConditions(){if(Health<=0||EnemyHealth<=0)return;foreach(var special in Enemy.ActivateSpecials(Round,setup,random)){pending.Add(special);Timeline.Add(special);Log("条件达成，特殊技能加入本回合："+special.Label);}}
+        private void ActivateEnemyConditions(){if(Health<=0||EnemyHealth<=0)return;if(Enemy.Encounter!=null){if(preparingContentRound)UpdateEncounterPhase();else QueueContentSpecials();return;}foreach(var special in Enemy.ActivateSpecials(Round,setup,random)){pending.Add(special);Timeline.Add(special);Log("条件达成，特殊技能加入本回合："+special.Label);}}
 
     }
 }

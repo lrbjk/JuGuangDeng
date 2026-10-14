@@ -87,7 +87,8 @@ public static class RuleChecks
         Check(g.Phase == GamePhase.Reward && g.Coins == 25 && g.Rewards.Count == 3, "victory reward");
         g.TakeReward(0); Check(g.Phase == GamePhase.Map && g.Deck.Count == 19, "reward joins deck");
         g.StartBattle(); g.EnemyHealth = 1; Arrange(g, Card(1, CardEffect.Strike)); g.Confirm(); g.Step(); g.TakeReward(0);
-        g.StartBattle(true); Check(g.Boss && g.Timeline.Count == 3, "boss unlock and intents");
+        g.StartBattle(true); Check(!g.Boss && g.Phase == GamePhase.Map, "boss stays locked before six victories");
+        g.Victories = 6; g.StartBattle(true); Check(g.Boss && g.Timeline.Count == 3, "boss unlock and intents");
         g.EnemyHealth = 1; Arrange(g, Card(1, CardEffect.Strike)); g.Confirm(); g.Step();
         Check(g.Phase == GamePhase.Won, "boss win");
 

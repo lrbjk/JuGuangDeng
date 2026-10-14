@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Linq;
 namespace RainbowLi.UnityGame {
 public sealed class CardModule : MonoBehaviour {
  public GameSession session;
@@ -16,12 +17,12 @@ public sealed class CardModule : MonoBehaviour {
   var g=session.Game;if(g==null||g.Phase!=GamePhase.Planning||card==null||insertionSlot<0||insertionSlot>g.Timeline.Count)return false;
   int from=g.Timeline.FindIndex(a=>!a.Enemy&&a.Card==card);if(from<0)return false;
   int to=insertionSlot>from?insertionSlot-1:insertionSlot;if(to==from)return true;
-  g.MoveAction(from,to-from);Selected=null;session.Notify();return true;
+  g.MoveAction(from,to-from);Selected=null;session.Notify();return g.Timeline.FindIndex(a=>!a.Enemy&&a.Card==card)==to;
  }
  public bool Withdraw(Card card){
   var g=session.Game;if(g==null||g.Phase!=GamePhase.Planning||card==null)return false;
   int at=g.Timeline.FindIndex(a=>!a.Enemy&&a.Card==card);if(at<0)return false;
-  g.RemoveAction(at);Selected=null;session.Notify();return true;
+  g.RemoveAction(at);Selected=null;session.Notify();return !g.Timeline.Any(a=>!a.Enemy&&a.Card==card);
  }
  public void Move(int slot,int direction){session.Game.MoveAction(slot,direction);session.Notify();}
  public void Remove(int slot){session.Game.RemoveAction(slot);session.Notify();}

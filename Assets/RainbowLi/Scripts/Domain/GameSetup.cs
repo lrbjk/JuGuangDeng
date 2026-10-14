@@ -11,6 +11,7 @@ namespace RainbowLi
         public bool RandomStartingDeck;
         public float RepeatWeightMultiplier=.5f;
         public readonly List<EnemySkill> EnemySkills=new List<EnemySkill>();
+        public readonly List<EncounterDefinition> NormalEncounters=new List<EncounterDefinition>(),BossEncounters=new List<EncounterDefinition>();
         public readonly List<ConditionalSequence> EnemyConditionalRules=new List<ConditionalSequence>();
         public int StartingCoins, PlayerActions=4, EnemyActions=2, BossActions=3, GuardSlot=1, GuardInterval=2;
         public int[] EnemyNumbers;

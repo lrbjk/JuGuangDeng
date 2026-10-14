@@ -55,3 +55,7 @@ MonoBehaviour:
     threshold: 50
     sequence: {fileID: 11400000, guid: 76ec61b2432f516da9d8f841d2d1c33b, type: 2}
   cardTable: {fileID: 11400000, guid: e648ffe61a1c592e9d3ba7911f1d7e4a, type: 2}
+  contentTable: {fileID: 11400000, guid: 817d9294d92ffa741accfa846c806865, type: 2}
+  contentEnemyId: ""
+  bossTable: {fileID: 11400000, guid: 7ae6a82746ec1544d9d025486b116c0a, type: 2}
+  bossId: ""

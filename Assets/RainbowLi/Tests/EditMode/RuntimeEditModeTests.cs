@@ -4,6 +4,7 @@ using UnityEngine;
 public sealed class RuntimeEditModeTests {
  [Test] public void AdvancedRulesAndSaveContinuation(){AdvancedRuntimeChecks.Main();}
  [Test] public void EffectPoolWeightsAndSaveContinuation(){EffectPoolRuntimeChecks.Main();}
+ [Test] public void AuthoredEnemyAndBossEncounters(){EnemyEncounterChecks.Main();}
  [Test] public void UnityJsonPreservesIdentityAndParameters(){
   var g=new ContainmentGame(14);g.StartBattle();g.AddCard(g.Hand[0]);g.Confirm();g.Step();
   var restored=ContainmentGame.RestoreSave(JsonUtility.FromJson<RunSave>(JsonUtility.ToJson(g.CaptureSave())));

@@ -13,6 +13,7 @@ namespace RainbowLi
         private void ApplyRule(BattleAction action)
         {
             var rule = action.Rule;
+            if(rule.EncounterEffects!=null&&rule.EncounterEffects.Length>0){Enemy.Encounter.TotalSequenceTriggers++;ApplyEncounterEffects(action,rule.EncounterEffects,BattleEventSource.Sequence);return;}
             ApplyAdvancedRule(action);
             if (rule.Effect == RuleEffect.Damage) SettleDamage(action.Enemy,!action.Enemy,rule.Value,rule.Code??rule.Name,BattleEventSource.Sequence);
             else if (rule.Effect == RuleEffect.Shield) SettleShield(action.Enemy,action.Enemy,rule.Value,rule.Code??rule.Name,BattleEventSource.Sequence);

@@ -27,6 +27,7 @@ namespace RainbowLi
         public static DamageResult Damage(CombatantState source, CombatantState target, int amount)
         {
             int hp=target.Health, shield=target.Shield;
+            if(target.Statuses[CardEffect.Invulnerable]>0)return new DamageResult(amount,0,hp,hp,shield,shield,false);
             int outgoing=source==null?Math.Max(0,amount):OutgoingDamage(source,amount);
             if(outgoing==0||hp<=0)return new DamageResult(amount,0,hp,hp,shield,shield,false);
             long value=(long)outgoing+target.Statuses[CardEffect.Vulnerable];
