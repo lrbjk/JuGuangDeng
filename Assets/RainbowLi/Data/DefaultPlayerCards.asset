@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: DefaultPlayerCards
   m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.PlayerCardTable
   rows:
-  - id: "卡效_01"
-    name: "伤害X"
-    description: "造成X点伤害。（X为卡牌对应数字。）"
-    range: "为卡牌对应数字"
-    notes:
-    pools: "默认卡池,伤害卡池"
+  - id: "\u5361\u6548_01"
+    name: "\u4F24\u5BB3X"
+    description: "\u9020\u6210X\u70B9\u4F24\u5BB3\u3002\uFF08X\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57\u3002\uFF09"
+    range: "\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57"
+    notes: 
+    pools: "\u9ED8\u8BA4\u5361\u6C60,\u4F24\u5BB3\u5361\u6C60"
     effect: 0
     lifetime: 0
     polarity: 1
@@ -34,12 +34,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_02"
-    name: "防御X"
-    description: "获得X点护盾。（X为卡牌对应数字。）"
-    range: "为卡牌对应数字"
-    notes:
-    pools: "默认卡池,增益效果池"
+  - id: "\u5361\u6548_02"
+    name: "\u9632\u5FA1X"
+    description: "\u83B7\u5F97X\u70B9\u62A4\u76FE\u3002\uFF08X\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57\u3002\uFF09"
+    range: "\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57"
+    notes: 
+    pools: "\u9ED8\u8BA4\u5361\u6C60,\u589E\u76CA\u6548\u679C\u6C60"
     effect: 1
     lifetime: 0
     polarity: 0
@@ -55,12 +55,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_03"
-    name: "增值伤害X"
-    description: "造成1+X点伤害。（X为卡牌对应数字。）"
-    range: "为卡牌对应数字"
-    notes:
-    pools: "默认卡池,伤害卡池"
+  - id: "\u5361\u6548_03"
+    name: "\u589E\u503C\u4F24\u5BB3X"
+    description: "\u9020\u62101+X\u70B9\u4F24\u5BB3\u3002\uFF08X\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57\u3002\uFF09"
+    range: "\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57"
+    notes: 
+    pools: "\u9ED8\u8BA4\u5361\u6C60,\u4F24\u5BB3\u5361\u6C60"
     effect: 3
     lifetime: 0
     polarity: 1
@@ -76,12 +76,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_04"
-    name: "减值伤害X"
-    description: "造成7-X点伤害。（X为卡牌对应数字。造成伤害最小值为1点）"
-    range: "为卡牌对应数字"
-    notes:
-    pools: "默认卡池,伤害卡池"
+  - id: "\u5361\u6548_04"
+    name: "\u51CF\u503C\u4F24\u5BB3X"
+    description: "\u9020\u62107-X\u70B9\u4F24\u5BB3\u3002\uFF08X\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57\u3002\u9020\u6210\u4F24\u5BB3\u6700\u5C0F\u503C\u4E3A1\u70B9\uFF09"
+    range: "\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57"
+    notes: 
+    pools: "\u9ED8\u8BA4\u5361\u6C60,\u4F24\u5BB3\u5361\u6C60"
     effect: 4
     lifetime: 0
     polarity: 1
@@ -97,12 +97,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_05"
-    name: "恢复X"
-    description: "恢复X点血量。（X为卡牌对应数字。）"
-    range: "为卡牌对应数字"
-    notes:
-    pools: "默认卡池,增益效果池"
+  - id: "\u5361\u6548_05"
+    name: "\u6062\u590DX"
+    description: "\u6062\u590DX\u70B9\u8840\u91CF\u3002\uFF08X\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57\u3002\uFF09"
+    range: "\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57"
+    notes: 
+    pools: "\u9ED8\u8BA4\u5361\u6C60,\u589E\u76CA\u6548\u679C\u6C60"
     effect: 2
     lifetime: 0
     polarity: 0
@@ -118,12 +118,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_06"
-    name: "力量X"
-    description: "造成的伤害增加X点。（X为效果层数。）"
+  - id: "\u5361\u6548_06"
+    name: "\u529B\u91CFX"
+    description: "\u9020\u6210\u7684\u4F24\u5BB3\u589E\u52A0X\u70B9\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\u3002\uFF09"
     range: 1-2
-    notes:
-    pools: "默认卡池,增益效果池,临时状态效果池"
+    notes: 
+    pools: "\u9ED8\u8BA4\u5361\u6C60,\u589E\u76CA\u6548\u679C\u6C60,\u4E34\u65F6\u72B6\u6001\u6548\u679C\u6C60"
     effect: 5
     lifetime: 1
     polarity: 0
@@ -139,12 +139,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_07"
-    name: "易伤X"
-    description: "受到的伤害增加X点。（X为效果层数。）"
+  - id: "\u5361\u6548_07"
+    name: "\u6613\u4F24X"
+    description: "\u53D7\u5230\u7684\u4F24\u5BB3\u589E\u52A0X\u70B9\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\u3002\uFF09"
     range: 1-2
-    notes:
-    pools: "默认卡池,减益效果池,临时状态效果池"
+    notes: 
+    pools: "\u9ED8\u8BA4\u5361\u6C60,\u51CF\u76CA\u6548\u679C\u6C60,\u4E34\u65F6\u72B6\u6001\u6548\u679C\u6C60"
     effect: 6
     lifetime: 1
     polarity: 1
@@ -160,12 +160,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_08"
-    name: "弱化X"
-    description: "造成的伤害减少25%，向下取整。（X为效果层数，每个回合结束时减少一层）"
+  - id: "\u5361\u6548_08"
+    name: "\u5F31\u5316X"
+    description: "\u9020\u6210\u7684\u4F24\u5BB3\u51CF\u5C1125%\uFF0C\u5411\u4E0B\u53D6\u6574\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\uFF0C\u6BCF\u4E2A\u56DE\u5408\u7ED3\u675F\u65F6\u51CF\u5C11\u4E00\u5C42\uFF09"
     range: 1-2
-    notes:
-    pools: "减益效果池,持续状态效果池"
+    notes: 
+    pools: "\u51CF\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
     effect: 7
     lifetime: 2
     polarity: 1
@@ -181,12 +181,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_09"
-    name: "再生X"
-    description: "回合开始时恢复X点血量。（X为效果层数，触发效果时减少一层）"
+  - id: "\u5361\u6548_09"
+    name: "\u518D\u751FX"
+    description: "\u56DE\u5408\u5F00\u59CB\u65F6\u6062\u590DX\u70B9\u8840\u91CF\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\uFF0C\u89E6\u53D1\u6548\u679C\u65F6\u51CF\u5C11\u4E00\u5C42\uFF09"
     range: 1-3
-    notes:
-    pools: "增益效果池,持续状态效果池"
+    notes: 
+    pools: "\u589E\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
     effect: 8
     lifetime: 2
     polarity: 0
@@ -202,12 +202,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_10"
-    name: "坚固X"
-    description: "受到的伤害减少25%，向下取整。（X为效果层数，每个回合结束时减少一层）"
+  - id: "\u5361\u6548_10"
+    name: "\u575A\u56FAX"
+    description: "\u53D7\u5230\u7684\u4F24\u5BB3\u51CF\u5C1125%\uFF0C\u5411\u4E0B\u53D6\u6574\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\uFF0C\u6BCF\u4E2A\u56DE\u5408\u7ED3\u675F\u65F6\u51CF\u5C11\u4E00\u5C42\uFF09"
     range: 1-2
-    notes:
-    pools: "增益效果池,持续状态效果池"
+    notes: 
+    pools: "\u589E\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
     effect: 9
     lifetime: 2
     polarity: 0
@@ -223,12 +223,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_11"
-    name: "中毒X"
-    description: "回合结束时，造成X点伤害。（X为效果层数，结算后立即减少当前层数一半。）向下取整"
+  - id: "\u5361\u6548_11"
+    name: "\u4E2D\u6BD2X"
+    description: "\u56DE\u5408\u7ED3\u675F\u65F6\uFF0C\u9020\u6210X\u70B9\u4F24\u5BB3\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\uFF0C\u7ED3\u7B97\u540E\u7ACB\u5373\u51CF\u5C11\u5F53\u524D\u5C42\u6570\u4E00\u534A\u3002\uFF09\u5411\u4E0B\u53D6\u6574"
     range: 1-6
-    notes:
-    pools: "伤害卡池,减益效果池,持续状态效果池"
+    notes: 
+    pools: "\u4F24\u5BB3\u5361\u6C60,\u51CF\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
     effect: 10
     lifetime: 2
     polarity: 1
@@ -244,12 +244,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_20"
-    name: "烧伤X"
-    description: "回合开始时，受到X点伤害。（X为效果层数，结算后立即减少一层。）向下取整"
+  - id: "\u5361\u6548_20"
+    name: "\u70E7\u4F24X"
+    description: "\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u53D7\u5230X\u70B9\u4F24\u5BB3\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\uFF0C\u7ED3\u7B97\u540E\u7ACB\u5373\u51CF\u5C11\u4E00\u5C42\u3002\uFF09\u5411\u4E0B\u53D6\u6574"
     range: 1-4
-    notes:
-    pools: "伤害卡池,减益效果池,持续状态效果池"
+    notes: 
+    pools: "\u4F24\u5BB3\u5361\u6C60,\u51CF\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
     effect: 19
     lifetime: 2
     polarity: 1
@@ -265,12 +265,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_12"
-    name: "流血X"
-    description: "每次触发行动时，减少X点血量。（X为效果层数，触发后减少一层。）向下取整"
+  - id: "\u5361\u6548_12"
+    name: "\u6D41\u8840X"
+    description: "\u6BCF\u6B21\u89E6\u53D1\u884C\u52A8\u65F6\uFF0C\u51CF\u5C11X\u70B9\u8840\u91CF\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\uFF0C\u89E6\u53D1\u540E\u51CF\u5C11\u4E00\u5C42\u3002\uFF09\u5411\u4E0B\u53D6\u6574"
     range: 1-4
-    notes:
-    pools: "伤害卡池,减益效果池,持续状态效果池"
+    notes: 
+    pools: "\u4F24\u5BB3\u5361\u6C60,\u51CF\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
     effect: 11
     lifetime: 2
     polarity: 1
@@ -286,12 +286,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_13"
-    name: "铁壁X"
-    description: "获得的护盾量增加25%。（X为效果层数，每个回合结束时减少一层。）"
+  - id: "\u5361\u6548_13"
+    name: "\u94C1\u58C1X"
+    description: "\u83B7\u5F97\u7684\u62A4\u76FE\u91CF\u589E\u52A025%\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\uFF0C\u6BCF\u4E2A\u56DE\u5408\u7ED3\u675F\u65F6\u51CF\u5C11\u4E00\u5C42\u3002\uFF09"
     range: 1-2
-    notes:
-    pools: "增益效果池,持续状态效果池"
+    notes: 
+    pools: "\u589E\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
     effect: 12
     lifetime: 2
     polarity: 0
@@ -307,12 +307,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_14"
-    name: "招架X"
-    description: "免疫一次受到的任意伤害，触发时减少一层。"
+  - id: "\u5361\u6548_14"
+    name: "\u62DB\u67B6X"
+    description: "\u514D\u75AB\u4E00\u6B21\u53D7\u5230\u7684\u4EFB\u610F\u4F24\u5BB3\uFF0C\u89E6\u53D1\u65F6\u51CF\u5C11\u4E00\u5C42\u3002"
     range: 1
-    notes:
-    pools: "增益效果池,持续状态效果池"
+    notes: 
+    pools: "\u589E\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
     effect: 13
     lifetime: 2
     polarity: 0
@@ -328,12 +328,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_15"
-    name: "壁垒X"
-    description: "回合开始时，获得X点护盾，触发后减少当前层数的一半。（X为效果层数）"
+  - id: "\u5361\u6548_15"
+    name: "\u58C1\u5792X"
+    description: "\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u83B7\u5F97X\u70B9\u62A4\u76FE\uFF0C\u89E6\u53D1\u540E\u51CF\u5C11\u5F53\u524D\u5C42\u6570\u7684\u4E00\u534A\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\uFF09"
     range: 1-6
-    notes:
-    pools: "增益效果池,持续状态效果池"
+    notes: 
+    pools: "\u589E\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
     effect: 14
     lifetime: 2
     polarity: 0
@@ -349,12 +349,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_16"
-    name: "限制伤害X"
-    description: "每次只会受到X点伤害。回合结束时失去该效果。"
+  - id: "\u5361\u6548_16"
+    name: "\u9650\u5236\u4F24\u5BB3X"
+    description: "\u6BCF\u6B21\u53EA\u4F1A\u53D7\u5230X\u70B9\u4F24\u5BB3\u3002\u56DE\u5408\u7ED3\u675F\u65F6\u5931\u53BB\u8BE5\u6548\u679C\u3002"
     range: 7-13
-    notes:
-    pools: "特殊效果池"
+    notes: 
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60"
     effect: 15
     lifetime: 1
     polarity: 0
@@ -370,12 +370,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_17"
-    name: "随机X"
-    description: "每次自己行动后，随机抽取X个数字。"
+  - id: "\u5361\u6548_17"
+    name: "\u968F\u673AX"
+    description: "\u6BCF\u6B21\u81EA\u5DF1\u884C\u52A8\u540E\uFF0C\u968F\u673A\u62BD\u53D6X\u4E2A\u6570\u5B57\u3002"
     range: 1-2
-    notes:
-    pools: "特殊效果池"
+    notes: 
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60"
     effect: 16
     lifetime: 1
     polarity: 2
@@ -391,12 +391,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_18"
-    name: "吟唱X"
-    description: "触发的牌序效果额外触发X次。"
+  - id: "\u5361\u6548_18"
+    name: "\u541F\u5531X"
+    description: "\u89E6\u53D1\u7684\u724C\u5E8F\u6548\u679C\u989D\u5916\u89E6\u53D1X\u6B21\u3002"
     range: 1-3
-    notes:
-    pools: "特殊效果池"
+    notes: 
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60"
     effect: 17
     lifetime: 1
     polarity: 2
@@ -412,12 +412,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_19"
-    name: "往复"
-    description: "所有行为会额外执行一次。"
+  - id: "\u5361\u6548_19"
+    name: "\u5F80\u590D"
+    description: "\u6240\u6709\u884C\u4E3A\u4F1A\u989D\u5916\u6267\u884C\u4E00\u6B21\u3002"
     range: 1
-    notes:
-    pools: "特殊效果池"
+    notes: 
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60"
     effect: 18
     lifetime: 1
     polarity: 2
@@ -433,12 +433,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_21"
-    name: "点燃X"
-    description: "进行任意行动后，施加X层烧伤。"
+  - id: "\u5361\u6548_21"
+    name: "\u70B9\u71C3X"
+    description: "\u8FDB\u884C\u4EFB\u610F\u884C\u52A8\u540E\uFF0C\u65BD\u52A0X\u5C42\u70E7\u4F24\u3002"
     range: 1
-    notes:
-    pools: "增益效果池"
+    notes: 
+    pools: "\u589E\u76CA\u6548\u679C\u6C60"
     effect: 20
     lifetime: 1
     polarity: 0
@@ -454,12 +454,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_22"
-    name: "淬毒X"
-    description: "进行任意行动后，施加X层中毒。"
+  - id: "\u5361\u6548_22"
+    name: "\u6DEC\u6BD2X"
+    description: "\u8FDB\u884C\u4EFB\u610F\u884C\u52A8\u540E\uFF0C\u65BD\u52A0X\u5C42\u4E2D\u6BD2\u3002"
     range: 2
-    notes:
-    pools: "增益效果池"
+    notes: 
+    pools: "\u589E\u76CA\u6548\u679C\u6C60"
     effect: 21
     lifetime: 1
     polarity: 0
@@ -475,12 +475,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_23"
-    name: "无序"
-    description: "所有数字填入改为随机填入。"
+  - id: "\u5361\u6548_23"
+    name: "\u65E0\u5E8F"
+    description: "\u6240\u6709\u6570\u5B57\u586B\u5165\u6539\u4E3A\u968F\u673A\u586B\u5165\u3002"
     range: 1
-    notes:
-    pools: "特殊效果池"
+    notes: 
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60"
     effect: 22
     lifetime: 1
     polarity: 1
@@ -496,12 +496,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_24"
-    name: "变动X"
-    description: "接下来填入的X个数字将会随机变化。"
+  - id: "\u5361\u6548_24"
+    name: "\u53D8\u52A8X"
+    description: "\u63A5\u4E0B\u6765\u586B\u5165\u7684X\u4E2A\u6570\u5B57\u5C06\u4F1A\u968F\u673A\u53D8\u5316\u3002"
     range: 1-2
-    notes:
-    pools: "特殊效果池,临时状态效果池"
+    notes: 
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60,\u4E34\u65F6\u72B6\u6001\u6548\u679C\u6C60"
     effect: 23
     lifetime: 1
     polarity: 2
@@ -517,12 +517,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_25"
-    name: "加值X"
-    description: "填入的数字获得+X。"
+  - id: "\u5361\u6548_25"
+    name: "\u52A0\u503CX"
+    description: "\u586B\u5165\u7684\u6570\u5B57\u83B7\u5F97+X\u3002"
     range: 1-2
-    notes:
-    pools: "特殊效果池,临时状态效果池"
+    notes: 
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60,\u4E34\u65F6\u72B6\u6001\u6548\u679C\u6C60"
     effect: 24
     lifetime: 1
     polarity: 2
@@ -538,12 +538,12 @@ MonoBehaviour:
     threshold: 3
     specialWeightRatio: 0.5
     additionalEffects: []
-  - id: "卡效_26"
-    name: "减值X"
-    description: "填入的数字获得-X。"
+  - id: "\u5361\u6548_26"
+    name: "\u51CF\u503CX"
+    description: "\u586B\u5165\u7684\u6570\u5B57\u83B7\u5F97-X\u3002"
     range: 1-2
-    notes:
-    pools: "特殊效果池,临时状态效果池"
+    notes: 
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60,\u4E34\u65F6\u72B6\u6001\u6548\u679C\u6C60"
     effect: 25
     lifetime: 1
     polarity: 2

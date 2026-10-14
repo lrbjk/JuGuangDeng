@@ -16,6 +16,7 @@ MonoBehaviour:
   floors: 8
   lanes: 3
   randomizeEachRun: 0
+  independentStacks: 1
   stackedLayout: 1
   cardDungeon: 1
   startingLane: -1

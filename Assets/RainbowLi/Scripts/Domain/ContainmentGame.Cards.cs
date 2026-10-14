@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 namespace RainbowLi
@@ -8,6 +8,14 @@ namespace RainbowLi
         private Card FromSpec(CardEffectSpec spec,int number)=>new Card {Number=number,Effect=spec.Effect,Spec=spec.Copy(),EffectAmount=random.Next(spec.Min,spec.Max+1),AttackBase=BaseAttack,BaseBonus=0,UpgradeBonus=spec.Effect==CardEffect.DamageCap||spec.Effect==CardEffect.Reciprocity||spec.Effect==CardEffect.Disorder?0:2};
         private void GenerateInitialDeck(){
             if(setup!=null&&!setup.RandomStartingDeck&&setup.InitialDeck.Count>0)return;
+            if(setup!=null&&setup.CardEffectGroups.Count>0){
+                var groups=setup.CardEffectGroups.Where(g=>g.Primary.StartingEnabled&&ValidWeight(g.Primary.Weight)).ToArray();
+                if(groups.Length==0)throw new ArgumentException("起始牌效果组池为空。");
+                for(int round=0;round<3;round++){var weights=groups.Select(g=>(double)g.Primary.Weight).ToArray();for(int number=1;number<=6;number++){
+                    if(setup.CardEffectPools.Count>0)Deck.Add(DrawCardGroup(true).CreateCard(number,random,BaseAttack));
+                    else {int at=WeightedChoice(weights);Deck.Add(groups[at].CreateCard(number,random,BaseAttack));weights[at]*=Math.Max(.01,Math.Min(1,setup.RepeatWeightMultiplier));}
+                }}return;
+            }
             if(setup!=null&&setup.CardEffects.Count>0){
                 if(setup.CardEffectPools.Count>0){
                     for(int group=0;group<3;group++)for(int number=1;number<=6;number++)Deck.Add(FromSpec(DrawCardEffect(true),number));
@@ -36,6 +44,7 @@ namespace RainbowLi
 
         public Card GenerateCard(int number = 0)
         {
+            if(setup!=null&&setup.CardEffectGroups.Count>0)return DrawCardGroup(false).CreateCard(number==0?random.Next(1,7):number,random,BaseAttack);
             if(setup!=null&&setup.CardEffects.Count>0)return FromSpec(DrawCardEffect(false),number==0?random.Next(1,7):number);
             if (setup != null && setup.CardPool.Count > 0)
             {
@@ -45,6 +54,11 @@ namespace RainbowLi
             return new Card { AttackBase=BaseAttack, Number = number == 0 ? random.Next(1, 7) : number, Effect = (CardEffect)random.Next(0, 3) };
         }
 
+        private CardEffectGroup DrawCardGroup(bool starting){
+            string pool=DrawPool(setup.CardEffectPools);var groups=setup.CardEffectGroups.Where(g=>(!starting||g.Primary.StartingEnabled)&&ValidWeight(g.Primary.Weight)&&g.Primary.InPool(pool)).ToArray();
+            if(groups.Length==0)throw new InvalidOperationException("Empty card effect group pool: "+pool);
+            return groups[WeightedChoice(groups.Select(g=>(double)g.Primary.Weight).ToArray())];
+        }
         private CardEffectSpec DrawCardEffect(bool starting){
             var candidates=setup.CardEffects.Where(e=>(!starting||e.StartingEnabled)&&ValidWeight(e.Weight)).ToArray();
             string pool=DrawPool(setup.CardEffectPools);

@@ -13,210 +13,210 @@ MonoBehaviour:
   m_Name: DefaultEngravingEffects
   m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.EngravingEffectTable
   rows:
-  - id: "铭刻效果_01"
-    name: "毒素X"
-    description: "施加X层中毒"
+  - id: "\u94ED\u523B\u6548\u679C_01"
+    name: "\u6BD2\u7D20X"
+    description: "\u65BD\u52A0X\u5C42\u4E2D\u6BD2"
     range: 5-15
-    pools:
-    notes:
+    pools: 
+    notes: 
     behavior: Poison
     enabled: 1
     weight: 50
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_02"
-    name: "灼烧X"
-    description: "施加X层烧伤"
+  - id: "\u94ED\u523B\u6548\u679C_02"
+    name: "\u707C\u70E7X"
+    description: "\u65BD\u52A0X\u5C42\u70E7\u4F24"
     range: 4-12
-    pools:
-    notes:
+    pools: 
+    notes: 
     behavior: Burn
     enabled: 1
     weight: 50
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_03"
-    name: "追击X"
-    description: "造成X点伤害。"
+  - id: "\u94ED\u523B\u6548\u679C_03"
+    name: "\u8FFD\u51FBX"
+    description: "\u9020\u6210X\u70B9\u4F24\u5BB3\u3002"
     range: 8-18
-    pools:
-    notes:
+    pools: 
+    notes: 
     behavior: FollowUpDamage
     enabled: 1
     weight: 50
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_04"
-    name: "成长X"
-    description: "每当此卡牌触发牌序效果时，卡牌效果+X。（跨战斗继承）"
+  - id: "\u94ED\u523B\u6548\u679C_04"
+    name: "\u6210\u957FX"
+    description: "\u6BCF\u5F53\u6B64\u5361\u724C\u89E6\u53D1\u724C\u5E8F\u6548\u679C\u65F6\uFF0C\u5361\u724C\u6548\u679C+X\u3002\uFF08\u8DE8\u6218\u6597\u7EE7\u627F\uFF09"
     range: 1
-    pools:
-    notes:
+    pools: 
+    notes: 
     behavior: Growth
     enabled: 1
     weight: 5
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_05"
-    name: "变化X"
-    description: "此卡被同时视作数字X。"
+  - id: "\u94ED\u523B\u6548\u679C_05"
+    name: "\u53D8\u5316X"
+    description: "\u6B64\u5361\u88AB\u540C\u65F6\u89C6\u4F5C\u6570\u5B57X\u3002"
     range: 1-6
-    pools:
-    notes:
+    pools: 
+    notes: 
     behavior: ExtraNumber
     enabled: 1
     weight: 20
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_06"
-    name: "泛用"
-    description: "此卡被视作任意数字。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_06"
+    name: "\u6CDB\u7528"
+    description: "\u6B64\u5361\u88AB\u89C6\u4F5C\u4EFB\u610F\u6570\u5B57\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: Wildcard
     enabled: 1
     weight: 10
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_07"
-    name: "收尾"
-    description: "此卡位于卡序“后”时，卡牌效果+3。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_07"
+    name: "\u6536\u5C3E"
+    description: "\u6B64\u5361\u4F4D\u4E8E\u5361\u5E8F\u201C\u540E\u201D\u65F6\uFF0C\u5361\u724C\u6548\u679C+3\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: SequenceTailBonus
     enabled: 1
     weight: 15
     multiplier: 1
     fixedValue: 3
-  - id: "铭刻效果_08"
-    name: "冲锋"
-    description: "此卡位于卡序“前”时，卡牌效果+3。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_08"
+    name: "\u51B2\u950B"
+    description: "\u6B64\u5361\u4F4D\u4E8E\u5361\u5E8F\u201C\u524D\u201D\u65F6\uFF0C\u5361\u724C\u6548\u679C+3\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: SequenceHeadBonus
     enabled: 1
     weight: 15
     multiplier: 1
     fixedValue: 3
-  - id: "铭刻效果_09"
-    name: "阻断"
-    description: "此卡与其前后卡牌无法参与任何卡序的构建。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_09"
+    name: "\u963B\u65AD"
+    description: "\u6B64\u5361\u4E0E\u5176\u524D\u540E\u5361\u724C\u65E0\u6CD5\u53C2\u4E0E\u4EFB\u4F55\u5361\u5E8F\u7684\u6784\u5EFA\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: BlockSequence
     enabled: 1
     weight: 10
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_10"
-    name: "桥接"
-    description: "此卡可跨越卡牌顺序，与此之后的任意卡牌实现卡序。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_10"
+    name: "\u6865\u63A5"
+    description: "\u6B64\u5361\u53EF\u8DE8\u8D8A\u5361\u724C\u987A\u5E8F\uFF0C\u4E0E\u6B64\u4E4B\u540E\u7684\u4EFB\u610F\u5361\u724C\u5B9E\u73B0\u5361\u5E8F\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: Bridge
     enabled: 1
     weight: 10
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_11"
-    name: "传承"
-    description: "此卡的卡牌效果触发后，会将其效果传承至下一张卡牌。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_11"
+    name: "\u4F20\u627F"
+    description: "\u6B64\u5361\u7684\u5361\u724C\u6548\u679C\u89E6\u53D1\u540E\uFF0C\u4F1A\u5C06\u5176\u6548\u679C\u4F20\u627F\u81F3\u4E0B\u4E00\u5F20\u5361\u724C\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: Inherit
     enabled: 1
     weight: 15
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_12"
-    name: "千变万化"
-    description: "此卡后的所有数字为随机数字。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_12"
+    name: "\u5343\u53D8\u4E07\u5316"
+    description: "\u6B64\u5361\u540E\u7684\u6240\u6709\u6570\u5B57\u4E3A\u968F\u673A\u6570\u5B57\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: RandomizeFollowing
     enabled: 1
     weight: 15
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_13"
-    name: "轮盘赌"
-    description: "此卡触发卡效时，50%概率不触发，50%概率效果翻倍。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_13"
+    name: "\u8F6E\u76D8\u8D4C"
+    description: "\u6B64\u5361\u89E6\u53D1\u5361\u6548\u65F6\uFF0C50%\u6982\u7387\u4E0D\u89E6\u53D1\uFF0C50%\u6982\u7387\u6548\u679C\u7FFB\u500D\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: Roulette
     enabled: 1
     weight: 20
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_14"
-    name: "独木成林"
-    description: "场上除开敌人卡牌外，只存在此卡一张卡牌时，触发效果。随机触发本回合弃置的任意三张卡牌的效果，并使其卡牌效果获得+2。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_14"
+    name: "\u72EC\u6728\u6210\u6797"
+    description: "\u573A\u4E0A\u9664\u5F00\u654C\u4EBA\u5361\u724C\u5916\uFF0C\u53EA\u5B58\u5728\u6B64\u5361\u4E00\u5F20\u5361\u724C\u65F6\uFF0C\u89E6\u53D1\u6548\u679C\u3002\u968F\u673A\u89E6\u53D1\u672C\u56DE\u5408\u5F03\u7F6E\u7684\u4EFB\u610F\u4E09\u5F20\u5361\u724C\u7684\u6548\u679C\uFF0C\u5E76\u4F7F\u5176\u5361\u724C\u6548\u679C\u83B7\u5F97+2\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: OnlyPlayerCard
     enabled: 1
     weight: 10
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_15"
-    name: "谢幕"
-    description: "此卡最后行动时触发，此卡的卡牌效果+2。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_15"
+    name: "\u8C22\u5E55"
+    description: "\u6B64\u5361\u6700\u540E\u884C\u52A8\u65F6\u89E6\u53D1\uFF0C\u6B64\u5361\u7684\u5361\u724C\u6548\u679C+2\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: LastActionBonus
     enabled: 1
     weight: 25
     multiplier: 1
     fixedValue: 2
-  - id: "铭刻效果_16"
-    name: "开幕"
-    description: "此卡最先行动时触发，此卡的卡牌效果+2。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_16"
+    name: "\u5F00\u5E55"
+    description: "\u6B64\u5361\u6700\u5148\u884C\u52A8\u65F6\u89E6\u53D1\uFF0C\u6B64\u5361\u7684\u5361\u724C\u6548\u679C+2\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: FirstActionBonus
     enabled: 1
     weight: 25
     multiplier: 1
     fixedValue: 2
-  - id: "铭刻效果_17"
-    name: "充能"
-    description: "本场战斗中，每打出一次此卡时，此卡卡牌效果+1。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_17"
+    name: "\u5145\u80FD"
+    description: "\u672C\u573A\u6218\u6597\u4E2D\uFF0C\u6BCF\u6253\u51FA\u4E00\u6B21\u6B64\u5361\u65F6\uFF0C\u6B64\u5361\u5361\u724C\u6548\u679C+1\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: Charge
     enabled: 1
     weight: 15
     multiplier: 1
     fixedValue: 1
-  - id: "铭刻效果_18"
-    name: "毒爆"
-    description: "消耗所有中毒，造成1.5倍消耗层数的伤害。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_18"
+    name: "\u6BD2\u7206"
+    description: "\u6D88\u8017\u6240\u6709\u4E2D\u6BD2\uFF0C\u9020\u62101.5\u500D\u6D88\u8017\u5C42\u6570\u7684\u4F24\u5BB3\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: PoisonExplosion
     enabled: 1
     weight: 20
     multiplier: 1
     fixedValue: 0
-  - id: "铭刻效果_19"
-    name: "引燃"
-    description: "消耗所有烧伤，造成2倍消耗层数的伤害。"
-    range:
-    pools:
-    notes:
+  - id: "\u94ED\u523B\u6548\u679C_19"
+    name: "\u5F15\u71C3"
+    description: "\u6D88\u8017\u6240\u6709\u70E7\u4F24\uFF0C\u9020\u62102\u500D\u6D88\u8017\u5C42\u6570\u7684\u4F24\u5BB3\u3002"
+    range: 
+    pools: 
+    notes: 
     behavior: BurnExplosion
     enabled: 1
     weight: 20

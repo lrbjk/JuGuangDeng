@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 namespace RainbowLi
 {
     // Runtime copies only: authoring assets never hold health, shields or trigger counters.
@@ -15,6 +15,7 @@ namespace RainbowLi
         public int StartingCoins, PlayerActions=4, EnemyActions=2, BossActions=3, GuardSlot=1, GuardInterval=2;
         public int[] EnemyNumbers;
         public int EnemyAttack = 5, EnemyGuard = 6, BossHealth = 110, BossAttack = 9;
+        public readonly List<CardEffectGroup> CardEffectGroups=new List<CardEffectGroup>();
         public readonly List<CardEffectSpec> CardEffects=new List<CardEffectSpec>();
         public readonly List<EffectPoolWeight> CardEffectPools=new List<EffectPoolWeight>(), SequenceEffectPools=new List<EffectPoolWeight>();
         public readonly List<Card> InitialDeck = new List<Card>(), CardPool = new List<Card>();

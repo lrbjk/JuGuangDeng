@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_03
-  m_EditorClassIdentifier:
-  effectId: "卡效_03"
-  displayName: "增值伤害X"
-  pools: "默认卡池,伤害卡池"
+  m_EditorClassIdentifier: 
+  effectId: "\u5361\u6548_03"
+  displayName: "\u589E\u503C\u4F24\u5BB3X"
+  pools: "\u9ED8\u8BA4\u5361\u6C60,\u4F24\u5BB3\u5361\u6C60"
   sourceSheet: Sheet1
-  sourceRange: "为卡牌对应数字"
+  sourceRange: "\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57"
   sourceRow: 4
   effect: 3
   lifetime: 0
   polarity: 1
-  description: "造成1+X点伤害。（X为卡牌对应数字。）"
+  description: "\u9020\u62101+X\u70B9\u4F24\u5BB3\u3002\uFF08X\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57\u3002\uFF09"
   usesCardNumber: 1
   includeInStartingDeck: 1
   minValue: 1

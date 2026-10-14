@@ -30,7 +30,7 @@ namespace RainbowLi.UnityGame {
    float baseWeight=skills==null?10:skills.Where(b=>b!=null&&!b.Special).Select(b=>Mathf.Max(.001f,b.Weight)).DefaultIfEmpty(10).Average();
    if(skills!=null)foreach(var skill in skills)if(skill!=null){
     float ratio=Mathf.Clamp(skill.SpecialWeightRatio,.3f,.7f);
-    setup.EnemySkills.Add(new EnemySkill {Name=skill.Name,Number=Mathf.Clamp(skill.Number,1,6),Effect=skill.Effect,Modifier=skill.Modifier,
+    setup.EnemySkills.Add(new EnemySkill {Name=skill.Name,Number=Mathf.Clamp(skill.Number,1,6),Effect=skill.Effect,Modifier=skill.Modifier,Spec=skill.Spec?.Copy(),Specs=(skill.Specs??System.Array.Empty<CardEffectSpec>()).Select(s=>s.Copy()).ToArray(),
      Weight=skill.Special?baseWeight*ratio:Mathf.Max(.001f,skill.Weight),SpecialWeightRatio=ratio,Special=skill.Special,Condition=skill.Condition,Threshold=skill.Threshold});
    }
    setup.EnemyConditionalRules.Clear();

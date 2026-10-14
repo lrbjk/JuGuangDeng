@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_08
-  m_EditorClassIdentifier:
-  effectId: "卡效_08"
-  displayName: "弱化X"
-  pools: "减益效果池,持续状态效果池"
+  m_EditorClassIdentifier: 
+  effectId: "\u5361\u6548_08"
+  displayName: "\u5F31\u5316X"
+  pools: "\u51CF\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
   sourceSheet: Sheet1
   sourceRange: 1-2
   sourceRow: 9
   effect: 7
   lifetime: 2
   polarity: 1
-  description: "造成的伤害减少25%，向下取整。（X为效果层数，每个回合结束时减少一层）"
+  description: "\u9020\u6210\u7684\u4F24\u5BB3\u51CF\u5C1125%\uFF0C\u5411\u4E0B\u53D6\u6574\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\uFF0C\u6BCF\u4E2A\u56DE\u5408\u7ED3\u675F\u65F6\u51CF\u5C11\u4E00\u5C42\uFF09"
   usesCardNumber: 0
   includeInStartingDeck: 1
   minValue: 1

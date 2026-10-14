@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_02
-  m_EditorClassIdentifier:
-  effectId: "卡效_02"
-  displayName: "防御X"
-  pools: "默认卡池,增益效果池"
+  m_EditorClassIdentifier: 
+  effectId: "\u5361\u6548_02"
+  displayName: "\u9632\u5FA1X"
+  pools: "\u9ED8\u8BA4\u5361\u6C60,\u589E\u76CA\u6548\u679C\u6C60"
   sourceSheet: Sheet1
-  sourceRange: "为卡牌对应数字"
+  sourceRange: "\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57"
   sourceRow: 3
   effect: 1
   lifetime: 0
   polarity: 0
-  description: "获得X点护盾。（X为卡牌对应数字。）"
+  description: "\u83B7\u5F97X\u70B9\u62A4\u76FE\u3002\uFF08X\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57\u3002\uFF09"
   usesCardNumber: 1
   includeInStartingDeck: 1
   minValue: 1

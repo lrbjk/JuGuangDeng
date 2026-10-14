@@ -13,14 +13,15 @@ namespace RainbowLi {
   public readonly List<LevelNodeData> Nodes;
   public bool Stacked {get;}
   public bool CardDungeon {get;}
+  public bool IndependentStacks {get;}
   public int StartLane {get;}
-  public RouteGraph(IEnumerable<LevelNodeData> nodes,bool stacked=false,bool cardDungeon=false,int startLane=-1){CardDungeon=cardDungeon;Stacked=stacked||cardDungeon;Nodes=nodes.Select(n=>n.Copy()).ToList();StartLane=startLane<0?(Nodes.Count==0?0:Nodes.Max(n=>n.lane)/2):startLane;if(Stacked)foreach(var n in Nodes)n.next.Clear();Validate();}
+  public RouteGraph(IEnumerable<LevelNodeData> nodes,bool stacked=false,bool cardDungeon=false,int startLane=-1,bool independentStacks=false){IndependentStacks=independentStacks;CardDungeon=cardDungeon&&!independentStacks;Stacked=stacked||cardDungeon||independentStacks;Nodes=nodes.Select(n=>n.Copy()).ToList();StartLane=startLane<0?(Nodes.Count==0?0:Nodes.Max(n=>n.lane)/2):startLane;if(Stacked)foreach(var n in Nodes)n.next.Clear();Validate();}
   public LevelNodeData Find(int id)=>Nodes.Find(n=>n.id==id);
   public int Floors=>Nodes.Max(n=>n.floor)+1;
   public void Validate(){
    if(Nodes.Count==0||Nodes.Any(n=>n.floor<0||n.lane<0)||Nodes.Select(n=>n.id).Distinct().Count()!=Nodes.Count)throw new ArgumentException("Invalid node coordinates or IDs");
    int top=Nodes.Max(n=>n.floor);if(Nodes.Count(n=>n.kind==LevelKind.Boss)!=1||Nodes.Single(n=>n.kind==LevelKind.Boss).floor!=top||Nodes.Count(n=>n.floor==top)!=1)throw new ArgumentException("Final floor must have one boss");
-   if(Stacked){if(Nodes.Any(n=>n.id<0)||Nodes.GroupBy(n=>new {n.floor,n.lane}).Any(g=>g.Count()>1))throw new ArgumentException("Duplicate stack positions or negative IDs");if(CardDungeon){if(StartLane<0||StartLane>Nodes.Max(n=>n.lane)||!Nodes.Any(n=>n.floor==0&&Math.Abs(n.lane-StartLane)<=1))throw new ArgumentException("No reachable starting card");foreach(var n in Nodes.Where(n=>n.kind!=LevelKind.Boss))if(!Nodes.Any(v=>v.floor==n.floor+1&&(v.kind==LevelKind.Boss||Math.Abs(v.lane-n.lane)<=1)))throw new ArgumentException("Dungeon dead end at "+n.id);}return;}
+   if(Stacked){if(Nodes.Any(n=>n.id<0)||Nodes.GroupBy(n=>new {n.floor,n.lane}).Any(g=>g.Count()>1))throw new ArgumentException("Duplicate stack positions or negative IDs");if(IndependentStacks&&(!Nodes.Where(n=>n.kind!=LevelKind.Boss).Select(n=>n.lane).Distinct().OrderBy(n=>n).SequenceEqual(new[]{0,1,2})))throw new ArgumentException("Independent stacks require exactly three lanes (0, 1, 2)");if(CardDungeon){if(StartLane<0||StartLane>Nodes.Max(n=>n.lane)||!Nodes.Any(n=>n.floor==0&&Math.Abs(n.lane-StartLane)<=1))throw new ArgumentException("No reachable starting card");foreach(var n in Nodes.Where(n=>n.kind!=LevelKind.Boss))if(!Nodes.Any(v=>v.floor==n.floor+1&&(v.kind==LevelKind.Boss||Math.Abs(v.lane-n.lane)<=1)))throw new ArgumentException("Dungeon dead end at "+n.id);}return;}
    foreach(var n in Nodes){if(n.floor<top&&n.next.Count==0)throw new ArgumentException("Dead end at "+n.id);foreach(int id in n.next){var to=Find(id);if(to==null||to.floor!=n.floor+1)throw new ArgumentException("Connections must advance one floor");}if(n.floor==top&&n.next.Count>0)throw new ArgumentException("Boss is terminal");}
    var reachable=new HashSet<int>(Nodes.Where(n=>n.floor==0).Select(n=>n.id));
    foreach(var n in Nodes.OrderBy(n=>n.floor))if(reachable.Contains(n.id))foreach(int id in n.next)reachable.Add(id);
@@ -72,15 +73,24 @@ namespace RainbowLi {
    run.CurrentId=current;run.Completed.UnionWith(completed??Array.Empty<int>());
    if(run.Completed.Any(id=>graph.Find(id)==null))throw new ArgumentException("Invalid completed node");
    if(graph.CardDungeon&&current>=0){var node=graph.Find(current);run.PlayerFloor=node.floor;run.PlayerLane=node.lane;}
-   if(graph.Stacked&&!graph.CardDungeon){var first=run.Completed.Select(graph.Find).Where(n=>n.kind!=LevelKind.Boss).OrderBy(n=>n.floor).FirstOrDefault();if(first!=null)run.ChosenLane=first.lane;}
+   if(graph.Stacked&&!graph.CardDungeon&&!graph.IndependentStacks){var first=run.Completed.Select(graph.Find).Where(n=>n.kind!=LevelKind.Boss).OrderBy(n=>n.floor).FirstOrDefault();if(first!=null)run.ChosenLane=first.lane;}
    if(active>=0&&!run.Enter(active))throw new ArgumentException("Invalid active node");
    run.Finished=finished;run.Failed=failed;return run;
   }
-  public bool IsAbandoned(int id){var n=Graph.Find(id);return n!=null&&(Graph.CardDungeon?n.floor<=PlayerFloor&&!Completed.Contains(id):Graph.Stacked&&ChosenLane>=0&&n.kind!=LevelKind.Boss&&n.lane!=ChosenLane);}
+  public bool IsAbandoned(int id){var n=Graph.Find(id);return n!=null&&!Graph.IndependentStacks&&(Graph.CardDungeon?n.floor<=PlayerFloor&&!Completed.Contains(id):Graph.Stacked&&ChosenLane>=0&&n.kind!=LevelKind.Boss&&n.lane!=ChosenLane);}
   public bool IsCovered(int id){var n=Graph.Find(id);if(n!=null&&n.kind==LevelKind.Boss&&BossUnlockByBattles)return !BossUnlocked;if(n==null||!Graph.Stacked)return false;if(Graph.CardDungeon)return n.floor>PlayerFloor+1;return Graph.Nodes.Any(v=>v.kind!=LevelKind.Boss&&!IsAbandoned(v.id)&&!Completed.Contains(v.id)&&(n.kind==LevelKind.Boss||v.lane==n.lane&&v.floor<n.floor));}
   public bool CanEnter(int id){var n=Graph.Find(id);if(n!=null&&n.kind==LevelKind.Boss&&BossUnlockByBattles)return !Finished&&!Failed&&ActiveId<0&&!Completed.Contains(id)&&BossUnlocked;return n!=null&&!Finished&&!Failed&&ActiveId<0&&!Completed.Contains(id)&&!IsAbandoned(id)&&(Graph.CardDungeon?n.floor==PlayerFloor+1&&(n.kind==LevelKind.Boss||Math.Abs(n.lane-PlayerLane)<=1):Graph.Stacked?!IsCovered(id):(CurrentId<0?n.floor==0:Graph.Find(CurrentId).next.Contains(id)));}
-  public bool Enter(int id){if(!CanEnter(id))return false;ActiveId=id;if(Graph.Stacked&&!Graph.CardDungeon&&ChosenLane<0&&Graph.Find(id).kind!=LevelKind.Boss)ChosenLane=Graph.Find(id).lane;return true;}
-  public bool Complete(){if(ActiveId<0||Failed)return false;CurrentId=ActiveId;Completed.Add(ActiveId);var n=Graph.Find(ActiveId);if(Graph.CardDungeon){PlayerFloor=n.floor;PlayerLane=n.lane;}Finished=n.kind==LevelKind.Boss;ActiveId=-1;ExtendDungeonIfBossLocked();return true;}
+  public bool Enter(int id){if(!CanEnter(id))return false;ActiveId=id;if(Graph.Stacked&&!Graph.CardDungeon&&!Graph.IndependentStacks&&ChosenLane<0&&Graph.Find(id).kind!=LevelKind.Boss)ChosenLane=Graph.Find(id).lane;return true;}
+  public bool Complete(){if(ActiveId<0||Failed)return false;CurrentId=ActiveId;Completed.Add(ActiveId);var n=Graph.Find(ActiveId);if(Graph.CardDungeon){PlayerFloor=n.floor;PlayerLane=n.lane;}Finished=n.kind==LevelKind.Boss;ActiveId=-1;ExtendIndependentStackIfBossLocked(n.lane);ExtendDungeonIfBossLocked();return true;}
+  // Each lane is a queue; completed cards are removed only from their own queue.
+  public LevelNodeData FrontNode(int lane)=>Graph.Nodes.Where(n=>n.kind!=LevelKind.Boss&&n.lane==lane&&!Completed.Contains(n.id)).OrderBy(n=>n.floor).FirstOrDefault();
+  private void ExtendIndependentStackIfBossLocked(int lane){
+   if(!Graph.IndependentStacks||!BossUnlockByBattles||BossUnlocked||Finished||Failed||FrontNode(lane)!=null)return;
+   var boss=Graph.Nodes.First(n=>n.kind==LevelKind.Boss);
+   int floor=Graph.Nodes.Where(n=>n.kind!=LevelKind.Boss&&n.lane==lane).Max(n=>n.floor)+1;
+   boss.floor=Math.Max(boss.floor,floor+1);
+   Graph.Nodes.Add(new LevelNodeData{id=Graph.Nodes.Max(n=>n.id)+1,floor=floor,lane=lane,kind=LevelKind.Combat});
+  }
   private void ExtendDungeonIfBossLocked(){
    if(!Graph.CardDungeon||!BossUnlockByBattles||BossUnlocked||Finished||Failed)return;
    var boss=Graph.Nodes.First(n=>n.kind==LevelKind.Boss);if(PlayerFloor+1!=boss.floor)return;

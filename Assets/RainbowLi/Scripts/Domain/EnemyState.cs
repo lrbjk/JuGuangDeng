@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 namespace RainbowLi {
  public enum ActivationCondition { RoundAtLeast, HealthPercentAtMost }
  [Serializable] public sealed class EnemySkill {
   public string Name="攻击";public int Number=1;public CardEffect Effect;public int Modifier;public float Weight=10;public CardEffectSpec Spec;
+  public CardEffectSpec[] Specs=Array.Empty<CardEffectSpec>();
   public bool Special;public float SpecialWeightRatio=.5f;public ActivationCondition Condition;public int Threshold=3;
  }
  [Serializable] public sealed class ConditionalSequence {
@@ -23,7 +24,8 @@ namespace RainbowLi {
   public void StartEncounter(int maxHealth,bool boss,bool elite=false){MaxHealth=Health=maxHealth;Boss=boss;Elite=elite;EliteAttackBonus=0;unlocked.Clear();activeRules.Clear();ConditionalRules.Clear();Statuses.Clear();ResetRound();}
   private BattleAction Action(EnemySkill skill,GameSetup setup,Random random){
    int attack=setup==null?(Boss?9:5):(Boss?setup.BossAttack:setup.EnemyAttack);
-   var spec=skill.Spec;var card=spec==null?null:new Card {Number=skill.Number,Effect=skill.Effect,Spec=spec.Copy(),EffectAmount=random.Next(spec.Min,spec.Max+1),UpgradeBonus=0};
+   if(skill.Specs!=null&&skill.Specs.Length>1){var effects=CardEffectGroup.CreateEffects(skill.Specs,random,false);var primary=effects[0];return new BattleAction{Enemy=true,Number=skill.Number,Effect=primary.Spec.Effect,EffectSpec=primary.Spec.Copy(),Value=primary.ResolveValue(skill.Number,0),OrderedEffects=effects,SkillName=skill.Name,Special=skill.Special};}
+   var spec=skill.Spec??(skill.Specs!=null&&skill.Specs.Length==1?skill.Specs[0]:null);var card=spec==null?null:new Card {Number=skill.Number,Effect=skill.Effect,Spec=spec.Copy(),EffectAmount=random.Next(spec.Min,spec.Max+1),UpgradeBonus=0};
    return new BattleAction {Enemy=true,Number=skill.Number,Effect=skill.Effect,EffectSpec=card?.Spec,Value=card==null?Math.Max(0,attack+skill.Modifier+(Elite?EliteAttackBonus:0)):card.Value,SkillName=skill.Name,Special=skill.Special};
   }
   public List<BattleAction> ActivateSpecials(int round,GameSetup setup,Random random=null){

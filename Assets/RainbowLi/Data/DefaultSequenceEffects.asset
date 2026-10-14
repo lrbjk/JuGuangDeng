@@ -13,276 +13,276 @@ MonoBehaviour:
   m_Name: DefaultSequenceEffects
   m_EditorClassIdentifier: Assembly-CSharp::RainbowLi.UnityGame.SequenceEffectTable
   rows:
-  - id: "牌序效果_01"
-    name: "伤害X"
-    description: "造成X点伤害。"
+  - id: "\u724C\u5E8F\u6548\u679C_01"
+    name: "\u4F24\u5BB3X"
+    description: "\u9020\u6210X\u70B9\u4F24\u5BB3\u3002"
     range: 5-10
-    pools: "默认池,伤害池"
-    notes:
+    pools: "\u9ED8\u8BA4\u6C60,\u4F24\u5BB3\u6C60"
+    notes: 
     behavior: Damage
     enabled: 1
     weight: 50
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_02"
-    name: "填充X"
-    description: "在牌序最后填充数字X。"
+  - id: "\u724C\u5E8F\u6548\u679C_02"
+    name: "\u586B\u5145X"
+    description: "\u5728\u724C\u5E8F\u6700\u540E\u586B\u5145\u6570\u5B57X\u3002"
     range: 1-6
-    pools: "默认池,特殊效果池,数字效果池"
-    notes:
+    pools: "\u9ED8\u8BA4\u6C60,\u7279\u6B8A\u6548\u679C\u6C60,\u6570\u5B57\u6548\u679C\u6C60"
+    notes: 
     behavior: InsertNumber
     enabled: 1
     weight: 30
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_03"
-    name: "护盾X"
-    description: "获得X点护盾。"
+  - id: "\u724C\u5E8F\u6548\u679C_03"
+    name: "\u62A4\u76FEX"
+    description: "\u83B7\u5F97X\u70B9\u62A4\u76FE\u3002"
     range: 4-8
-    pools: "默认池,增益池"
-    notes:
+    pools: "\u9ED8\u8BA4\u6C60,\u589E\u76CA\u6C60"
+    notes: 
     behavior: Shield
     enabled: 1
     weight: 50
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_04"
-    name: "恢复X"
-    description: "恢复X点血量。"
+  - id: "\u724C\u5E8F\u6548\u679C_04"
+    name: "\u6062\u590DX"
+    description: "\u6062\u590DX\u70B9\u8840\u91CF\u3002"
     range: 2-8
-    pools: "默认池,增益池"
-    notes:
+    pools: "\u9ED8\u8BA4\u6C60,\u589E\u76CA\u6C60"
+    notes: 
     behavior: Heal
     enabled: 1
     weight: 40
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_05"
-    name: "增幅X"
-    description: "后续的卡牌效果获得+X。"
+  - id: "\u724C\u5E8F\u6548\u679C_05"
+    name: "\u589E\u5E45X"
+    description: "\u540E\u7EED\u7684\u5361\u724C\u6548\u679C\u83B7\u5F97+X\u3002"
     range: 1-3
-    pools: "默认池,增益池,特殊效果池"
-    notes:
+    pools: "\u9ED8\u8BA4\u6C60,\u589E\u76CA\u6C60,\u7279\u6B8A\u6548\u679C\u6C60"
+    notes: 
     behavior: Boost
     enabled: 1
     weight: 25
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_06"
-    name: "燃烧X"
-    description: "施加X层烧伤。"
+  - id: "\u724C\u5E8F\u6548\u679C_06"
+    name: "\u71C3\u70E7X"
+    description: "\u65BD\u52A0X\u5C42\u70E7\u4F24\u3002"
     range: 2-6
-    pools: "伤害池,减益池"
-    notes:
+    pools: "\u4F24\u5BB3\u6C60,\u51CF\u76CA\u6C60"
+    notes: 
     behavior: Burn
     enabled: 1
     weight: 30
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_07"
-    name: "掷毒X"
-    description: "施加X层中毒。"
+  - id: "\u724C\u5E8F\u6548\u679C_07"
+    name: "\u63B7\u6BD2X"
+    description: "\u65BD\u52A0X\u5C42\u4E2D\u6BD2\u3002"
     range: 3-9
-    pools: "伤害池,减益池"
-    notes:
+    pools: "\u4F24\u5BB3\u6C60,\u51CF\u76CA\u6C60"
+    notes: 
     behavior: Poison
     enabled: 1
     weight: 30
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_08"
-    name: "强化X"
-    description: "获得X层强壮。"
+  - id: "\u724C\u5E8F\u6548\u679C_08"
+    name: "\u5F3A\u5316X"
+    description: "\u83B7\u5F97X\u5C42\u5F3A\u58EE\u3002"
     range: 2-4
-    pools: "增益池"
-    notes:
+    pools: "\u589E\u76CA\u6C60"
+    notes: 
     behavior: Strength
     enabled: 1
     weight: 25
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_09"
-    name: "撕裂X"
-    description: "施加X层流血。"
+  - id: "\u724C\u5E8F\u6548\u679C_09"
+    name: "\u6495\u88C2X"
+    description: "\u65BD\u52A0X\u5C42\u6D41\u8840\u3002"
     range: 3-7
-    pools: "增益池"
-    notes:
+    pools: "\u589E\u76CA\u6C60"
+    notes: 
     behavior: Bleed
     enabled: 1
     weight: 30
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_10"
-    name: "重构X"
-    description: "添加X个随机数字。"
+  - id: "\u724C\u5E8F\u6548\u679C_10"
+    name: "\u91CD\u6784X"
+    description: "\u6DFB\u52A0X\u4E2A\u968F\u673A\u6570\u5B57\u3002"
     range: 1-3
-    pools: "特殊效果池,数字效果池"
-    notes:
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60,\u6570\u5B57\u6548\u679C\u6C60"
+    notes: 
     behavior: RandomNumbers
     enabled: 1
     weight: 15
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_11"
-    name: "背水X"
-    description: "减少血量至X%，造成2倍减少血量的伤害。"
+  - id: "\u724C\u5E8F\u6548\u679C_11"
+    name: "\u80CC\u6C34X"
+    description: "\u51CF\u5C11\u8840\u91CF\u81F3X%\uFF0C\u9020\u62102\u500D\u51CF\u5C11\u8840\u91CF\u7684\u4F24\u5BB3\u3002"
     range: 5-25
-    pools: "伤害池,特殊效果池"
-    notes:
+    pools: "\u4F24\u5BB3\u6C60,\u7279\u6B8A\u6548\u679C\u6C60"
+    notes: 
     behavior: LastStand
     enabled: 1
     weight: 5
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_12"
-    name: "混乱X"
-    description: "触发X次随机卡牌效果。"
+  - id: "\u724C\u5E8F\u6548\u679C_12"
+    name: "\u6DF7\u4E71X"
+    description: "\u89E6\u53D1X\u6B21\u968F\u673A\u5361\u724C\u6548\u679C\u3002"
     range: 1-4
-    pools: "特殊效果池"
-    notes:
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60"
+    notes: 
     behavior: RandomCardEffects
     enabled: 1
     weight: 5
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_13"
-    name: "破甲X"
-    description: "施加X层易伤。"
+  - id: "\u724C\u5E8F\u6548\u679C_13"
+    name: "\u7834\u7532X"
+    description: "\u65BD\u52A0X\u5C42\u6613\u4F24\u3002"
     range: 2-4
-    pools: "减益池"
-    notes:
+    pools: "\u51CF\u76CA\u6C60"
+    notes: 
     behavior: Vulnerable
     enabled: 1
     weight: 20
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_14"
-    name: "无敌X"
-    description: "获得X层招架。"
+  - id: "\u724C\u5E8F\u6548\u679C_14"
+    name: "\u65E0\u654CX"
+    description: "\u83B7\u5F97X\u5C42\u62DB\u67B6\u3002"
     range: 1-3
-    pools: "特殊效果池"
-    notes:
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60"
+    notes: 
     behavior: Parry
     enabled: 1
     weight: 10
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_15"
-    name: "回环X"
-    description: "重复触发X次构成此牌序的卡牌效果。"
+  - id: "\u724C\u5E8F\u6548\u679C_15"
+    name: "\u56DE\u73AFX"
+    description: "\u91CD\u590D\u89E6\u53D1X\u6B21\u6784\u6210\u6B64\u724C\u5E8F\u7684\u5361\u724C\u6548\u679C\u3002"
     range: 1-3
-    pools: "特殊效果池"
-    notes:
+    pools: "\u7279\u6B8A\u6548\u679C\u6C60"
+    notes: 
     behavior: RepeatSequenceCards
     enabled: 1
     weight: 5
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_16"
-    name: "伤害2X"
-    description: "造成2X点伤害。"
+  - id: "\u724C\u5E8F\u6548\u679C_16"
+    name: "\u4F24\u5BB32X"
+    description: "\u9020\u62102X\u70B9\u4F24\u5BB3\u3002"
     range: 5-10
-    pools: "默认池,伤害池"
-    notes:
+    pools: "\u9ED8\u8BA4\u6C60,\u4F24\u5BB3\u6C60"
+    notes: 
     behavior: Damage
     enabled: 1
     weight: 40
     multiplier: 2
     fixedValue: 0
-  - id: "牌序效果_17"
-    name: "恢复2X"
-    description: "恢复2X点血量。"
+  - id: "\u724C\u5E8F\u6548\u679C_17"
+    name: "\u6062\u590D2X"
+    description: "\u6062\u590D2X\u70B9\u8840\u91CF\u3002"
     range: 2-8
-    pools: "默认池,增益池"
-    notes:
+    pools: "\u9ED8\u8BA4\u6C60,\u589E\u76CA\u6C60"
+    notes: 
     behavior: Heal
     enabled: 1
     weight: 30
     multiplier: 2
     fixedValue: 0
-  - id: "牌序效果_18"
-    name: "护盾2X"
-    description: "获得2X点护盾。"
+  - id: "\u724C\u5E8F\u6548\u679C_18"
+    name: "\u62A4\u76FE2X"
+    description: "\u83B7\u5F972X\u70B9\u62A4\u76FE\u3002"
     range: 4-8
-    pools: "默认池,增益池"
-    notes:
+    pools: "\u9ED8\u8BA4\u6C60,\u589E\u76CA\u6C60"
+    notes: 
     behavior: Shield
     enabled: 1
     weight: 40
     multiplier: 2
     fixedValue: 0
-  - id: "牌序效果_19"
-    name: "增幅2X"
-    description: "后续的卡牌效果获得+2X。"
+  - id: "\u724C\u5E8F\u6548\u679C_19"
+    name: "\u589E\u5E452X"
+    description: "\u540E\u7EED\u7684\u5361\u724C\u6548\u679C\u83B7\u5F97+2X\u3002"
     range: 1-3
-    pools: "增益池,特殊效果池"
-    notes:
+    pools: "\u589E\u76CA\u6C60,\u7279\u6B8A\u6548\u679C\u6C60"
+    notes: 
     behavior: Boost
     enabled: 1
     weight: 15
     multiplier: 2
     fixedValue: 0
-  - id: "牌序效果_20"
-    name: "燃烧2X"
-    description: "施加2X层烧伤。"
+  - id: "\u724C\u5E8F\u6548\u679C_20"
+    name: "\u71C3\u70E72X"
+    description: "\u65BD\u52A02X\u5C42\u70E7\u4F24\u3002"
     range: 1-5
-    pools: "伤害池,减益池"
-    notes:
+    pools: "\u4F24\u5BB3\u6C60,\u51CF\u76CA\u6C60"
+    notes: 
     behavior: Burn
     enabled: 1
     weight: 20
     multiplier: 2
     fixedValue: 0
-  - id: "牌序效果_21"
-    name: "掷毒2X"
-    description: "施加2X层中毒。"
+  - id: "\u724C\u5E8F\u6548\u679C_21"
+    name: "\u63B7\u6BD22X"
+    description: "\u65BD\u52A02X\u5C42\u4E2D\u6BD2\u3002"
     range: 2-7
-    pools: "伤害池,减益池"
-    notes:
+    pools: "\u4F24\u5BB3\u6C60,\u51CF\u76CA\u6C60"
+    notes: 
     behavior: Poison
     enabled: 1
     weight: 20
     multiplier: 2
     fixedValue: 0
-  - id: "牌序效果_22"
-    name: "强化2X"
-    description: "获得2X层强壮。"
+  - id: "\u724C\u5E8F\u6548\u679C_22"
+    name: "\u5F3A\u53162X"
+    description: "\u83B7\u5F972X\u5C42\u5F3A\u58EE\u3002"
     range: 1-4
-    pools: "增益池"
-    notes:
+    pools: "\u589E\u76CA\u6C60"
+    notes: 
     behavior: Strength
     enabled: 1
     weight: 15
     multiplier: 2
     fixedValue: 0
-  - id: "牌序效果_23"
-    name: "撕裂2X"
-    description: "施加2X层流血。"
+  - id: "\u724C\u5E8F\u6548\u679C_23"
+    name: "\u6495\u88C22X"
+    description: "\u65BD\u52A02X\u5C42\u6D41\u8840\u3002"
     range: 2-6
-    pools: "伤害池,减益池"
-    notes:
+    pools: "\u4F24\u5BB3\u6C60,\u51CF\u76CA\u6C60"
+    notes: 
     behavior: Bleed
     enabled: 1
     weight: 20
     multiplier: 2
     fixedValue: 0
-  - id: "牌序效果_24"
-    name: "铁壁X"
-    description: "获得X层铁壁。"
+  - id: "\u724C\u5E8F\u6548\u679C_24"
+    name: "\u94C1\u58C1X"
+    description: "\u83B7\u5F97X\u5C42\u94C1\u58C1\u3002"
     range: 1-3
-    pools: "增益池"
-    notes:
+    pools: "\u589E\u76CA\u6C60"
+    notes: 
     behavior: IronWall
     enabled: 1
     weight: 25
     multiplier: 1
     fixedValue: 0
-  - id: "牌序效果_25"
-    name: "再生X"
-    description: "获得X层再生。"
+  - id: "\u724C\u5E8F\u6548\u679C_25"
+    name: "\u518D\u751FX"
+    description: "\u83B7\u5F97X\u5C42\u518D\u751F\u3002"
     range: 1-5
-    pools: "增益池"
-    notes:
+    pools: "\u589E\u76CA\u6C60"
+    notes: 
     behavior: Regeneration
     enabled: 1
     weight: 20

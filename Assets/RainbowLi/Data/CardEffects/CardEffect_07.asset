@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_07
-  m_EditorClassIdentifier:
-  effectId: "卡效_07"
-  displayName: "易伤X"
-  pools: "默认卡池,减益效果池,临时状态效果池"
+  m_EditorClassIdentifier: 
+  effectId: "\u5361\u6548_07"
+  displayName: "\u6613\u4F24X"
+  pools: "\u9ED8\u8BA4\u5361\u6C60,\u51CF\u76CA\u6548\u679C\u6C60,\u4E34\u65F6\u72B6\u6001\u6548\u679C\u6C60"
   sourceSheet: Sheet1
   sourceRange: 1-2
   sourceRow: 8
   effect: 6
   lifetime: 1
   polarity: 1
-  description: "受到的伤害增加X点。（X为效果层数。）"
+  description: "\u53D7\u5230\u7684\u4F24\u5BB3\u589E\u52A0X\u70B9\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\u3002\uFF09"
   usesCardNumber: 0
   includeInStartingDeck: 1
   minValue: 1

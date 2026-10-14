@@ -69,10 +69,10 @@ namespace RainbowLi.UnityGame {
     if(view==null){view=Instantiate(nodePrefab,content);view.name="RouteNode_"+n.id;view.nodeId=n.id;view.authoredFloor=n.floor;view.authoredLane=n.lane;((RectTransform)view.transform).anchoredPosition=Position(n,graph);nodes.Add(view);}
     if(view.authoredFloor!=n.floor||view.authoredLane!=n.lane){((RectTransform)view.transform).anchoredPosition=Position(n,graph);view.authoredFloor=n.floor;view.authoredLane=n.lane;}
     view.gameObject.SetActive(true);int id=n.id;view.map=this;view.Bind(n,run,()=>levels.SelectNode(id));
-    if(diagramLayout){view.gameObject.SetActive(n.kind!=LevelKind.Boss&&!run.IsAbandoned(n.id)&&!run.Completed.Contains(n.id)&&n.floor>=FocusFloor&&StackDepth(n,graph)<=diagramBackCards);((RectTransform)view.transform).anchoredPosition=Position(n,graph);((RectTransform)view.transform).sizeDelta=new Vector2(diagramCardWidth,diagramCardHeight);view.SetDepth(1);view.SetStackDepth(StackDepth(n,graph));}
+    if(diagramLayout){view.gameObject.SetActive(n.kind!=LevelKind.Boss&&!run.IsAbandoned(n.id)&&!run.Completed.Contains(n.id)&&(graph.IndependentStacks||n.floor>=FocusFloor)&&StackDepth(n,graph)<=diagramBackCards);((RectTransform)view.transform).anchoredPosition=Position(n,graph);((RectTransform)view.transform).sizeDelta=new Vector2(diagramCardWidth,diagramCardHeight);view.SetDepth(1);view.SetStackDepth(StackDepth(n,graph));}
     else if(perspectiveLayout){view.gameObject.SetActive(graph.Stacked?!run.IsAbandoned(n.id)&&!run.Completed.Contains(n.id)&&(overview||n.kind==LevelKind.Boss||StackDepth(n,graph)<=6):n.floor>=FocusFloor);((RectTransform)view.transform).anchoredPosition=Position(n,graph);view.SetDepth(NodeScale(n,graph));if(graph.Stacked)view.SetStackDepth(StackDepth(n,graph));}
    }
-   if(perspectiveLayout)foreach(var node in nodes.OrderByDescending(n=>n.authoredFloor))node.transform.SetAsLastSibling();
+   if(perspectiveLayout||diagramLayout)foreach(var node in nodes.OrderByDescending(n=>StackDepth(graph.Find(n.nodeId)??new LevelNodeData(),graph)))node.transform.SetAsLastSibling();
    if(regenerate){
     foreach(var line in lines)Destroy(line.gameObject);lines.Clear();
     foreach(Transform child in connections){child.gameObject.SetActive(false);Destroy(child.gameObject);}
@@ -94,7 +94,8 @@ namespace RainbowLi.UnityGame {
    legend.text=perspectiveLayout?(overview?"全路线预览 · 金色边框为可选关卡 · 滚轮查看远处路线":"选择一条道路  /  第 "+(FocusFloor+1)+" 层 · 共 "+graph.Floors+" 层"):"从下往上前进 · 绿色可选 · 金色已完成 · 沿连线选择下一层";
    if(graph.Stacked)legend.text=run.ChosenLane<0?"选择一个起点  /  选定后沿该列前进":"完成当前关卡  /  只露出正后方的下一关";
    if(graph.CardDungeon){progress.text="当前位置  "+(run.PlayerFloor<0?"入口":"第 "+(run.PlayerFloor+1)+" 行")+" / 第 "+(run.PlayerLane+1)+" 列     ·     已前进 "+run.Completed.Count+" 步";legend.text="选择前方左 / 中 / 右卡片  ·  完成后移动位置";if(playerMarker!=null){playerMarker.gameObject.SetActive(true);int lanes=graph.Nodes.Max(n=>n.lane)+1;playerMarker.anchoredPosition=new Vector2(contentWidth/2+(run.PlayerLane-(lanes-1)/2f)*Mathf.Min(foregroundSpacing,contentWidth/(lanes+.8f)),-(MapHeight(graph)-25));playerMarker.SetAsLastSibling();}}
-   if(diagramLayout){if(playerMarker!=null)playerMarker.gameObject.SetActive(false);progress.gameObject.SetActive(false);legend.text="当前位置：第 "+(run.PlayerLane+1)+" 列  ·  选择前方相邻卡片，完成关卡后向前移动";scroll.vertical=false;}
+   if(diagramLayout){if(playerMarker!=null)playerMarker.gameObject.SetActive(false);progress.gameObject.SetActive(false);legend.text=graph.IndependentStacks?"三列独立推进 · 完成一张关卡，只补上该列的下一张": "当前位置：第 "+(run.PlayerLane+1)+" 列  ·  选择前方相邻卡片，完成关卡后向前移动";scroll.vertical=false;}
+   if(graph.IndependentStacks){title.text="收容关卡";legend.text="三列独立推进 · 完成一张关卡，只补上该列的下一张";if(playerMarker!=null)playerMarker.gameObject.SetActive(false);}
    if(regenerate)scroll.verticalNormalizedPosition=0;
    if(followCurrentFloor&&displayedCurrent!=run.CurrentId){Canvas.ForceUpdateCanvases();int floor=run.CurrentId<0?0:graph.Find(run.CurrentId).floor;float overflow=Mathf.Max(1,content.rect.height-scroll.viewport.rect.height);scroll.verticalNormalizedPosition=perspectiveLayout?0:Mathf.Clamp01((floor*verticalSpacing-100)/overflow);displayedCurrent=run.CurrentId;}
   }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -55,7 +55,7 @@ namespace RainbowLi.EditorTools {
    if(!string.IsNullOrEmpty(message))EditorGUILayout.HelpBox(message,MessageType.None);
    var issues=CardTableValidation.Check(table.rows,Enemy);if(issues.Length>0)EditorGUILayout.HelpBox("发现 "+issues.Length+" 项错误，请查看各行下方提示；错误未修复前不能保存或批量应用。",MessageType.Error);
    foreach(var issue in issues.Where(e=>e.Row==0))EditorGUILayout.HelpBox(issue.ToString(),MessageType.Error);
-   if(table.rows.Any(r=>r!=null&&r.enabled&&r.HasCompoundEffects))EditorGUILayout.HelpBox("包含已启用的复合效果：配置可以保存和导出，当前玩法尚未接入多效果结算。运行前先禁用追加效果，或由玩法程序接入 GetEffects / EffectSpecs。",MessageType.Warning);
+   if(table.rows.Any(r=>r!=null&&r.enabled&&r.HasCompoundEffects))EditorGUILayout.HelpBox("已启用复合效果：每行生成一张完整卡牌，追加效果按列表顺序执行；随机卡池、起始牌组和敌人技能均已接入。",MessageType.Warning);
    EditorGUILayout.LabelField("共 "+table.rows.Length+" 行，启用 "+table.rows.Count(r=>r!=null&&r.enabled)+" 行"+(EditorUtility.IsDirty(table)?" · 有未保存修改":""));
    DrawBulk();
    scroll=EditorGUILayout.BeginScrollView(scroll);
@@ -86,7 +86,7 @@ namespace RainbowLi.EditorTools {
   }
   void DrawCompound(){
    if(selected<0||selected>=table.rows.Length||table.rows[selected]==null)return;var row=table.rows[selected];showCompound=EditorGUILayout.Foldout(showCompound,"选中行 "+row.id+" / 复合效果配置（主效果为序号1）",true);if(!showCompound)return;
-   EditorGUILayout.HelpBox("执行顺序按列表排列，作用对象仍由效果行为决定。这里只配置，真实多效果结算由玩法程序接入。",MessageType.Info);
+   EditorGUILayout.HelpBox("执行顺序按列表排列，作用对象仍由效果行为决定。运行时按顺序执行全部启用效果，每个效果数值在生成时确定。",MessageType.Info);
    Undo.RecordObject(table,"编辑卡牌复合效果");EditorGUI.BeginChangeCheck();var list=(row.additionalEffects??Array.Empty<CardTableEffect>()).ToList();int remove=-1,up=-1;
    EditorGUILayout.BeginHorizontal();foreach(var column in new[]{new{Title="序号",Width=55},new{Title="启用",Width=20},new{Title="结算效果",Width=120},new{Title="持续方式",Width=110},new{Title="性质",Width=100},new{Title="X范围",Width=85}})GUILayout.Label(column.Title,GUILayout.Width(column.Width));GUILayout.Label("效果描述");EditorGUILayout.EndHorizontal();
    compoundScroll=EditorGUILayout.BeginScrollView(compoundScroll,GUILayout.MaxHeight(160));

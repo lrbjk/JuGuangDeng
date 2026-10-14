@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_09
-  m_EditorClassIdentifier:
-  effectId: "卡效_09"
-  displayName: "再生X"
-  pools: "增益效果池,持续状态效果池"
+  m_EditorClassIdentifier: 
+  effectId: "\u5361\u6548_09"
+  displayName: "\u518D\u751FX"
+  pools: "\u589E\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
   sourceSheet: Sheet1
   sourceRange: 1-3
   sourceRow: 10
   effect: 8
   lifetime: 2
   polarity: 0
-  description: "回合开始时恢复X点血量。（X为效果层数，触发效果时减少一层）"
+  description: "\u56DE\u5408\u5F00\u59CB\u65F6\u6062\u590DX\u70B9\u8840\u91CF\u3002\uFF08X\u4E3A\u6548\u679C\u5C42\u6570\uFF0C\u89E6\u53D1\u6548\u679C\u65F6\u51CF\u5C11\u4E00\u5C42\uFF09"
   usesCardNumber: 0
   includeInStartingDeck: 1
   minValue: 1

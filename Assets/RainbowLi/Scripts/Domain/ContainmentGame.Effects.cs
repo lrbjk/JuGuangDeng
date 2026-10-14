@@ -1,15 +1,17 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 namespace RainbowLi {
  public sealed partial class ContainmentGame {
   private CombatantState Actor(bool enemy)=>enemy?(CombatantState)Enemy:Player;
   private int NextBattleNumber()=>random.Next(1,7);
   private void ApplyCardEffect(BattleAction action){
    var card=action.Card;if(action.EffectMultiplier==0)return;int adventureBonus=CardEffectGrowthFor(action);
-   if(card!=null&&card.HasOrderedEffects){
-    for(int i=0;i<card.Effects.Count;i++){
-     settlingEffectIndex=i;var effect=card.Effects[i];
-     ApplyEffect(action.Enemy,effect.Spec.Effect,CombatResolver.Clamp(((long)(action.BonusOnly?0:effect.ResolveValue(card.Number,card.Upgrade))+action.EffectBonus+adventureBonus)*action.EffectMultiplier),effect.Spec);
+   var ordered=card!=null&&card.HasOrderedEffects?card.Effects:action.OrderedEffects;
+   if(ordered!=null&&ordered.Count>0){
+    for(int i=0;i<ordered.Count;i++){
+     settlingEffectIndex=i;var effect=ordered[i];
+     ApplyEffect(action.Enemy,effect.Spec.Effect,CombatResolver.Clamp(((long)(action.BonusOnly?0:effect.ResolveValue(card==null?action.Number:card.Number,card==null?0:card.Upgrade))+action.EffectBonus+adventureBonus)*action.EffectMultiplier),effect.Spec);
      if(Health<=0||EnemyHealth<=0)return;
     }
    }else {settlingEffectIndex=0;ApplyEffect(action.Enemy,action.Effect,CombatResolver.Clamp(((long)(action.BonusOnly?0:card==null?action.Value:card.UnmodifiedValue)+action.EffectBonus+adventureBonus)*action.EffectMultiplier),card?.Spec??action.EffectSpec);}
@@ -33,7 +35,7 @@ namespace RainbowLi {
    ApplyStatus(action.Enemy,!action.Enemy,CardEffect.Burn,owner.Statuses[CardEffect.Ignite],"Ignite",BattleEventSource.Status);
    ApplyStatus(action.Enemy,!action.Enemy,CardEffect.Poison,owner.Statuses[CardEffect.Envenom],"Envenom",BattleEventSource.Status);
    var added=new List<BattleAction>();
-   if(owner.Statuses[CardEffect.Reciprocity]>0&&!action.IsRepeat)added.Add(new BattleAction {Card=action.Card,Enemy=action.Enemy,Number=action.Number,Effect=action.Effect,EffectSpec=action.EffectSpec,Value=action.Value,Rule=action.Rule,Participants=new List<BattleAction>(action.Participants),SequenceTrigger=action.SequenceTrigger,SourceAction=action.SourceAction??action,IsRepeat=true,EffectBonus=action.EffectBonus,EffectMultiplier=action.EffectMultiplier,SkillName=action.SkillName,Special=action.Special});
+   if(owner.Statuses[CardEffect.Reciprocity]>0&&!action.IsRepeat)added.Add(new BattleAction {Card=action.Card,OrderedEffects=action.OrderedEffects==null?new List<CardEffectInstance>():action.OrderedEffects.Select(e=>e.Copy()).ToList(),Enemy=action.Enemy,Number=action.Number,Effect=action.Effect,EffectSpec=action.EffectSpec,Value=action.Value,Rule=action.Rule,Participants=new List<BattleAction>(action.Participants),SequenceTrigger=action.SequenceTrigger,SourceAction=action.SourceAction??action,IsRepeat=true,EffectBonus=action.EffectBonus,EffectMultiplier=action.EffectMultiplier,SkillName=action.SkillName,Special=action.Special});
    for(int i=0;i<Math.Min(4096,owner.Statuses[CardEffect.RandomNumbers]);i++)added.Add(new BattleAction {IsNumberOnly=true,Enemy=action.Enemy,Number=NextBattleNumber()});
    pending.InsertRange(0,added);
   }

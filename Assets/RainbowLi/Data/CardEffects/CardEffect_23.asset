@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_23
-  m_EditorClassIdentifier:
-  effectId: "卡效_23"
-  displayName: "无序"
-  pools: "特殊效果池"
+  m_EditorClassIdentifier: 
+  effectId: "\u5361\u6548_23"
+  displayName: "\u65E0\u5E8F"
+  pools: "\u7279\u6B8A\u6548\u679C\u6C60"
   sourceSheet: Sheet1
   sourceRange: 1
   sourceRow: 24
   effect: 22
   lifetime: 1
   polarity: 1
-  description: "所有数字填入改为随机填入。"
+  description: "\u6240\u6709\u6570\u5B57\u586B\u5165\u6539\u4E3A\u968F\u673A\u586B\u5165\u3002"
   usesCardNumber: 0
   includeInStartingDeck: 1
   minValue: 1

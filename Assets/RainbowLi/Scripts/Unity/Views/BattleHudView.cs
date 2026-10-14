@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 namespace RainbowLi.UnityGame {
@@ -50,7 +50,7 @@ public sealed class BattleHudView : MonoBehaviour {
   for(int i=0;i<enemySkills.Length;i++){
    bool valid=rows!=null?i<rows.Length:skills!=null&&i<skills.Length;
    enemySkills[i].gameObject.SetActive(valid);if(!valid)continue;
-   if(rows!=null){var r=rows[i];int bonus=g.EnemyCardEffectBonus;enemySkills[i].Bind(r.number,r.effect,r.name+(r.special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+r.name,r.description+"\n效果数值："+CombatResolver.Clamp((long)r.min+bonus)+"～"+CombatResolver.Clamp((long)r.max+bonus)+(bonus>0?"\n全局敌人卡牌效果 +"+bonus:""));}
+   if(rows!=null){var r=rows[i];int bonus=g.EnemyCardEffectBonus;enemySkills[i].Bind(r.number,r.effect,r.name+(r.special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+r.name,string.Join("\n",r.EffectSpecs().Select((s,n)=>(n+1)+". "+s.Text+" ["+s.Min+"～"+s.Max+"]"))+"\n主效果数值："+CombatResolver.Clamp((long)r.min+bonus)+"～"+CombatResolver.Clamp((long)r.max+bonus)+(bonus>0?"\n全局敌人卡牌效果 +"+bonus:""));}
    else {var s=skills[i];enemySkills[i].Bind(s.Number,s.Effect,s.Name+(s.Special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+s.Name,CombatStatuses.Name(s.Effect)+" · 数字 "+s.Number+" · 修正 "+s.Modifier);}
   }
   LayoutCards(g);

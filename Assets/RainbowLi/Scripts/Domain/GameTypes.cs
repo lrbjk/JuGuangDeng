@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 namespace RainbowLi
@@ -91,6 +91,9 @@ namespace RainbowLi
         public bool IsNumberOnly;
         public string SkillName; public bool Special;
         public CardEffectSpec EffectSpec;
+        public List<CardEffectInstance> OrderedEffects=new List<CardEffectInstance>();
+        public string OrderedDescription(int bonus=0)=>string.Join(" / ",(OrderedEffects??new List<CardEffectInstance>()).Select(e=>CombatStatuses.Name(e.Spec.Effect)+" "+CombatResolver.Clamp((long)e.ResolveValue(Number,0)+bonus)));
+        public string OrderedRules(int bonus=0)=>string.Join("\n",(OrderedEffects??new List<CardEffectInstance>()).Select((e,i)=>(i+1)+". "+(string.IsNullOrEmpty(e.Spec.Text)?CombatStatuses.Name(e.Spec.Effect):e.Spec.Text.Replace("X",CombatResolver.Clamp((long)e.ResolveValue(Number,0)+bonus).ToString()))));
         public bool IsRepeat,IsStatusTick,EndTick;
         public int SequenceTrigger;
         public bool EffectOnly, BonusOnly;

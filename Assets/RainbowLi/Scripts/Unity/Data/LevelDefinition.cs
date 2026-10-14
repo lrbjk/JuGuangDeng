@@ -11,7 +11,10 @@ namespace RainbowLi.UnityGame {
   public bool randomizeEachRun=true;
   [Tooltip("起点三选一；选定后隐藏其他列，只沿所选列推进。BOSS 独立按完成战斗数解锁。")]
   public bool stackedLayout=true;
-  [Header("卡片地牢（优先于旧路线模式）")]
+  [Header("三列独立关卡（优先于旧路线模式）")]
+  [Tooltip("三个独立卡堆。完成某列前面的关卡，只补上该列后面的关卡，其余两列不变。固定节点用行号排列各列的先后顺序。新局生效。") ]
+  public bool independentStacks=true;
+  [Header("旧版卡片地牢")]
   [Tooltip("玩家每步可进入前方左、中、右卡片，完成后移动位置，中途可换方向。")]
   public bool cardDungeon=true;
   [Tooltip("-1 从中间列开始；其他值从 0 起指定玩家列。")][Min(-1)] public int startingLane=-1;
@@ -30,6 +33,6 @@ namespace RainbowLi.UnityGame {
   [Min(0)] public int eventGold=18,eventHealing=16;
   [Min(1)] public float eliteHealthMultiplier=1.5f;
   [Min(0)] public int eliteAttackBonus=3,eliteGold=40;
-  public RouteGraph CreateGraph(int gameSeed){var graph=randomizeEachRun||authoredNodes.Count==0?RouteGenerator.Generate(seed==0?gameSeed:seed,floors,lanes):new RouteGraph(authoredNodes,stackedLayout,cardDungeon,startingLane);return cardDungeon?new RouteGraph(graph.Nodes,true,true,startingLane):stackedLayout?new RouteGraph(graph.Nodes,true):graph;}
+  public RouteGraph CreateGraph(int gameSeed){if(independentStacks){var nodes=randomizeEachRun||authoredNodes.Count==0?RouteGenerator.Generate(seed==0?gameSeed:seed,floors,3).Nodes:authoredNodes;return new RouteGraph(nodes,true,false,-1,true);}var graph=randomizeEachRun||authoredNodes.Count==0?RouteGenerator.Generate(seed==0?gameSeed:seed,floors,lanes):new RouteGraph(authoredNodes,stackedLayout,cardDungeon,startingLane);return cardDungeon?new RouteGraph(graph.Nodes,true,true,startingLane):stackedLayout?new RouteGraph(graph.Nodes,true):graph;}
  }
 }

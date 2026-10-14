@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_19
-  m_EditorClassIdentifier:
-  effectId: "卡效_19"
-  displayName: "往复"
-  pools: "特殊效果池"
+  m_EditorClassIdentifier: 
+  effectId: "\u5361\u6548_19"
+  displayName: "\u5F80\u590D"
+  pools: "\u7279\u6B8A\u6548\u679C\u6C60"
   sourceSheet: Sheet1
   sourceRange: 1
   sourceRow: 20
   effect: 18
   lifetime: 1
   polarity: 2
-  description: "所有行为会额外执行一次。"
+  description: "\u6240\u6709\u884C\u4E3A\u4F1A\u989D\u5916\u6267\u884C\u4E00\u6B21\u3002"
   usesCardNumber: 0
   includeInStartingDeck: 1
   minValue: 1

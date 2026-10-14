@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_14
-  m_EditorClassIdentifier:
-  effectId: "卡效_14"
-  displayName: "招架X"
-  pools: "增益效果池,持续状态效果池"
+  m_EditorClassIdentifier: 
+  effectId: "\u5361\u6548_14"
+  displayName: "\u62DB\u67B6X"
+  pools: "\u589E\u76CA\u6548\u679C\u6C60,\u6301\u7EED\u72B6\u6001\u6548\u679C\u6C60"
   sourceSheet: Sheet1
   sourceRange: 1
   sourceRow: 15
   effect: 13
   lifetime: 2
   polarity: 0
-  description: "免疫一次受到的任意伤害，触发时减少一层。"
+  description: "\u514D\u75AB\u4E00\u6B21\u53D7\u5230\u7684\u4EFB\u610F\u4F24\u5BB3\uFF0C\u89E6\u53D1\u65F6\u51CF\u5C11\u4E00\u5C42\u3002"
   usesCardNumber: 0
   includeInStartingDeck: 1
   minValue: 1

@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_24
-  m_EditorClassIdentifier:
-  effectId: "卡效_24"
-  displayName: "变动X"
-  pools: "特殊效果池,临时状态效果池"
+  m_EditorClassIdentifier: 
+  effectId: "\u5361\u6548_24"
+  displayName: "\u53D8\u52A8X"
+  pools: "\u7279\u6B8A\u6548\u679C\u6C60,\u4E34\u65F6\u72B6\u6001\u6548\u679C\u6C60"
   sourceSheet: Sheet1
   sourceRange: 1-2
   sourceRow: 25
   effect: 23
   lifetime: 1
   polarity: 2
-  description: "接下来填入的X个数字将会随机变化。"
+  description: "\u63A5\u4E0B\u6765\u586B\u5165\u7684X\u4E2A\u6570\u5B57\u5C06\u4F1A\u968F\u673A\u53D8\u5316\u3002"
   usesCardNumber: 0
   includeInStartingDeck: 1
   minValue: 1

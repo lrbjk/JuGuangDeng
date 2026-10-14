@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_25
-  m_EditorClassIdentifier:
-  effectId: "卡效_25"
-  displayName: "加值X"
-  pools: "特殊效果池,临时状态效果池"
+  m_EditorClassIdentifier: 
+  effectId: "\u5361\u6548_25"
+  displayName: "\u52A0\u503CX"
+  pools: "\u7279\u6B8A\u6548\u679C\u6C60,\u4E34\u65F6\u72B6\u6001\u6548\u679C\u6C60"
   sourceSheet: Sheet1
   sourceRange: 1-2
   sourceRow: 26
   effect: 24
   lifetime: 1
   polarity: 2
-  description: "填入的数字获得+X。"
+  description: "\u586B\u5165\u7684\u6570\u5B57\u83B7\u5F97+X\u3002"
   usesCardNumber: 0
   includeInStartingDeck: 1
   minValue: 1

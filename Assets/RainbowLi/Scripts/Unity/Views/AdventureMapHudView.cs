@@ -19,7 +19,7 @@ namespace RainbowLi.UnityGame {
   private void Update(){if(elapsedTime!=null){int seconds=Mathf.Max(0,Mathf.FloorToInt(session.ElapsedSeconds));elapsedTime.text="已用时间  "+(seconds/3600).ToString("00")+":"+(seconds/60%60).ToString("00")+":"+(seconds%60).ToString("00");}}
   public void Refresh(){
    var game=session.Game;var run=levels.Run;if(game==null||run==null)return;
-   completedRooms.text="已完成关卡  "+run.Completed.Count+" / "+run.Graph.Floors;
+   completedRooms.text="已完成关卡  "+run.Completed.Count+(run.Graph.IndependentStacks?"": " / "+run.Graph.Floors);
    growthCount.text="敌人增益  "+(growth==null?0:growth.Count(game))+" 次";
    growthDescription.text=growth==null?"暂无敌人冒险增益":growth.Description(game);
    battleCount.text="战斗进度  "+run.CompletedBattleCount+" / "+run.BossRequiredBattles+"  ·  第 "+run.AdventureLayer+" 层";

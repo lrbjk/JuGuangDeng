@@ -11,17 +11,17 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bea9346051995107aa6c98166c51fc17, type: 3}
   m_Name: CardEffect_05
-  m_EditorClassIdentifier:
-  effectId: "卡效_05"
-  displayName: "恢复X"
-  pools: "默认卡池,增益效果池"
+  m_EditorClassIdentifier: 
+  effectId: "\u5361\u6548_05"
+  displayName: "\u6062\u590DX"
+  pools: "\u9ED8\u8BA4\u5361\u6C60,\u589E\u76CA\u6548\u679C\u6C60"
   sourceSheet: Sheet1
-  sourceRange: "为卡牌对应数字"
+  sourceRange: "\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57"
   sourceRow: 6
   effect: 2
   lifetime: 0
   polarity: 0
-  description: "恢复X点血量。（X为卡牌对应数字。）"
+  description: "\u6062\u590DX\u70B9\u8840\u91CF\u3002\uFF08X\u4E3A\u5361\u724C\u5BF9\u5E94\u6570\u5B57\u3002\uFF09"
   usesCardNumber: 1
   includeInStartingDeck: 1
   minValue: 1
