@@ -21,10 +21,18 @@ public sealed class BattlePanelView:MonoBehaviour {
   for(int i=0;i<g.Timeline.Count&&i<view.actions.Length;i++){var r=(RectTransform)view.actions[i].transform;float center=area.InverseTransformPoint(r.TransformPoint(r.rect.center)).x;if(local.x<center){slot=i;break;}}
   return true;
  }
- public void ShowInsertion(int slot){
+ public void ShowInsertion(int slot,BattleAction moving=null){
   var area=DropArea;if(area==null||slot<0){HideInsertion();return;}
   if(insertionMarker==null){var go=new GameObject("DragInsertionMarker",typeof(RectTransform),typeof(Image));insertionMarker=go.GetComponent<Image>();insertionMarker.raycastTarget=false;}
   var rect=insertionMarker.rectTransform;rect.SetParent(area,false);rect.anchorMin=rect.anchorMax=rect.pivot=new Vector2(.5f,.5f);
+  var poker=view.battleHud==null?null:view.battleHud.pokerLayout;
+  if(poker!=null&&poker.illustratedSlots&&poker.TryGetInsertionRect(slot,moving,out var target)){
+   var content=view.battleHud.actionArea;
+   Vector3 bottom=area.InverseTransformPoint(content.TransformPoint(target.min));
+   Vector3 top=area.InverseTransformPoint(content.TransformPoint(target.max));
+   rect.sizeDelta=new Vector2(Mathf.Abs(top.x-bottom.x),Mathf.Abs(top.y-bottom.y));rect.localPosition=(bottom+top)*.5f;rect.SetAsLastSibling();
+   insertionMarker.color=new Color(insertionColor.r,insertionColor.g,insertionColor.b,.25f);insertionMarker.gameObject.SetActive(true);return;
+  }
   float x=area.rect.xMin+12;
   if(slot<view.insertButtons.Length){var r=(RectTransform)view.insertButtons[slot].transform;x=area.InverseTransformPoint(r.TransformPoint(r.rect.center)).x;}
   rect.sizeDelta=new Vector2(6,Mathf.Max(20,area.rect.height-16));rect.localPosition=new Vector3(Mathf.Clamp(x,area.rect.xMin+4,area.rect.xMax-4),area.rect.center.y,0);rect.SetAsLastSibling();insertionMarker.color=insertionColor;insertionMarker.gameObject.SetActive(true);
@@ -59,14 +67,14 @@ public sealed class BattlePanelView:MonoBehaviour {
   if(fighting){var r=g.ArenaRules[g.ArenaIndex];view.arena.text="场地牌序："+r.Pattern+"\n"+r.Description+" · 最后一个数字所属方触发";view.enemyIntent.text="敌方牌序："+string.Join(" / ",g.Enemy.ActiveRules.Select(rule=>rule.Pattern+" "+rule.Description));}
   for(int i=0;i<view.hand.Length;i++){
    view.hand[i].gameObject.SetActive(i<g.Hand.Count);if(i>=g.Hand.Count)continue;var c=g.Hand[i];bool placed=g.Timeline.Any(a=>a.Card==c);
-   view.hand[i].Bind(c.Number,c.Effect,c.Description,false,c.Engraved,false,planning&&!placed&&g.PlayerActionCount<g.PlayerActionLimit,null);
+   view.hand[i].Bind(c.Number,c.Effect,c.Description,false,c.Engraved,false,planning&&!placed&&g.PlayerActionCount<g.PlayerActionLimit,null,c.Engraving);
    var drag=view.hand[i].GetComponent<HandCardDrag>();if(drag==null)drag=view.hand[i].gameObject.AddComponent<HandCardDrag>();drag.Bind(this,c);
    view.hand[i].SetDetails(view.tooltip,"玩家 · "+c.Name+" · 数字 "+c.Number,c.RulesText);
   }
   for(int i=0;i<view.actions.Length;i++){
    bool exists=i<g.Timeline.Count;view.actions[i].gameObject.SetActive(exists);view.actionLabels[i].gameObject.SetActive(exists);
    view.leftButtons[i].gameObject.SetActive(false);view.rightButtons[i].gameObject.SetActive(false);view.removeButtons[i].gameObject.SetActive(false);
-   if(!exists)continue;var a=g.Timeline[i];int growth=g.CardEffectGrowthFor(a);int shownValue=CombatResolver.Clamp((long)a.Value+growth);view.actions[i].Bind(a.Number,a.Effect,a.Card==null&&a.OrderedEffects.Count>0?a.OrderedDescription(growth):a.Card==null?(a.EncounterEffects?.Length>0?(a.Special?"特殊 / ":"")+a.SkillName:(a.Special?"特殊 / ":"")+CombatStatuses.Name(a.Effect)+" "+shownValue):a.Card.Description+(growth>0?" · 全局卡效 +"+growth:""),a.Enemy,a.Card!=null&&a.Card.Engraved,false,planning&&!a.Enemy&&a.Card!=null,null);
+   if(!exists)continue;var a=g.Timeline[i];int growth=g.CardEffectGrowthFor(a);int shownValue=CombatResolver.Clamp((long)a.Value+growth);view.actions[i].Bind(a.Number,a.Effect,a.Card==null&&a.OrderedEffects.Count>0?a.OrderedDescription(growth):a.Card==null?(a.EncounterEffects?.Length>0?(a.Special?"特殊 / ":"")+a.SkillName:(a.Special?"特殊 / ":"")+CombatStatuses.Name(a.Effect)+" "+shownValue):a.Card.Description+(growth>0?" · 全局卡效 +"+growth:""),a.Enemy,a.Card!=null&&a.Card.Engraved,false,planning&&!a.Enemy&&a.Card!=null,null,a.Card?.Engraving);
    var drag=view.actions[i].GetComponent<HandCardDrag>();if(!a.Enemy&&a.Card!=null){if(drag==null)drag=view.actions[i].gameObject.AddComponent<HandCardDrag>();drag.enabled=true;drag.Bind(this,a.Card,a);}else if(drag!=null)drag.enabled=false;
    view.actions[i].SetDetails(view.tooltip,(a.Enemy?"敌人":"玩家")+" · "+CombatStatuses.Name(a.Effect),(a.Card==null&&a.OrderedEffects.Count>0?a.OrderedRules(growth):a.Card==null?(a.EffectSpec==null?a.Label+(growth>0?"\n当前效果数值："+shownValue:""):a.EffectSpec.Text.Replace("X",shownValue.ToString())):a.Card.RulesText)+(growth>0?"\n全局敌人卡牌效果 +"+growth+"（已计入当前效果）":""));
    view.actionLabels[i].text=(i+1).ToString("00")+" · "+(a.Enemy?"敌方":"玩家");view.actionLabels[i].color=a.Enemy?new Color(.98f,.57f,.46f):new Color(.55f,.88f,.78f);

@@ -7,6 +7,11 @@ public sealed class BattleHudView : MonoBehaviour {
  public GameView view;
  public RectTransform handArea, actionArea;
  public Image enemyPortrait;
+ [Header("美术战斗布局")] public bool artLayout;
+ public RectTransform enemySkillContent;
+ public Vector2 skillOrigin=new Vector2(4,-4),skillSpacing=new Vector2(74,102);
+ [Range(.2f,1)] public float skillScale=.46f;
+ [Range(1,8)] public int skillColumns=4;
  public Text portraitPlaceholder,enemyName,playerShield,enemyShield,coins,deckCount,drawCount,discardCount,turnLabel;
  public Text[] enemyRules;
  public SequenceView[] enemySequenceViews;
@@ -41,26 +46,27 @@ public sealed class BattleHudView : MonoBehaviour {
   var rows=enemySequenceViews.ToList();var parent=(RectTransform)rows[0].transform.parent;
   if(enemySequenceScroll==null){
    var viewport=new GameObject("EnemySequenceScroll",typeof(RectTransform),typeof(Image),typeof(RectMask2D),typeof(ScrollRect));viewport.transform.SetParent(parent,false);
-   var rect=(RectTransform)viewport.transform;rect.anchorMin=rect.anchorMax=rect.pivot=new Vector2(0,1);rect.anchoredPosition=new Vector2(12,-44);rect.sizeDelta=new Vector2(parent.rect.width-24,parent.rect.height-50);viewport.GetComponent<Image>().color=Color.clear;
+   var rect=(RectTransform)viewport.transform;rect.anchorMin=rect.anchorMax=rect.pivot=new Vector2(0,1);rect.anchoredPosition=artLayout?Vector2.zero:new Vector2(12,-44);rect.sizeDelta=artLayout?parent.rect.size:new Vector2(parent.rect.width-24,parent.rect.height-50);viewport.GetComponent<Image>().color=Color.clear;
    var content=new GameObject("Content",typeof(RectTransform));content.transform.SetParent(rect,false);var contentRect=(RectTransform)content.transform;contentRect.anchorMin=new Vector2(0,1);contentRect.anchorMax=new Vector2(1,1);contentRect.pivot=new Vector2(.5f,1);contentRect.anchoredPosition=Vector2.zero;
    enemySequenceScroll=viewport.GetComponent<ScrollRect>();enemySequenceScroll.viewport=rect;enemySequenceScroll.content=contentRect;enemySequenceScroll.horizontal=false;enemySequenceScroll.movementType=ScrollRect.MovementType.Clamped;enemySequenceScroll.scrollSensitivity=35;
    foreach(var row in rows)row.transform.SetParent(contentRect,false);
   }
   while(rows.Count<count){var row=Instantiate(rows[0],enemySequenceScroll.content);row.name="EnemySequenceView_"+rows.Count;rows.Add(row);}
-  for(int i=0;i<rows.Count;i++){var rect=(RectTransform)rows[i].transform;rect.anchoredPosition=new Vector2(0,-i*82);}
-  enemySequenceScroll.content.sizeDelta=new Vector2(0,rows.Count*82);enemySequenceViews=rows.ToArray();
+  for(int i=0;i<rows.Count;i++){var rect=(RectTransform)rows[i].transform;rect.anchoredPosition=new Vector2(0,-i*(artLayout?58:82));}
+  enemySequenceScroll.content.sizeDelta=new Vector2(0,rows.Count*(artLayout?58:82));enemySequenceViews=rows.ToArray();
  }
  public void Refresh(ContainmentGame g) {
+  bool artActive=artLayout&&view.battlePanel.activeSelf;
   if(playerStatuses!=null)playerStatuses.Refresh(g.Player.Statuses);
   if(enemyStatuses!=null)enemyStatuses.Refresh(g.Enemy.Statuses);
   if(speedLabel!=null)speedLabel.text="播放速度  "+view.battle.PlaybackSpeed.ToString("0.#")+"×";
   enemyName.text=g.EnemyName;
   RefreshEnemyPortrait(g);
-  playerShield.text="护盾\n"+g.Shield;enemyShield.text="护盾\n"+g.EnemyShield;
+  playerShield.text=artActive?g.Shield.ToString():"护盾\n"+g.Shield;enemyShield.text=artActive?g.EnemyShield.ToString():"护盾\n"+g.EnemyShield;
   view.playerStats.text="玩家   "+g.Health+" / "+g.HealthLimit+"    增伤 "+g.Power;
   view.enemyStats.text=g.EnemyHealth+" / "+g.EnemyMaxHealth+"    增伤 "+g.EnemyPower;
-  coins.text="金币  "+g.Coins;deckCount.text="牌组  "+g.Deck.Count;if(mapDeckCount!=null)mapDeckCount.text="牌组  "+g.Deck.Count+" · 查看";
-  drawCount.text="抽牌堆\n"+g.DrawPileCards.Count;discardCount.text="弃牌堆\n"+g.DiscardCards.Count;
+  coins.text=artActive?g.Coins.ToString():"金币  "+g.Coins;deckCount.text=artActive?g.Deck.Count.ToString():"牌组  "+g.Deck.Count;if(mapDeckCount!=null)mapDeckCount.text="牌组  "+g.Deck.Count+" · 查看";
+  drawCount.text=artActive?g.DrawPileCards.Count.ToString():"抽牌堆\n"+g.DrawPileCards.Count;discardCount.text=artActive?g.DiscardCards.Count.ToString():"弃牌堆\n"+g.DiscardCards.Count;
   turnLabel.text="回合 "+g.Round+"   行动 "+g.PlayerActionCount+" / "+g.PlayerActionLimit;
   var rules=g.Enemy.ActiveRules.ToArray();
   EnsureEnemySequences(rules.Length);
@@ -69,7 +75,7 @@ public sealed class BattleHudView : MonoBehaviour {
    if(enemySequenceViews[i]==null)continue;
    if(i<rules.Length)enemySequenceViews[i].Bind(rules[i],false);else enemySequenceViews[i].BindEmpty("未激活牌序");
   }
-  if(arenaSequenceView!=null){if(g.ArenaRules.Count>0&&g.ArenaIndex>=0&&g.ArenaIndex<g.ArenaRules.Count)arenaSequenceView.Bind(g.ArenaRules[g.ArenaIndex],false);else arenaSequenceView.BindEmpty("场地牌序");}
+  if(arenaSequenceView!=null){if(g.ArenaRules.Count>0&&g.ArenaIndex>=0&&g.ArenaIndex<g.ArenaRules.Count){arenaSequenceView.Bind(g.ArenaRules[g.ArenaIndex],false);if(artLayout)arenaSequenceView.description.text+=" · 最后一个数字所属方触发";}else arenaSequenceView.BindEmpty("场地牌序");}
 
   var definition=view.session.enemy==null?null:view.session.enemy.definition;
   var configured=g.Enemy.Encounter?.Definition.Skills;
@@ -84,6 +90,11 @@ public sealed class BattleHudView : MonoBehaviour {
    else if(rows!=null){var r=rows[i];int bonus=g.EnemyCardEffectBonus;enemySkills[i].Bind(r.number,r.effect,r.name+(r.special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+r.name,string.Join("\n",r.EffectSpecs().Select((spec,n)=>(n+1)+". "+spec.Text+" ["+spec.Min+"～"+spec.Max+"]"))+"\n主效果数值："+CombatResolver.Clamp((long)r.min+bonus)+"～"+CombatResolver.Clamp((long)r.max+bonus)+(bonus>0?"\n全局敌人卡牌效果 +"+bonus:""));}
    else {var s=skills[i];enemySkills[i].Bind(s.Number,s.Effect,s.Name+(s.Special?"\n特殊技能":""),true,false,false,false,null);enemySkills[i].SetDetails(view.tooltip,"敌人技能 · "+s.Name,CombatStatuses.Name(s.Effect)+" · 数字 "+s.Number+" · 修正 "+s.Modifier);}
   }
+  if(artLayout){
+   view.playerStats.text=g.Health+" / "+g.HealthLimit;view.enemyStats.text=g.EnemyHealth+" / "+g.EnemyMaxHealth;
+   int visible=0;foreach(var card in enemySkills){if(!card.gameObject.activeSelf)continue;card.SetLayout(new Vector2(skillOrigin.x+visible%skillColumns*skillSpacing.x,skillOrigin.y-visible/skillColumns*skillSpacing.y),skillScale);visible++;}
+   if(enemySkillContent!=null)enemySkillContent.sizeDelta=new Vector2(enemySkillContent.sizeDelta.x,Mathf.Max(200,Mathf.CeilToInt(visible/(float)skillColumns)*skillSpacing.y));
+  }
   LayoutCards(g);
   if(pilePanel.activeSelf)UpdatePile(g);
  }
@@ -93,8 +104,8 @@ public sealed class BattleHudView : MonoBehaviour {
   float handWidth=handScroll==null?handArea.rect.width:handScroll.viewport.rect.width;
   float scale=Mathf.Min(handScale,(handWidth-32-cardGap*Mathf.Max(0,count-1))/Mathf.Max(1,count*130f));
   if(handScroll!=null){scale=Mathf.Max(.65f,scale);handArea.sizeDelta=new Vector2(Mathf.Max(handWidth,count*130*scale+Mathf.Max(0,count-1)*cardGap+32),handArea.sizeDelta.y);}
-  if(handScroll!=null)scale=Mathf.Min(scale,(handArea.rect.height-32)/225f);
-  float width=count*130*scale+Mathf.Max(0,count-1)*cardGap,start=(handArea.rect.width-width)/2;
+  if(handScroll!=null)scale=Mathf.Min(scale,artLayout?(handArea.rect.height-24)/195f:(handArea.rect.height-32)/225f);
+  float width=count*130*scale+Mathf.Max(0,count-1)*cardGap,start=artLayout?10:(handArea.rect.width-width)/2;
   for(int i=0;i<view.hand.Length;i++)PlaceCard(view.hand[i],new Vector2(start+i*(130*scale+cardGap),handScroll==null?-34:-24),scale);
   if(pokerLayout==null)pokerLayout=actionArea.GetComponent<PokerActionLayout>();
   if(pokerLayout!=null){pokerLayout.Layout(timelineCount);return;}
@@ -112,7 +123,7 @@ public sealed class BattleHudView : MonoBehaviour {
  private static void Place(Component c,float x,float y,float w,float h){var r=(RectTransform)c.transform;r.anchoredPosition=new Vector2(x,-y);r.sizeDelta=new Vector2(w,h);}
  public void ToggleSettings(){settingsPanel.SetActive(!settingsPanel.activeSelf);if(settingsPanel.activeSelf)settingsPanel.transform.SetAsLastSibling();}
  public void CloseSettings(){settingsPanel.SetActive(false);}
- public void SetVolume(float value){var fx=view.session.GetComponentInChildren<BattleEffects>();if(fx!=null&&fx.audioSource!=null)fx.audioSource.volume=value;}
+ public void SetVolume(float value){view.GetComponent<GameAudioController>()?.SetVolume(value);var fx=view.session.GetComponentInChildren<BattleEffects>();if(fx!=null&&fx.audioSource!=null)fx.audioSource.volume=value;}
  public void CycleSpeed(){view.battle.CycleSpeed();speedLabel.text="播放速度  "+view.battle.PlaybackSpeed.ToString("0.#")+"×";}
  public void ShowDrawPile(){if(deckOperations!=null){deckOperations.Open(DeckOperation.DrawPile);return;}displayedPile=0;pilePanel.SetActive(true);UpdatePile(view.session.Game);}
  public void ShowDiscardPile(){if(deckOperations!=null){deckOperations.Open(DeckOperation.DiscardPile);return;}displayedPile=1;pilePanel.SetActive(true);UpdatePile(view.session.Game);}
@@ -130,3 +141,5 @@ public sealed class BattleHudView : MonoBehaviour {
  }
 }
 }
+
+

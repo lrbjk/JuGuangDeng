@@ -33,7 +33,7 @@ public sealed class HandCardDrag : MonoBehaviour,IBeginDragHandler,IDragHandler,
   if(!IsDragging||e.pointerId!=pointer)return;if(!Valid()){CancelDrag();return;}
   if(RectTransformUtility.ScreenPointToWorldPointInRectangle(canvasRect,e.position,e.pressEventCamera,out var world))ghost.position=world-ghost.TransformVector(ghost.rect.center);
   ghost.SetAsLastSibling();
-  if(panel.TryGetDropSlot(e.position,e.pressEventCamera,out int slot))panel.ShowInsertion(slot);else panel.HideInsertion();
+  if(panel.TryGetDropSlot(e.position,e.pressEventCamera,out int slot))panel.ShowInsertion(slot,action);else panel.HideInsertion();
  }
  public void OnEndDrag(PointerEventData e){
   if(!IsDragging||e.pointerId!=pointer)return;

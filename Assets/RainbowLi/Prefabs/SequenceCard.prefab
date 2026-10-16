@@ -276,6 +276,7 @@ GameObject:
   - component: {fileID: 6427482906859359184}
   - component: {fileID: 4887274034478012837}
   - component: {fileID: 7562198066807104534}
+  - component: {fileID: 8111147563686182355}
   m_Layer: 0
   m_Name: Digit_1
   m_TagString: Untagged
@@ -400,6 +401,20 @@ MonoBehaviour:
   m_EffectColor: {r: 0.03, g: 0.05, b: 0.04, a: 1}
   m_EffectDistance: {x: 3, y: -3}
   m_UseGraphicAlpha: 1
+--- !u!114 &8111147563686182355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5034873416927674397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad388cfe11745cfafe717ae4c11bf99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.AudioUiFeedback
+  mainMenuButton: 0
+  interaction: 0
 --- !u!1 &5331016559366305410
 GameObject:
   m_ObjectHideFlags: 0
@@ -492,6 +507,7 @@ GameObject:
   - component: {fileID: 9164049489892175982}
   - component: {fileID: 7024541098575854315}
   - component: {fileID: 5509795013990821055}
+  - component: {fileID: 3972220782040468263}
   m_Layer: 0
   m_Name: Digit_0
   m_TagString: Untagged
@@ -616,6 +632,20 @@ MonoBehaviour:
   m_EffectColor: {r: 0.03, g: 0.05, b: 0.04, a: 1}
   m_EffectDistance: {x: 3, y: -3}
   m_UseGraphicAlpha: 1
+--- !u!114 &3972220782040468263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5931994799559883127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad388cfe11745cfafe717ae4c11bf99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.AudioUiFeedback
+  mainMenuButton: 0
+  interaction: 0
 --- !u!1 &5948023833838372371
 GameObject:
   m_ObjectHideFlags: 0
@@ -708,6 +738,7 @@ GameObject:
   - component: {fileID: 5360816515060779929}
   - component: {fileID: 8042673994884681403}
   - component: {fileID: 885711511432515070}
+  - component: {fileID: 3463957484828470444}
   m_Layer: 0
   m_Name: Digit_2
   m_TagString: Untagged
@@ -832,6 +863,20 @@ MonoBehaviour:
   m_EffectColor: {r: 0.03, g: 0.05, b: 0.04, a: 1}
   m_EffectDistance: {x: 3, y: -3}
   m_UseGraphicAlpha: 1
+--- !u!114 &3463957484828470444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7388286767142356501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad388cfe11745cfafe717ae4c11bf99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.AudioUiFeedback
+  mainMenuButton: 0
+  interaction: 0
 --- !u!1 &8180445145720429040
 GameObject:
   m_ObjectHideFlags: 0

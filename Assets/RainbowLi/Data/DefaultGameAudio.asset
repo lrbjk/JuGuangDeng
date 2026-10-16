@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 639386f81f45411186deb8dbc57a4a3c, type: 3}
+  m_Name: DefaultGameAudio
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.GameAudioProfile
+  entries:
+  - cue: 0
+    clip: {fileID: 8300000, guid: 456da3d2a0d51d64dbaabdd76930ff6e, type: 3}
+    volume: 0.8
+    pitch: 1
+  - cue: 1
+    clip: {fileID: 8300000, guid: 17aef3d3a20d68943a12c707fe132c9e, type: 3}
+    volume: 0.8
+    pitch: 1
+  - cue: 2
+    clip: {fileID: 8300000, guid: 1d6ad7f131617284a993745b37942be3, type: 3}
+    volume: 0.8
+    pitch: 1
+  - cue: 3
+    clip: {fileID: 8300000, guid: 5cd8c60651a7f3e4b84bd9347e6db4c4, type: 3}
+    volume: 0.8
+    pitch: 1
+  - cue: 4
+    clip: {fileID: 8300000, guid: b869c9a956d4d844792c110857f74051, type: 3}
+    volume: 0.8
+    pitch: 1
+  - cue: 5
+    clip: {fileID: 8300000, guid: b688f1903a9588649800e14fb41a6ad3, type: 3}
+    volume: 0.8
+    pitch: 1
+  - cue: 6
+    clip: {fileID: 8300000, guid: 1e930b411ecdb6749b2b7cddb137236e, type: 3}
+    volume: 0.8
+    pitch: 1
+  - cue: 7
+    clip: {fileID: 8300000, guid: d3700c0e786ba8748aa17c4f3005b280, type: 3}
+    volume: 0.8
+    pitch: 1
+  - cue: 8
+    clip: {fileID: 8300000, guid: 6c5583dec37da664c90668a9997d7f41, type: 3}
+    volume: 0.8
+    pitch: 1
+  minimumInterval: 0.025

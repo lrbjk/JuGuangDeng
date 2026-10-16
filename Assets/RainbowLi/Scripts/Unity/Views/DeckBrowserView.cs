@@ -27,7 +27,7 @@ public sealed class DeckBrowserView:MonoBehaviour {
   for(int i=0;i<cards.Count;i++){
    cards[i].gameObject.SetActive(i<ordered.Length);if(i>=ordered.Length)continue;
    var card=ordered[i];string caption=card.Description+(card.Upgrade>0?" · 升级 "+card.Upgrade:"");
-   cards[i].Bind(card.Number,card.Effect,caption,false,card.Engraved,false,false,null);
+   cards[i].Bind(card.Number,card.Effect,caption,false,card.Engraved,false,false,null,card.Engraving);
    cards[i].SetLayout(new Vector2(padding+i%count*(width+gap),-padding-i/count*(height+gap)),scale);
    cards[i].SetDetails(tooltip,card.Name+" / 数字 "+card.Number,"升级次数："+card.Upgrade+"\n"+card.RulesText+(card.Engraved?"\n铭刻："+(card.Engraving==null?"牌序收尾时追加伤害":card.Engraving.Description):""));
   }

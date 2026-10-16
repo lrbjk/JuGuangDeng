@@ -57,7 +57,7 @@ namespace RainbowLi.UnityGame {
   void BeginConfirmation(Card card,int number){
    pendingGame=openedGame;pendingCard=card;pendingNumber=number;pendingOperation=Operation;pendingState=State(card);confirmation.SetActive(true);confirmation.transform.SetAsLastSibling();view.tooltip.HideAll();
    confirmationTitle.text=ReadOnly(Operation)?"卡牌详情":"确认"+Name(Operation);
-   confirmationCard.gameObject.SetActive(card!=null);if(card!=null){confirmationCard.Bind(card.Number,card.Effect,card.Description,false,card.Engraved,false,false,null);}
+   confirmationCard.gameObject.SetActive(card!=null);if(card!=null){confirmationCard.Bind(card.Number,card.Effect,card.Description,false,card.Engraved,false,false,null,card.Engraving);}
    string detail=card==null?"":card.Name+" · 数字 "+card.Number+"\n"+card.RulesText+"\n\n";
    if(Operation==DeckOperation.Upgrade){var copy=card.CopyForSnapshot();copy.Upgrade++;detail+="升级后："+copy.RulesText+"\n消耗 "+pendingGame.CardUpgradePrice+" 金币";}
    else if(Operation==DeckOperation.Engrave){var definition=view.engravings.definition;bool fixedEffect=definition!=null&&(definition.effectTable!=null&&!string.IsNullOrWhiteSpace(definition.effectId)||!pendingGame.HasConfiguredEngravings);if(fixedEffect){var template=definition.CreateEffect();detail+=template.RollX&&template.MaxX>template.MinX?"铭刻效果示例（X="+template.MinX+"）："+template.Description+"\n实际 X 将在 "+template.MinX+"～"+template.MaxX+" 内随机生成。":"将获得铭刻："+template.Description;}else detail+="将按铭刻效果池随机生成一个铭刻。";detail+="\n消耗 "+pendingGame.CardEngravingPrice+" 金币，每张牌最多铭刻一次。";}
@@ -111,7 +111,7 @@ namespace RainbowLi.UnityGame {
    for(int i=0;i<cards.Count;i++){
     var tile=cards[i];tile.gameObject.SetActive(i<total);if(i>=total)continue;
     if(Operation==DeckOperation.Buy){int number=i+1;tile.Bind(number,CardEffect.RandomNumbers,"随机效果 / 确认后生成",false,false,false,true,()=>SelectNumber(number));tile.SetDetails(view.tooltip,"购买数字 "+number,"确认后按配表生成随机效果，消耗 "+game.CardPurchasePrice+" 金币。");}
-    else{var card=displayed[i];tile.Bind(card.Number,card.Effect,card.Description+(card.Upgrade>0?" · 升级 "+card.Upgrade:""),false,card.Engraved,false,Operation!=DeckOperation.Generate,()=>Select(card));tile.SetDetails(view.tooltip,card.Name+" · 数字 "+card.Number,card.RulesText);}
+    else{var card=displayed[i];tile.Bind(card.Number,card.Effect,card.Description+(card.Upgrade>0?" · 升级 "+card.Upgrade:""),false,card.Engraved,false,Operation!=DeckOperation.Generate,()=>Select(card),card.Engraving);tile.SetDetails(view.tooltip,card.Name+" · 数字 "+card.Number,card.RulesText);}
     tile.SetLayout(new Vector2(padding+i%count*(width+gap),-padding-i/count*(height+gap)),scale);
    }
   }

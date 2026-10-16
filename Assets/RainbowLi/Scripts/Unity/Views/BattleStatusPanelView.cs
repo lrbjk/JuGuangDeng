@@ -14,20 +14,32 @@ public sealed class BattleStatusPanelView:MonoBehaviour {
  public Color positiveColor=new Color(.13f,.31f,.25f),negativeColor=new Color(.39f,.15f,.16f),specialColor=new Color(.26f,.20f,.37f);
  [Tooltip("横排状态标签，状态较多时搭配水平 ScrollRect 查看。")]
  public bool singleRow;
+ [System.Serializable] public sealed class StatusIcon {public CardEffect effect;public Sprite icon;}
+ [Header("美术状态图标")] public bool iconMode;
+ public StatusIcon[] statusIcons=System.Array.Empty<StatusIcon>();
+ public Sprite fallbackIcon;
+ [Min(24)] public float iconSize=46,iconGap=6;
  readonly Dictionary<CardEffect,Button> chips=new Dictionary<CardEffect,Button>();
  CombatStatuses statuses;CardEffect? selected;
- void Awake(){closeButton.onClick.AddListener(CloseDetails);}
+ void Awake(){AllowBackgroundClicks();closeButton.onClick.AddListener(CloseDetails);}
+ // Only status chips receive clicks; transparent panel and mask backgrounds must pass through.
+ void AllowBackgroundClicks(){var background=GetComponent<Graphic>();if(background!=null)background.raycastTarget=false;var scroll=GetComponent<ScrollRect>();if(scroll!=null&&scroll.viewport!=null){var viewport=scroll.viewport.GetComponent<Graphic>();if(viewport!=null)viewport.raycastTarget=false;}}
  void OnDisable(){CloseDetails();}
  public void Refresh(CombatStatuses value){
-  statuses=value;emptyLabel.gameObject.SetActive(!value.Any);
+  statuses=value;emptyLabel.gameObject.SetActive(!iconMode&&!value.Any);
   foreach(var chip in chips.Values)chip.gameObject.SetActive(false);
   var effects=value.ActiveEffects.OrderBy(e=>Category(e)).ThenBy(e=>(int)e).ToArray();
-  int columns=singleRow?Mathf.Max(1,effects.Length):3;
+  int columns=singleRow?Mathf.Max(1,effects.Length):iconMode?Mathf.Max(1,Mathf.FloorToInt(((RectTransform)content.parent).rect.width/(iconSize+iconGap))):3;
   content.sizeDelta=singleRow?new Vector2(Mathf.Max(((RectTransform)content.parent).rect.width,effects.Length*123),34):new Vector2(content.sizeDelta.x,Mathf.Max(70,((effects.Length+2)/3)*38));
   for(int i=0;i<effects.Length;i++){
    var effect=effects[i];if(!chips.TryGetValue(effect,out var button)){button=Instantiate(chipTemplate,content);button.name="Status_"+effect;button.onClick=new Button.ButtonClickedEvent();button.onClick.AddListener(()=>ShowDetails(effect));chips.Add(effect,button);}
    button.gameObject.SetActive(true);var r=(RectTransform)button.transform;r.anchoredPosition=new Vector2(i%columns*123,-i/columns*38);button.GetComponent<Image>().color=Category(effect)==0?positiveColor:Category(effect)==1?negativeColor:specialColor;
    button.GetComponentInChildren<Text>().text=CombatStatuses.Name(effect)+"  "+value[effect]+"层\n"+CategoryName(effect);
+  }
+  if(iconMode){
+   float step=iconSize+iconGap;
+   content.sizeDelta=new Vector2(singleRow?Mathf.Max(((RectTransform)content.parent).rect.width,effects.Length*step):content.sizeDelta.x,singleRow?iconSize:Mathf.Max(iconSize,Mathf.CeilToInt(effects.Length/(float)columns)*step));
+   for(int i=0;i<effects.Length;i++){var effect=effects[i];var chip=chips[effect];var r=(RectTransform)chip.transform;r.anchoredPosition=new Vector2(i%columns*step,-i/columns*step);r.sizeDelta=Vector2.one*iconSize;var image=chip.GetComponent<Image>();image.sprite=statusIcons.FirstOrDefault(item=>item.effect==effect)?.icon??fallbackIcon;image.type=Image.Type.Simple;image.color=Color.white;var text=chip.GetComponentInChildren<Text>();text.rectTransform.anchorMin=Vector2.zero;text.rectTransform.anchorMax=Vector2.one;text.rectTransform.offsetMin=new Vector2(1,1);text.rectTransform.offsetMax=new Vector2(-1,-1);text.text=value[effect].ToString();text.fontSize=16;text.alignment=TextAnchor.LowerRight;text.color=Color.white;}
   }
   if(selected.HasValue){if(value[selected.Value]<=0)CloseDetails();else UpdateDetails(selected.Value);}
  }
@@ -75,3 +87,4 @@ public sealed class BattleStatusPanelView:MonoBehaviour {
  }}
 }
 }
+

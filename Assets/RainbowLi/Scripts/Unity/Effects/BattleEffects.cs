@@ -45,6 +45,7 @@ public sealed class BattleEffects : MonoBehaviour {
  private void OnResolution(ResolutionEvent e){if(cardMotion==null||!cardMotion.isActiveAndEnabled||!cardMotion.enableMotion)PlayResolution(e);}
  public void PlayResolution(ResolutionEvent e,bool arrived=false){
   if(Skipping)return;
+  gameView?.GetComponent<GameAudioController>()?.PlayResolution(e);
   ApplyProfile();
   if(gameView!=null)actionViews=gameView.actions;
   if(e.Action==null)return;
@@ -70,7 +71,7 @@ public sealed class BattleEffects : MonoBehaviour {
   int count=Mathf.Min(maxParticles,Mathf.RoundToInt((8+strength*36)*gain));
   for(int i=0;i<count;i++){var spark=Instantiate(particlePrefab,overlay);spark.color=i%3==0?(profile==null?new Color(1,.85f,.48f):profile.sparkAccentColor):(profile==null?new Color(1,.48f,.43f):profile.sparkColor);b.particles.Add(spark);}
   bursts.Add(b);
-  if(!aura&&audioSource!=null){bool heavy=strength*gain>.65f;var clip=heavy?heavyHit:lightHit;if(profile!=null){var assigned=heavy?profile.heavyHit:profile.lightHit;if(assigned!=null)clip=assigned;}if(clip==null){if(generatedHit==null)generatedHit=MakeHit();clip=generatedHit;}audioSource.pitch=Mathf.Lerp(profile==null?1.2f:profile.lightPitch,profile==null?.7f:profile.heavyPitch,Mathf.Clamp01(strength*gain));audioSource.PlayOneShot(clip,Mathf.Lerp(.4f,1,strength)*(profile==null?1:profile.soundVolume));}
+  if(!aura&&audioSource!=null&&!(gameView!=null&&gameView.GetComponent<GameAudioController>()?.HasConfiguredAudio==true)){bool heavy=strength*gain>.65f;var clip=heavy?heavyHit:lightHit;if(profile!=null){var assigned=heavy?profile.heavyHit:profile.lightHit;if(assigned!=null)clip=assigned;}if(clip==null){if(generatedHit==null)generatedHit=MakeHit();clip=generatedHit;}audioSource.pitch=Mathf.Lerp(profile==null?1.2f:profile.lightPitch,profile==null?.7f:profile.heavyPitch,Mathf.Clamp01(strength*gain));audioSource.PlayOneShot(clip,Mathf.Lerp(.4f,1,strength)*(profile==null?1:profile.soundVolume));}
  }
  private void LateUpdate(){
   if(audioSource!=null){if(gameView!=null&&gameView.battle!=null&&gameView.battle.IsPresentationPaused)audioSource.Pause();else audioSource.UnPause();}

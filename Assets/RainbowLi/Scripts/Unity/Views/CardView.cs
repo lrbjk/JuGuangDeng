@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +7,12 @@ using UnityEngine.EventSystems;
 namespace RainbowLi.UnityGame {
 public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPointerMoveHandler {
  public Image face, engravingBadge;
+ [Header("美术牌面")] public bool illustrated;
+ public Sprite illustratedFace,attackIcon,guardIcon,healIcon,otherIcon;
+ public CardSkinCatalog cardSkins;
+ public EngravingArtCatalog engravingArt;
+ public RuntimeEngraving BoundEngraving {get;private set;}
+ public Color illustratedInk=new Color(.04f,.1f,.12f);
  public Text topRank,bottomRank,caption;
  public Image topSuit,bottomSuit;
  public Image[] pips;
@@ -42,7 +48,7 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
  }
  public void SetDetails(TooltipView target,string title,string body){tooltip=target;detailTitle=title;detailBody=body;}
  private void Awake(){rect=(RectTransform)transform;home=rect.anchoredPosition;ownerView=GetComponentInParent<GameView>();}
- public void Bind(int number,CardEffect effect,string description,bool enemy,bool engraved,bool active,bool enabled,Action clicked) {
+ public void Bind(int number,CardEffect effect,string description,bool enemy,bool engraved,bool active,bool enabled,Action clicked,RuntimeEngraving engraving=null) {
   if(rect==null){rect=(RectTransform)transform;home=rect.anchoredPosition;}
   if(callback!=null)button.onClick.RemoveListener(callback);
   callback=()=>clicked?.Invoke(); button.onClick.AddListener(callback);button.interactable=enabled;
@@ -54,8 +60,36 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
   topRank.color=bottomRank.color=color;
   topSuit.sprite=bottomSuit.sprite=suits[suit];topSuit.color=bottomSuit.color=color;
   for(int i=0;i<pips.Length;i++){ pips[i].gameObject.SetActive(i<number);pips[i].sprite=suits[suit];pips[i].color=color; }
-  engravingBadge.gameObject.SetActive(engraved);
+  if(illustrated){
+   face.sprite=illustratedFace;face.type=Image.Type.Simple;
+   topRank.color=bottomRank.color=illustratedInk;caption.color=Color.white;
+   topSuit.sprite=suit==0?attackIcon:suit==1?guardIcon:suit==2?healIcon:otherIcon;topSuit.color=Color.white;
+   bottomSuit.gameObject.SetActive(false);foreach(var pip in pips)pip.gameObject.SetActive(false);
+  }
+  if(illustrated&&cardSkins!=null){
+   var artwork=cardSkins.Find(number,effect,enemy);bool baked=artwork!=null;
+   face.sprite=baked?artwork:illustratedFace;face.material=baked?null:cardSkins.fallbackMaterial;face.color=baked?Color.white:(enemy?enemyFace:playerFace);face.preserveAspect=baked;if(baked)caption.color=Color.white;
+   topRank.gameObject.SetActive(!baked);bottomRank.gameObject.SetActive(!baked);topSuit.gameObject.SetActive(!baked);
+   var plate=transform.Find("CaptionPlate");if(plate!=null)plate.gameObject.SetActive(!baked);
+  }
+  SetEngraving(engraved,engraving);
   Lift(active?selectedLift:0);
+ }
+ public void SetEngraving(bool engraved,RuntimeEngraving engraving){
+  BoundEngraving=engraved?engraving:null;
+  engravingBadge.gameObject.SetActive(engraved);if(!engraved)return;
+  var frame=illustrated&&engravingArt!=null?engravingArt.Find(engraving):null;
+  if(frame==null)return;
+  engravingBadge.sprite=frame;engravingBadge.color=Color.white;engravingBadge.material=null;
+  engravingBadge.raycastTarget=false;engravingBadge.type=Image.Type.Simple;engravingBadge.preserveAspect=false;
+  // Both textures use the same source canvas. Align their trimmed Sprite coordinates,
+  // retaining the frame's diamond above the card instead of stretching it into the face.
+  var baseRect=face.sprite.rect;var area=face.rectTransform.rect;
+  float scale=Mathf.Min(area.width/baseRect.width,area.height/baseRect.height);
+  var r=engravingBadge.rectTransform;r.SetParent(face.transform,false);r.anchorMin=r.anchorMax=r.pivot=new Vector2(0,1);
+  r.anchoredPosition=new Vector2((area.width-baseRect.width*scale)*.5f+(frame.rect.x-baseRect.x)*scale,
+   -(area.height-baseRect.height*scale)*.5f+(frame.rect.yMax-baseRect.yMax)*scale);
+  r.sizeDelta=frame.rect.size*scale;r.localScale=Vector3.one;r.localRotation=Quaternion.identity;
  }
  public void OnPointerEnter(PointerEventData e){
   if(!Application.isPlaying||!isActiveAndEnabled||attacking||GetComponent<HandCardDrag>()?.IsDragging==true)return;

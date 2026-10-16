@@ -313,6 +313,7 @@ GameObject:
   - component: {fileID: 8395053208004709733}
   - component: {fileID: 1756461624270369894}
   - component: {fileID: 8431467997916665944}
+  - component: {fileID: 6803329107589608923}
   m_Layer: 0
   m_Name: RouteBannerNode
   m_TagString: Untagged
@@ -457,6 +458,20 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.7}
   m_EffectDistance: {x: 0, y: -8}
   m_UseGraphicAlpha: 1
+--- !u!114 &6803329107589608923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5610141553429317914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad388cfe11745cfafe717ae4c11bf99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.AudioUiFeedback
+  mainMenuButton: 0
+  interaction: 0
 --- !u!1 &9167117081794257263
 GameObject:
   m_ObjectHideFlags: 0

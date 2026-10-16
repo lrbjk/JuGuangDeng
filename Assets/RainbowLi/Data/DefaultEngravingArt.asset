@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0389c2828e87f7d4f9315d9e916024d9, type: 3}
+  m_Name: DefaultEngravingArt
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.EngravingArtCatalog
+  entries:
+  - name: "\u6BD2\u7D20X"
+    effectId: "\u94ED\u523B\u6548\u679C_01"
+    effect: 0
+    frame: {fileID: -8027482173866284928, guid: 22021ed316ecea9489511df752b3d207, type: 3}
+  - name: "\u707C\u70E7X"
+    effectId: "\u94ED\u523B\u6548\u679C_02"
+    effect: 1
+    frame: {fileID: -3945597719477182463, guid: 0085b725dda6ade4695fe27c0d9ba819, type: 3}
+  - name: "\u8FFD\u51FBX"
+    effectId: "\u94ED\u523B\u6548\u679C_03"
+    effect: 2
+    frame: {fileID: 7133140468635531670, guid: 3abc1d1fa66615b428ed31da5cfb87f3, type: 3}
+  - name: "\u6210\u957FX"
+    effectId: "\u94ED\u523B\u6548\u679C_04"
+    effect: 3
+    frame: {fileID: -8322857322142147778, guid: 04c87922e64d8b54196a750c9f7e5e87, type: 3}
+  - name: "\u53D8\u5316X"
+    effectId: "\u94ED\u523B\u6548\u679C_05"
+    effect: 4
+    frame: {fileID: 7887026757314850796, guid: e8e2c301df8642a4fbe39fcab8041dd5, type: 3}
+  - name: "\u6CDB\u7528"
+    effectId: "\u94ED\u523B\u6548\u679C_06"
+    effect: 5
+    frame: {fileID: 5432296045531983515, guid: 18337b0a9329016408a9cfb2a1e9934d, type: 3}
+  - name: "\u6536\u5C3E"
+    effectId: "\u94ED\u523B\u6548\u679C_07"
+    effect: 6
+    frame: {fileID: -529978147356647207, guid: 690d4ce9a7e827144b9b6685f4662a3a, type: 3}
+  - name: "\u51B2\u950B"
+    effectId: "\u94ED\u523B\u6548\u679C_08"
+    effect: 7
+    frame: {fileID: -3270846913626098937, guid: b46d06072521e1d4ebd436954dd1e56b, type: 3}
+  - name: "\u963B\u65AD"
+    effectId: "\u94ED\u523B\u6548\u679C_09"
+    effect: 8
+    frame: {fileID: -6553124015803447533, guid: bf21a4a35236afd40b103dd6f218aad8, type: 3}
+  - name: "\u6865\u63A5"
+    effectId: "\u94ED\u523B\u6548\u679C_10"
+    effect: 9
+    frame: {fileID: 4560461732000048302, guid: 8fc1d5c60fc037545bf199d0afe81142, type: 3}
+  - name: "\u4F20\u627F"
+    effectId: "\u94ED\u523B\u6548\u679C_11"
+    effect: 10
+    frame: {fileID: 757330249895051124, guid: 5ce0ffc4e519e1e4f9bdbbc0aad565f0, type: 3}
+  - name: "\u5343\u53D8\u4E07\u5316"
+    effectId: "\u94ED\u523B\u6548\u679C_12"
+    effect: 11
+    frame: {fileID: 6513350231029710698, guid: 2d463eb2d7488d24b9d2694f9665c4ca, type: 3}
+  - name: "\u8F6E\u76D8\u8D4C"
+    effectId: "\u94ED\u523B\u6548\u679C_13"
+    effect: 12
+    frame: {fileID: -5940462099376890929, guid: eb1a648665411c544b43a068cda3e9d8, type: 3}
+  - name: "\u72EC\u6728\u6210\u6797"
+    effectId: "\u94ED\u523B\u6548\u679C_14"
+    effect: 13
+    frame: {fileID: -6805695411997758335, guid: 9f2ccf9d3c4017f4c85c56f78fdaad04, type: 3}
+  - name: "\u8C22\u5E55"
+    effectId: "\u94ED\u523B\u6548\u679C_15"
+    effect: 14
+    frame: {fileID: -1215921499578409138, guid: ba9fdf397567da342b23fc110b5fb15c, type: 3}
+  - name: "\u5F00\u5E55"
+    effectId: "\u94ED\u523B\u6548\u679C_16"
+    effect: 15
+    frame: {fileID: -5041546793508326736, guid: 8fa4b92e0e5383046a76fa9712d8ef93, type: 3}
+  - name: "\u5145\u80FD"
+    effectId: "\u94ED\u523B\u6548\u679C_17"
+    effect: 16
+    frame: {fileID: 997374958598832580, guid: c7c2c115c8877f04e9be973c5a8e5714, type: 3}
+  - name: "\u6BD2\u7206"
+    effectId: "\u94ED\u523B\u6548\u679C_18"
+    effect: 17
+    frame: {fileID: 1422752401863273127, guid: 670379d2c10f4e949ab8f9d428b1e319, type: 3}
+  - name: "\u5F15\u71C3"
+    effectId: "\u94ED\u523B\u6548\u679C_19"
+    effect: 18
+    frame: {fileID: 5308300015144041628, guid: 65f192616ed7a7c4dabf67a79cb9367a, type: 3}
+  legacyEffect: 2

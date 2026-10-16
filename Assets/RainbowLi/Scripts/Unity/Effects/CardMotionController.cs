@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,12 +34,12 @@ public sealed class CardMotionController : MonoBehaviour {
  public bool BlocksResolution=>isActiveAndEnabled&&enableMotion&&(transfers.Count>0||casts.Count>0||KeepBattleVisible);
  public bool KeepBattleVisible {get;private set;}
  private sealed class Visual {
-  public int number;public CardEffect effect;public string label;public bool enemy,engraved;
+  public int number;public CardEffect effect;public string label;public bool enemy,engraved;public RuntimeEngraving engraving;
   public Vector2 point,size;public float angle;
  }
  private sealed class Transfer {
   public CardView ghost;public Image back;public RectTransform destination;
-  public Visual from,to;public float start,duration,arc;public bool flip;
+  public Visual from,to;public float start,duration,arc;public bool flip;public GameAudioCue? audioCue;
   public readonly List<Image> trails=new List<Image>();
  }
  private sealed class Cast {
@@ -93,7 +93,7 @@ public sealed class CardMotionController : MonoBehaviour {
    if(wasBattle&&(newRound||!battle)){
     int i=0;foreach(var item in hands){var origin=actions.FirstOrDefault(a=>a.Key.Card==item.Key).Value??item.Value;
      float wait=(!battle?chargeDuration+projectileDuration+impactDuration:0)*Pace+i++*dealStagger*Pace;
-     Fly(origin,At(discardPile,origin,.22f),null,discardDuration*Pace,wait,false);TotalDiscards++;
+     Fly(origin,At(discardPile,origin,.22f),null,discardDuration*Pace,wait,false,GameAudioCue.Click);TotalDiscards++;
     }
     delay=(discardDuration+dealStagger*Mathf.Max(0,hands.Count-1)+.06f)*Pace;
    }
@@ -105,8 +105,8 @@ public sealed class CardMotionController : MonoBehaviour {
       delay+=(placeDuration+.1f)*Pace;
      }
     }
-    int i=0;foreach(var item in nextHands){Fly(At(drawPile,item.Value,.24f),item.Value,HandRect(g,item.Key),drawDuration*Pace,delay+i++*dealStagger*Pace,true);TotalDraws++;}
-    i=0;foreach(var item in nextActions){var origin=EnemyOrigin(item.Key,item.Value);Fly(origin,item.Value,ActionRect(g,item.Key),placeDuration*Pace,delay+i++*dealStagger*Pace,false);}
+    int i=0;foreach(var item in nextHands){Fly(At(drawPile,item.Value,.24f),item.Value,HandRect(g,item.Key),drawDuration*Pace,delay+i++*dealStagger*Pace,true,GameAudioCue.Click);TotalDraws++;}
+    i=0;foreach(var item in nextActions){var origin=EnemyOrigin(item.Key,item.Value);Fly(origin,item.Value,ActionRect(g,item.Key),placeDuration*Pace,delay+i++*dealStagger*Pace,false,GameAudioCue.Button);}
    }else if(battle){
     foreach(var item in nextActions){Visual origin;
      if(!actions.TryGetValue(item.Key,out origin)){
@@ -114,10 +114,10 @@ public sealed class CardMotionController : MonoBehaviour {
       else origin=EnemyOrigin(item.Key,item.Value);
      }
      if(!actions.ContainsKey(item.Key)||(origin.point-item.Value.point).sqrMagnitude>4)
-      Fly(origin,item.Value,ActionRect(g,item.Key),placeDuration*Pace,0,false);
+      Fly(origin,item.Value,ActionRect(g,item.Key),placeDuration*Pace,0,false,GameAudioCue.Button);
     }
     foreach(var item in actions)if(!nextActions.ContainsKey(item.Key)&&item.Key.Card!=null&&nextHands.TryGetValue(item.Key.Card,out var target))
-     Fly(item.Value,target,HandRect(g,item.Key.Card),placeDuration*Pace,0,false);
+     Fly(item.Value,target,HandRect(g,item.Key.Card),placeDuration*Pace,0,false,GameAudioCue.Button);
    }
   }
   lastHeal=Mathf.Max(0,g.Health-health);lastEnemyHeal=Mathf.Max(0,g.EnemyHealth-enemyHealth);
@@ -139,17 +139,17 @@ public sealed class CardMotionController : MonoBehaviour {
   var r=(RectTransform)card.transform;var corners=new Vector3[4];r.GetWorldCorners(corners);
   Vector2 a=motionLayer.InverseTransformPoint(corners[0]),b=motionLayer.InverseTransformPoint(corners[2]);
   return new Visual{point=Point(r),size=new Vector2(Mathf.Abs(b.x-a.x),Mathf.Abs(b.y-a.y)),angle=r.eulerAngles.z-motionLayer.eulerAngles.z,
-   number=data?.Number??int.Parse(card.topRank.text),effect=data?.Effect??card.BoundEffect,label=card.caption.text,enemy=enemy,engraved=data?.Engraved??false};
+   number=data?.Number??int.Parse(card.topRank.text),effect=data?.Effect??card.BoundEffect,label=card.caption.text,enemy=enemy,engraved=data?.Engraved??card.engravingBadge.gameObject.activeSelf,engraving=(data?.Engraving??card.BoundEngraving)?.Copy()};
  }
  private Vector2 Point(RectTransform r)=>r==null?Vector2.zero:(Vector2)motionLayer.InverseTransformPoint(r.TransformPoint(r.rect.center));
- private Visual At(RectTransform r,Visual card,float scale)=>new Visual{point=Point(r),size=new Vector2(130,225)*scale,number=card.number,effect=card.effect,label=card.label,enemy=card.enemy,engraved=card.engraved};
+ private Visual At(RectTransform r,Visual card,float scale)=>new Visual{point=Point(r),size=new Vector2(130,225)*scale,number=card.number,effect=card.effect,label=card.label,enemy=card.enemy,engraved=card.engraved,engraving=card.engraving?.Copy()};
  private Visual EnemyOrigin(BattleAction a,Visual target){
   if(a.Enemy&&view.battleHud!=null){var skills=view.battleHud.enemySkills;var match=skills.FirstOrDefault(c=>c!=null&&c.gameObject.activeInHierarchy&&c.topRank.text==a.Number.ToString()&&c.BoundEffect==a.Effect);if(match!=null)return Read(match,null,true);}
   return At(ruleOrigin,target,.3f);
  }
  private CardView Ghost(Visual v){
   var c=Instantiate(cardPrefab,motionLayer);c.name="FlyingCard";c.gameObject.SetActive(true);
-  c.SetPreview(v.number,v.effect,v.label);c.Bind(v.number,v.effect,v.label,v.enemy,v.engraved,false,false,null);
+  c.SetPreview(v.number,v.effect,v.label);c.Bind(v.number,v.effect,v.label,v.enemy,v.engraved,false,false,null,v.engraving);
   c.SetPresentationOnly();if(c.caption!=null)c.caption.gameObject.SetActive(false);
   var r=(RectTransform)c.transform;r.anchorMin=r.anchorMax=r.pivot=new Vector2(.5f,.5f);r.localRotation=Quaternion.identity;
   r.anchoredPosition=v.point;r.localScale=new Vector3(v.size.x/r.rect.width,v.size.y/r.rect.height,1);return c;
@@ -157,8 +157,8 @@ public sealed class CardMotionController : MonoBehaviour {
  private Image Image(string name,Color color){var go=new GameObject(name,typeof(RectTransform),typeof(UnityEngine.UI.Image));go.transform.SetParent(motionLayer,false);var im=go.GetComponent<Image>();im.color=color;im.raycastTarget=false;return im;}
  private DuelRingGraphic Ring(string name,Color color){var go=new GameObject(name,typeof(RectTransform),typeof(DuelRingGraphic));go.transform.SetParent(motionLayer,false);var r=go.GetComponent<DuelRingGraphic>();r.color=color;r.raycastTarget=false;return r;}
  private Image Back(CardView ghost){var go=new GameObject("CardBack",typeof(RectTransform),typeof(UnityEngine.UI.Image));go.transform.SetParent(ghost.face.transform,false);var r=(RectTransform)go.transform;r.anchorMin=Vector2.zero;r.anchorMax=Vector2.one;r.offsetMin=r.offsetMax=Vector2.zero;var im=go.GetComponent<Image>();im.color=new Color(.08f,.22f,.35f);im.raycastTarget=false;var outline=go.AddComponent<Outline>();outline.effectColor=new Color(.9f,.76f,.45f);outline.effectDistance=new Vector2(3,-3);return im;}
- private void Fly(Visual from,Visual to,RectTransform destination,float duration,float delay,bool flip){
-  var t=new Transfer{from=from,to=to,destination=destination,start=Now+delay,duration=Mathf.Max(.05f,duration),arc=flightArc,flip=flip};
+ private void Fly(Visual from,Visual to,RectTransform destination,float duration,float delay,bool flip,GameAudioCue? audioCue=null){
+  var t=new Transfer{from=from,to=to,destination=destination,start=Now+delay,duration=Mathf.Max(.05f,duration),arc=flightArc,flip=flip,audioCue=audioCue};
   t.ghost=Ghost(from);if(flip)t.back=Back(t.ghost);t.ghost.gameObject.SetActive(delay<=0);
   for(int i=0;i<6;i++){var trail=Image("CardFlightTrail",from.enemy?attackColor:shieldColor);trail.gameObject.SetActive(false);t.trails.Add(trail);}
   if(destination!=null){hidden.TryGetValue(destination,out int count);hidden[destination]=count+1;}transfers.Add(t);
@@ -220,7 +220,7 @@ public sealed class CardMotionController : MonoBehaviour {
    r.localRotation=Quaternion.Euler(0,0,Mathf.Lerp(t.from.angle,t.to.angle,ease)+Mathf.Sin(p*Mathf.PI)*(profile==null?14:profile.flightRotation));
    if(t.back!=null)t.back.gameObject.SetActive(p<.5f);
    Trail(t.trails,t.from.point,t.to.point,ease,t.arc,shieldColor,1,Mathf.Sin(p*Mathf.PI));
-   if(p>=1){DestroyTransfer(t);transfers.RemoveAt(i);}
+   if(p>=1){if(t.audioCue.HasValue)view.GetComponent<GameAudioController>()?.Play(t.audioCue.Value);DestroyTransfer(t);transfers.RemoveAt(i);}
   }
   for(int i=casts.Count-1;i>=0;i--){var c=casts[i];float age=Now-c.start;
    float charge=Mathf.Clamp01(age/c.charge),travel=Mathf.Clamp01((age-c.charge)/c.travel),hit=Mathf.Clamp01((age-c.charge-c.travel)/c.impact);

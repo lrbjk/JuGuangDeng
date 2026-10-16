@@ -24,6 +24,7 @@ namespace RainbowLi.UnityGame {
   public RectTransform playerMarker;
   [Header("三列卡片选关布局")]
   public bool diagramLayout;
+  [Min(0)] public float diagramColumnGap=76;
   [Min(100)] public float diagramCardWidth=278,diagramCardHeight=400;
   [Min(20)] public float diagramStripHeight=64;
   [Range(1,6)] public int diagramBackCards=4;
@@ -50,7 +51,7 @@ namespace RainbowLi.UnityGame {
   private void OnEnable(){levels.session.Changed+=Refresh;Refresh();}
   private void OnDisable(){levels.session.Changed-=Refresh;}
   public Vector2 Position(LevelNodeData n,RouteGraph graph){int lanes=graph.Nodes.Max(v=>v.lane)+1;
-   if(diagramLayout)return new Vector2(contentWidth/2+(n.lane-(lanes-1)/2f)*(diagramCardWidth+76),-(8+diagramStripHeight*(diagramBackCards-Mathf.Min(diagramBackCards,StackDepth(n,graph)))));if(!perspectiveLayout)return new Vector2(contentWidth/2+(n.lane-(lanes-1)/2f)*horizontalSpacing,-60-(graph.Floors-1-n.floor)*verticalSpacing);
+   if(diagramLayout)return new Vector2(contentWidth/2+(n.lane-(lanes-1)/2f)*(diagramCardWidth+diagramColumnGap),-(8+diagramStripHeight*(diagramBackCards-Mathf.Min(diagramBackCards,StackDepth(n,graph)))));if(!perspectiveLayout)return new Vector2(contentWidth/2+(n.lane-(lanes-1)/2f)*horizontalSpacing,-60-(graph.Floors-1-n.floor)*verticalSpacing);
    if(graph.CardDungeon)return new Vector2(contentWidth/2+(n.lane-(lanes-1)/2f)*Mathf.Min(foregroundSpacing,contentWidth/(lanes+.8f)),-(MapHeight(graph)-190-StackDepth(n,graph)*60));
    if(graph.Stacked)return new Vector2(n.kind==LevelKind.Boss?contentWidth/2:contentWidth/2+(n.lane-(lanes-1)/2f)*Mathf.Min(foregroundSpacing,contentWidth/(lanes+.8f)),-(n.kind==LevelKind.Boss&&StackDepth(n,graph)>0?90:MapHeight(graph)-140-StackDepth(n,graph)*65));
    float y=MapHeight(graph)-140;for(int f=FocusFloor;f<n.floor;f++)y-=140*DepthScale(f);

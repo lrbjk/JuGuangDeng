@@ -209,6 +209,7 @@ GameObject:
   - component: {fileID: 889881281332725115}
   - component: {fileID: 6964071418085030405}
   - component: {fileID: 9116411965117084247}
+  - component: {fileID: 7633165846317404694}
   m_Layer: 0
   m_Name: Upgrade
   m_TagString: Untagged
@@ -333,6 +334,20 @@ MonoBehaviour:
   m_EffectColor: {r: 0.03, g: 0.05, b: 0.04, a: 1}
   m_EffectDistance: {x: 3, y: -3}
   m_UseGraphicAlpha: 1
+--- !u!114 &7633165846317404694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4220859706720807576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad388cfe11745cfafe717ae4c11bf99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.AudioUiFeedback
+  mainMenuButton: 0
+  interaction: 1
 --- !u!1 &5389079537646292553
 GameObject:
   m_ObjectHideFlags: 0
@@ -346,6 +361,7 @@ GameObject:
   - component: {fileID: 7783104950421002307}
   - component: {fileID: 6101958751688380582}
   - component: {fileID: 4732012181889178612}
+  - component: {fileID: 2783001315692967444}
   m_Layer: 0
   m_Name: Remove
   m_TagString: Untagged
@@ -470,6 +486,20 @@ MonoBehaviour:
   m_EffectColor: {r: 0.03, g: 0.05, b: 0.04, a: 1}
   m_EffectDistance: {x: 3, y: -3}
   m_UseGraphicAlpha: 1
+--- !u!114 &2783001315692967444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5389079537646292553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad388cfe11745cfafe717ae4c11bf99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.AudioUiFeedback
+  mainMenuButton: 0
+  interaction: 1
 --- !u!1 &8463396844308480282
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,6 +750,7 @@ GameObject:
   - component: {fileID: 3144149721753879889}
   - component: {fileID: 692422800270374541}
   - component: {fileID: 9041217984729393961}
+  - component: {fileID: 7465684587129342419}
   m_Layer: 0
   m_Name: Engrave
   m_TagString: Untagged
@@ -844,3 +875,17 @@ MonoBehaviour:
   m_EffectColor: {r: 0.03, g: 0.05, b: 0.04, a: 1}
   m_EffectDistance: {x: 3, y: -3}
   m_UseGraphicAlpha: 1
+--- !u!114 &7465684587129342419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8646031087710308208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad388cfe11745cfafe717ae4c11bf99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.AudioUiFeedback
+  mainMenuButton: 0
+  interaction: 1

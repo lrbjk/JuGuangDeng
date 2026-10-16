@@ -9,6 +9,7 @@ namespace RainbowLi.UnityGame {
   public Button button;
   public Text label;
   public Image face;
+  public Image cardArtwork;
   public RouteBannerGraphic banner;
   public RouteIconGraphic icon;
   public Image customIcon;
@@ -18,7 +19,7 @@ namespace RainbowLi.UnityGame {
   private bool hover;
   public static string KindName(LevelKind kind)=>kind==LevelKind.Combat?"战斗":kind==LevelKind.Elite?"精英":kind==LevelKind.Rest?"休息":kind==LevelKind.Shop?"商店":kind==LevelKind.Event?"事件":"首领";
   public void SetDepth(float scale){baseScale=Vector3.one*scale;transform.localScale=baseScale;}
-  public void SetStackDepth(int depth){bool front=depth==0;label.gameObject.SetActive(front);stateLabel.gameObject.SetActive(front);banner.raycastTarget=front&&button.interactable;float width=((RectTransform)transform).rect.width;foreach(var g in new Graphic[]{icon,customIcon}){g.transform.localScale=Vector3.one*(map!=null&&map.diagramLayout?(front?1.5f:.55f):(front?1:.72f));((RectTransform)g.transform).anchoredPosition=map!=null&&map.diagramLayout?new Vector2(width*.5f-(front?48:17.6f),front?-64:-12):new Vector2(width*.5f-(front?32:23),front?-(banner.pointDepth<=.01f?75:31):-10);}}
+  public void SetStackDepth(int depth){bool front=depth==0;label.gameObject.SetActive(front);stateLabel.gameObject.SetActive(front);banner.raycastTarget=front&&button.interactable;if(cardArtwork!=null){cardArtwork.color=front?Color.white:new Color(.52f,.52f,.52f);foreach(var graphic in new Graphic[]{icon,customIcon}){graphic.transform.localScale=Vector3.one;var r=(RectTransform)graphic.transform;r.anchorMin=r.anchorMax=r.pivot=new Vector2(0,1);r.anchoredPosition=new Vector2(162,-24);r.sizeDelta=Vector2.one*32;graphic.gameObject.SetActive(front&&(graphic==customIcon?customIcon.sprite!=null:customIcon.sprite==null));}stateLabel.gameObject.SetActive(false);return;}float width=((RectTransform)transform).rect.width;foreach(var g in new Graphic[]{icon,customIcon}){g.transform.localScale=Vector3.one*(map!=null&&map.diagramLayout?(front?1.5f:.55f):(front?1:.72f));((RectTransform)g.transform).anchoredPosition=map!=null&&map.diagramLayout?new Vector2(width*.5f-(front?48:17.6f),front?-64:-12):new Vector2(width*.5f-(front?32:23),front?-(banner.pointDepth<=.01f?75:31):-10);}}
   private void Update(){if(banner==null)return;float pulse=button.interactable?Mathf.Sin(Time.unscaledTime*2.2f+nodeId)*.018f:0;transform.localScale=Vector3.Lerp(transform.localScale,baseScale*(1+(hover?.06f:pulse)),Time.unscaledDeltaTime*10);}
   public void OnPointerEnter(PointerEventData e){hover=true;map?.ShowTooltip(nodeId);}
   public void OnPointerExit(PointerEventData e){hover=false;map?.HideTooltip();}
@@ -39,6 +40,7 @@ namespace RainbowLi.UnityGame {
     icon.kind=node.kind;icon.color=available?new Color(.97f,.9f,.73f):visited?new Color(.59f,.48f,.28f):new Color(.38f,.39f,.38f);icon.SetVerticesDirty();
     customIcon.sprite=presentation?.icon;customIcon.gameObject.SetActive(customIcon.sprite!=null);icon.gameObject.SetActive(customIcon.sprite==null);
     label.color=available?new Color(.97f,.9f,.73f):new Color(.51f,.51f,.47f);
+    if(cardArtwork!=null){banner.color=Color.clear;banner.borderColor=Color.clear;banner.SetVerticesDirty();label.color=new Color(.08f,.10f,.11f);icon.color=new Color(.06f,.08f,.09f);icon.SetVerticesDirty();}
     return;
    }
    label.text=name+"\n"+(visited?"已完成":available?"可选择":"未解锁");

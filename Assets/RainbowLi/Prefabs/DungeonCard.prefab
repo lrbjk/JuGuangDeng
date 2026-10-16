@@ -168,6 +168,7 @@ GameObject:
   - component: {fileID: 478662778509418581}
   - component: {fileID: 2303426304084333184}
   - component: {fileID: 6904193016819879583}
+  - component: {fileID: 7850981649005906252}
   m_Layer: 0
   m_Name: DungeonCard
   m_TagString: Untagged
@@ -312,6 +313,20 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.7}
   m_EffectDistance: {x: 0, y: -8}
   m_UseGraphicAlpha: 1
+--- !u!114 &7850981649005906252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2525414758616539903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad388cfe11745cfafe717ae4c11bf99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.AudioUiFeedback
+  mainMenuButton: 0
+  interaction: 0
 --- !u!1 &5668986394826198205
 GameObject:
   m_ObjectHideFlags: 0
