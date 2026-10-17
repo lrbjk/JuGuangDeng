@@ -16,6 +16,7 @@ MonoBehaviour:
   - id: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
     sheetName: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
     title: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1\uFF1A\u7535\u8111"
+    portrait: {fileID: 0}
     enabled: 1
     configured: 1
     health: 50
@@ -23,7 +24,7 @@ MonoBehaviour:
     skillCount: 4
     sequenceCount: 3
     actions: 2-3
-    attack: 4-7
+    attack: 4
     initialEffects: "\u65E0"
     skills:
     - slot: "\u57FA\u7840\u6280\u80FD1"
@@ -206,6 +207,7 @@ MonoBehaviour:
   - id: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
     sheetName: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
     title: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2\uFF1A\u952E\u76D8\u805A\u5408\u4F53"
+    portrait: {fileID: 0}
     enabled: 1
     configured: 1
     health: 60
@@ -213,7 +215,7 @@ MonoBehaviour:
     skillCount: 4
     sequenceCount: 3
     actions: 2-3
-    attack: 3-6
+    attack: 3
     initialEffects: "\u65E0"
     skills:
     - slot: "\u57FA\u7840\u6280\u80FD1"
@@ -396,6 +398,7 @@ MonoBehaviour:
   - id: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3"
     sheetName: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3"
     title: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3\uFF1A\u7834\u788E\u805A\u5408\u4F53"
+    portrait: {fileID: 21300000, guid: 85319cc1f4e549a42ad85855ec3827a2, type: 3}
     enabled: 1
     configured: 1
     health: 40
@@ -403,7 +406,7 @@ MonoBehaviour:
     skillCount: 4
     sequenceCount: 3
     actions: 2-3
-    attack: 5-9
+    attack: 4
     initialEffects: "\u65E0"
     skills:
     - slot: "\u57FA\u7840\u6280\u80FD1"
@@ -585,7 +588,8 @@ MonoBehaviour:
       canSkip: 0
   - id: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
     sheetName: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
-    title: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1\uFF1A\u8815\u52A8\u8089\u56E2"
+    title: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1\uFF1A\u805A\u5408\u4EBA"
+    portrait: {fileID: 21300000, guid: 6447089b0b540aa48a347baaafbe91ee, type: 3}
     enabled: 1
     configured: 1
     health: 40
@@ -593,7 +597,7 @@ MonoBehaviour:
     skillCount: 4
     sequenceCount: 3
     actions: 2-3
-    attack: 3-6
+    attack: 3
     initialEffects: "\u65E0"
     skills:
     - slot: "\u57FA\u7840\u6280\u80FD1"
@@ -776,6 +780,7 @@ MonoBehaviour:
   - id: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
     sheetName: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
     title: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2\uFF1A\u7A81\u53D8\u4EBA\u5F62"
+    portrait: {fileID: 21300000, guid: 47bcffe857c00894689454bb702f4226, type: 3}
     enabled: 1
     configured: 1
     health: 70
@@ -783,7 +788,7 @@ MonoBehaviour:
     skillCount: 4
     sequenceCount: 3
     actions: 3
-    attack: 3-7
+    attack: 3
     initialEffects: "\u65E0"
     skills:
     - slot: "\u57FA\u7840\u6280\u80FD1"
@@ -966,6 +971,7 @@ MonoBehaviour:
   - id: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3"
     sheetName: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3"
     title: "\u751F\u7269\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA3\uFF1A\u730E\u72AC"
+    portrait: {fileID: 21300000, guid: eb10ab05a4a6ad54c9920734c8318ea8, type: 3}
     enabled: 1
     configured: 1
     health: 38
@@ -973,7 +979,7 @@ MonoBehaviour:
     skillCount: 4
     sequenceCount: 3
     actions: 2-3
-    attack: 8-15
+    attack: 7
     initialEffects: "\u65E0"
     skills:
     - slot: "\u57FA\u7840\u6280\u80FD1"
@@ -1156,6 +1162,7 @@ MonoBehaviour:
   - id: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
     sheetName: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
     title: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1\uFF1A\u590D\u5236\u7C98\u8D34"
+    portrait: {fileID: 21300000, guid: 5464080e98ed95b4f956d9af5c32f7d9, type: 3}
     enabled: 1
     configured: 1
     health: 60
@@ -1163,7 +1170,7 @@ MonoBehaviour:
     skillCount: 5
     sequenceCount: 3
     actions: 2-3
-    attack: 4-7
+    attack: 4
     initialEffects: "\u65E0"
     skills:
     - slot: "\u57FA\u7840\u6280\u80FD1"
@@ -1378,6 +1385,7 @@ MonoBehaviour:
   - id: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
     sheetName: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
     title: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2\uFF1A\u4E71\u7801"
+    portrait: {fileID: 21300000, guid: 0222f84fd594ee245b9b5a5a427fb2d0, type: 3}
     enabled: 1
     configured: 1
     health: 60
@@ -1385,7 +1393,7 @@ MonoBehaviour:
     skillCount: 5
     sequenceCount: 3
     actions: 2-3
-    attack: 4-7
+    attack: 4
     initialEffects: "\u65E0"
     skills:
     - slot: "\u57FA\u7840\u6280\u80FD1"

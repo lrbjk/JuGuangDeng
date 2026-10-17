@@ -17,6 +17,7 @@ MonoBehaviour:
       id: "\u673A\u68B0\u7C7B\uFF1ABOSS"
       sheetName: "\u673A\u68B0\u7C7B\uFF1ABOSS"
       title: "\u673A\u68B0\u7C7B\uFF1ABOSS\uFF1A\u6570\u636E\u7EC8\u7AEF\u805A\u5408"
+      portrait: {fileID: 21300000, guid: d18c16bf375638346bad33a1219085b4, type: 3}
       enabled: 1
       configured: 1
       health: 140
@@ -24,7 +25,7 @@ MonoBehaviour:
       skillCount: 7
       sequenceCount: 5
       actions: 3-4
-      attack: 8-15
+      attack: 9
       initialEffects: "\u6BCF\u56DE\u5408\u5F00\u59CB\u83B7\u5F975\u70B9\u62A4\u76FE"
       skills:
       - slot: "\u57FA\u7840\u6280\u80FD1"
@@ -495,7 +496,8 @@ MonoBehaviour:
   - content:
       id: "\u751F\u7269\u7C7B\uFF1ABOSS"
       sheetName: "\u751F\u7269\u7C7B\uFF1ABOSS"
-      title: "\u673A\u68B0\u7C7B\uFF1ABOSS\uFF1A\u8854\u5C3E\u4E4B\u86C7"
+      title: "\u751F\u7269\u7C7B\uFF1ABOSS\uFF1A\u8854\u5C3E\u4E4B\u86C7"
+      portrait: {fileID: 21300000, guid: 11033cb046937ac4c9c9c122f9533993, type: 3}
       enabled: 1
       configured: 1
       health: 118
@@ -503,7 +505,7 @@ MonoBehaviour:
       skillCount: 7
       sequenceCount: 5
       actions: 3-4
-      attack: 6-13
+      attack: 7
       initialEffects: "\u6BCF\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u51CF\u5C11\u4EFB\u610F\u8D1F\u9762\u6548\u679C\u4E00\u534A\u7684\u5C42\u6570\u3002\uFF08\u4E0D\u89E6\u53D1\u6548\u679C\uFF09"
       skills:
       - slot: "\u57FA\u7840\u6280\u80FD1"
@@ -965,6 +967,7 @@ MonoBehaviour:
       id: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1ABOSS"
       sheetName: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1ABOSS"
       title: "\u62BD\u8C61\u6982\u5FF5\u7C7B\uFF1ABOSS\uFF1AMO-166"
+      portrait: {fileID: 21300000, guid: 139492c580b11954f8ab39c279b7e7b6, type: 3}
       enabled: 1
       configured: 1
       health: 333
@@ -972,7 +975,7 @@ MonoBehaviour:
       skillCount: 9
       sequenceCount: 6
       actions: 3-5
-      attack: 7-14
+      attack: 7
       initialEffects: "\u6BCF\u56DE\u5408\u5F00\u59CB\u968F\u673A\u89E6\u53D1\u4E00\u6B21\u57FA\u7840\u6280\u80FD\u7EC4\u5361\u724C\u6548\u679C"
       skills:
       - slot: "\u57FA\u7840\u6280\u80FD1"
