@@ -88,7 +88,7 @@ namespace RainbowLi.EditorTools {
    foreach(var outline in view.endPanel.GetComponents<Outline>())outline.enabled=false;
    Place(view.endTitle,view.endPanel.transform,460,330,1000,90);TextStyle(view.endTitle,44,Cream);
    Place(view.endSummary,view.endPanel.transform,560,450,800,120);TextStyle(view.endSummary,24,Cyan);
-   view.endView.restart=EndButton(view.endPanel.transform,"RestartRun","再来一局",650);view.endView.mainMenu=EndButton(view.endPanel.transform,"ReturnToMenu","返回主菜单",990);Record(view.endView);
+   view.endView.restart=EndButton(view.endPanel.transform,"RestartRun","再来一局",650);view.endView.mainMenu=EndButton(view.endPanel.transform,"ReturnToMenu","返回主菜单",990);EndScreenCopySceneMigration.Configure(view);Record(view.endView);
   }
   static Image RoomSurface(string name,Transform parent,float x,float y,float w,float h){
    var image=Image(name,parent,x,y,w,h,null);image.color=new Color(.04f,.105f,.115f);var outline=image.GetComponent<Outline>()??image.gameObject.AddComponent<Outline>();outline.effectColor=new Color(.24f,.46f,.46f);outline.effectDistance=new Vector2(1,-1);return image;
