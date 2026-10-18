@@ -33,16 +33,17 @@ public sealed class HandCardDrag : MonoBehaviour,IBeginDragHandler,IDragHandler,
   if(!IsDragging||e.pointerId!=pointer)return;if(!Valid()){CancelDrag();return;}
   if(RectTransformUtility.ScreenPointToWorldPointInRectangle(canvasRect,e.position,e.pressEventCamera,out var world))ghost.position=world-ghost.TransformVector(ghost.rect.center);
   ghost.SetAsLastSibling();
-  if(panel.TryGetDropSlot(e.position,e.pressEventCamera,out int slot))panel.ShowInsertion(slot,action);else panel.HideInsertion();
+  if(panel.TryGetDropSlot(e.position,e.pressEventCamera,out int slot,action))panel.ShowInsertion(slot,action);else panel.HideInsertion();
  }
  public void OnEndDrag(PointerEventData e){
   if(!IsDragging||e.pointerId!=pointer)return;
-  bool withdraw=Valid()&&action!=null&&panel.IsHandDrop(e.position,e.pressEventCamera);
-  bool valid=!withdraw&&Valid()&&panel.TryGetDropSlot(e.position,e.pressEventCamera,out _);
-  int slot=-1;if(valid)panel.TryGetDropSlot(e.position,e.pressEventCamera,out slot);
-  var owner=panel;var dropped=card;bool reposition=action!=null;CancelDrag();e.eligibleForClick=false;
+  bool withdraw=Valid()&&action!=null&&!action.Enemy&&panel.IsHandDrop(e.position,e.pressEventCamera);
+  bool valid=!withdraw&&Valid()&&panel.TryGetDropSlot(e.position,e.pressEventCamera,out _,action);
+  int slot=-1;if(valid)panel.TryGetDropSlot(e.position,e.pressEventCamera,out slot,action);
+  var owner=panel;var dropped=card;var movedAction=action;bool reposition=action!=null;CancelDrag();e.eligibleForClick=false;
   if(withdraw)owner.view.cards.Withdraw(dropped);
-  else if(valid){if(reposition)owner.view.cards.Reposition(dropped,slot);else owner.view.cards.Place(dropped,slot);}
+  else if(valid&&owner.view.battleHud?.pokerLayout?.fixedGrid==true){if(reposition)owner.view.cards.MoveActionInBoardSlot(movedAction,slot,owner.view.battleHud.pokerLayout);else owner.view.cards.PlaceInBoardSlot(dropped,slot,owner.view.battleHud.pokerLayout);}
+  else if(valid){if(reposition)owner.view.cards.RepositionAction(movedAction,slot);else owner.view.cards.Place(dropped,slot);}
  }
  public void OnCancel(BaseEventData e){CancelDrag();}
  private void Update(){if(IsDragging&&!Valid())CancelDrag();}

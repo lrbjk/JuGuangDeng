@@ -26,8 +26,7 @@ namespace RainbowLi
         public void TakeReward(int index)
         {
             if (Phase != GamePhase.Reward || index < 0 || index >= Rewards.Count) return;
-            if(rewardBatches.Count>0){Deck.Add(Rewards[index]);rewardBatches.RemoveAt(0);ShowNextContentReward();return;}
-            Deck.Add(Rewards[index]); Rewards.Clear(); Phase = GamePhase.Map; Message = "奖励已加入牌组，继续选择任务。";
+            Deck.Add(Rewards[index]);CompleteRewardChoice();
         }
 
         public void OpenService(bool shop)

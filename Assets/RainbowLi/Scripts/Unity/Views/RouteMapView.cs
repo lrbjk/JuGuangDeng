@@ -51,6 +51,12 @@ namespace RainbowLi.UnityGame {
   private void OnEnable(){levels.session.Changed+=Refresh;Refresh();}
   private void OnDisable(){levels.session.Changed-=Refresh;}
   public Vector2 Position(LevelNodeData n,RouteGraph graph){int lanes=graph.Nodes.Max(v=>v.lane)+1;
+   if(diagramLayout&&graph.IndependentStacks){
+    var lane=graph.Nodes.Where(v=>v.kind!=LevelKind.Boss&&v.lane==n.lane).OrderBy(v=>v.floor).ToList();
+    int index=lane.FindIndex(v=>v.id==n.id),backs=Mathf.Max(0,lane.Count-1);
+    float step=backs==0?diagramStripHeight:Mathf.Min(diagramStripHeight,diagramStripHeight*diagramBackCards/backs);
+    return new Vector2(contentWidth/2+(n.lane-(lanes-1)/2f)*(diagramCardWidth+diagramColumnGap),-(8+step*Mathf.Max(0,backs-index)));
+   }
    if(diagramLayout)return new Vector2(contentWidth/2+(n.lane-(lanes-1)/2f)*(diagramCardWidth+diagramColumnGap),-(8+diagramStripHeight*(diagramBackCards-Mathf.Min(diagramBackCards,StackDepth(n,graph)))));if(!perspectiveLayout)return new Vector2(contentWidth/2+(n.lane-(lanes-1)/2f)*horizontalSpacing,-60-(graph.Floors-1-n.floor)*verticalSpacing);
    if(graph.CardDungeon)return new Vector2(contentWidth/2+(n.lane-(lanes-1)/2f)*Mathf.Min(foregroundSpacing,contentWidth/(lanes+.8f)),-(MapHeight(graph)-190-StackDepth(n,graph)*60));
    if(graph.Stacked)return new Vector2(n.kind==LevelKind.Boss?contentWidth/2:contentWidth/2+(n.lane-(lanes-1)/2f)*Mathf.Min(foregroundSpacing,contentWidth/(lanes+.8f)),-(n.kind==LevelKind.Boss&&StackDepth(n,graph)>0?90:MapHeight(graph)-140-StackDepth(n,graph)*65));
@@ -71,7 +77,7 @@ namespace RainbowLi.UnityGame {
     if(view==null){view=Instantiate(nodePrefab,content);view.name="RouteNode_"+n.id;view.nodeId=n.id;view.authoredFloor=n.floor;view.authoredLane=n.lane;((RectTransform)view.transform).anchoredPosition=Position(n,graph);nodes.Add(view);}
     if(view.authoredFloor!=n.floor||view.authoredLane!=n.lane){((RectTransform)view.transform).anchoredPosition=Position(n,graph);view.authoredFloor=n.floor;view.authoredLane=n.lane;}
     view.gameObject.SetActive(true);int id=n.id;view.map=this;view.Bind(n,run,()=>levels.SelectNode(id));
-    if(diagramLayout){view.gameObject.SetActive(n.kind!=LevelKind.Boss&&!run.IsAbandoned(n.id)&&!run.Completed.Contains(n.id)&&(graph.IndependentStacks||n.floor>=FocusFloor)&&StackDepth(n,graph)<=diagramBackCards);((RectTransform)view.transform).anchoredPosition=Position(n,graph);((RectTransform)view.transform).sizeDelta=new Vector2(diagramCardWidth,diagramCardHeight);view.SetDepth(1);view.SetStackDepth(StackDepth(n,graph));}
+    if(diagramLayout){view.gameObject.SetActive(n.kind!=LevelKind.Boss&&!run.IsAbandoned(n.id)&&!run.Completed.Contains(n.id)&&(graph.IndependentStacks||n.floor>=FocusFloor)&&(graph.IndependentStacks||StackDepth(n,graph)<=diagramBackCards));((RectTransform)view.transform).anchoredPosition=Position(n,graph);((RectTransform)view.transform).sizeDelta=new Vector2(diagramCardWidth,diagramCardHeight);view.SetDepth(1);view.SetStackDepth(StackDepth(n,graph));}
     else if(perspectiveLayout){view.gameObject.SetActive(graph.Stacked?!run.IsAbandoned(n.id)&&!run.Completed.Contains(n.id)&&(overview||n.kind==LevelKind.Boss||StackDepth(n,graph)<=6):n.floor>=FocusFloor);((RectTransform)view.transform).anchoredPosition=Position(n,graph);view.SetDepth(NodeScale(n,graph));if(graph.Stacked)view.SetStackDepth(StackDepth(n,graph));}
    }
    if(perspectiveLayout||diagramLayout)foreach(var node in nodes.OrderByDescending(n=>StackDepth(graph.Find(n.nodeId)??new LevelNodeData(),graph)))node.transform.SetAsLastSibling();

@@ -29,6 +29,7 @@ public sealed class PokerActionLayout : MonoBehaviour {
   if(child==null){var go=new GameObject("Art",typeof(RectTransform),typeof(Image));go.transform.SetParent(target.transform,false);image=go.GetComponent<Image>();image.rectTransform.anchorMin=Vector2.zero;image.rectTransform.anchorMax=Vector2.one;image.rectTransform.offsetMin=image.rectTransform.offsetMax=Vector2.zero;go.transform.SetAsFirstSibling();}else image=child.GetComponent<Image>();
   image.sprite=sprite;image.color=Color.white;image.raycastTarget=false;
  }
+ [Tooltip("拖牌到固定空格；已放的牌不挤动其他格子。")] public bool fixedGrid=true;
  public int VisibleSlots {get;private set;}
  private bool previewDirty=true;
  private void OnValidate(){previewDirty=true;}
@@ -43,15 +44,16 @@ public sealed class PokerActionLayout : MonoBehaviour {
   if(view==null||hud==null)return;EnsureVisuals();var g=view.session==null?null:view.session.Game;
   int remaining=g!=null&&g.Phase==GamePhase.Planning?Mathf.Max(0,g.PlayerActionLimit-g.PlayerActionCount):0;
   var owners=new List<bool>();for(int i=0;i<timelineCount;i++)owners.Add(g!=null&&i<g.Timeline.Count?g.Timeline[i].Enemy:true);
-  var positions=BuildSlotPositions(owners);int cursor=positions.Length>0?positions[positions.Length-1]+1:0;
+  if(fixedGrid&&g!=null)EnsureBoardSlots();
+  var positions=fixedGrid&&g!=null?g.Timeline.GetRange(0,Mathf.Min(timelineCount,g.Timeline.Count)).ConvertAll(a=>a.BoardSlot-1).ToArray():BuildSlotPositions(owners);int cursor=positions.Length>0?positions[positions.Length-1]+1:0;
   int occupiedEnd=timelineCount>0&&timelineCount<=positions.Length?positions[timelineCount-1]+1:0;
-  VisibleSlots=Mathf.Max(Mathf.Max(1,minimumSlots),illustratedSlots?occupiedEnd+remaining:timelineCount+remaining);
+  VisibleSlots=Mathf.Max(Mathf.Max(1,minimumSlots),fixedGrid?occupiedEnd:illustratedSlots?occupiedEnd+remaining:timelineCount+remaining);
   var occupied=new HashSet<int>();for(int i=0;i<timelineCount&&i<positions.Length;i++)occupied.Add(positions[i]);
   var content=hud.actionArea;float width=130*cardScale,stride=width+slotGap;
   float viewportWidth=hud.actionScroll==null?content.rect.width:hud.actionScroll.viewport.rect.width;
   float rowWidth=VisibleSlots*stride-slotGap;
   if(hud.actionScroll!=null)content.sizeDelta=new Vector2(Mathf.Max(viewportWidth,rowWidth+horizontalPadding*2),content.sizeDelta.y);
-  float start=(content.rect.width-rowWidth)*.5f;
+  float start=fixedGrid?horizontalPadding:(content.rect.width-rowWidth)*.5f;
   EnsureSlots(VisibleSlots);
   for(int i=0;i<slots.Length;i++){
    bool active=i<VisibleSlots;slots[i].gameObject.SetActive(active);if(!active)continue;
@@ -88,6 +90,18 @@ public sealed class PokerActionLayout : MonoBehaviour {
   float width=130*cardScale,stride=width+slotGap;
   float rowWidth=VisibleSlots*stride-slotGap,start=(hud.actionArea.rect.width-rowWidth)*.5f;
   rect=new Rect(start+positions[target]*stride,-cardTop-195*cardScale,width,195*cardScale);return true;
+ }
+ public void EnsureBoardSlots(){
+  var g=view?.session?.Game;if(g==null||g.Timeline.Count==0)return;
+  bool complete=true;int previous=0;foreach(var a in g.Timeline){if(a.BoardSlot<=previous){complete=false;break;}previous=a.BoardSlot;}if(complete)return;
+  var owners=g.Timeline.ConvertAll(a=>a.Enemy);var defaults=BuildSlotPositions(owners);previous=-1;
+  for(int i=0;i<g.Timeline.Count;i++){var a=g.Timeline[i];if(a.BoardSlot==0){int next=i+1;while(next<g.Timeline.Count&&g.Timeline[next].BoardSlot==0)next++;int limit=next<g.Timeline.Count?g.Timeline[next].BoardSlot-1:int.MaxValue;int candidate=Mathf.Max(previous+1,Mathf.Min(defaults[i],limit-1));a.BoardSlot=candidate+1;}previous=a.BoardSlot-1;}
+ }
+ public bool IsSlotAvailable(int slot,BattleAction moving=null){EnsureBoardSlots();var g=view?.session?.Game;return g!=null&&slot>=0&&slot<VisibleSlots&&!g.Timeline.Exists(a=>a!=moving&&a.BoardSlot==slot+1);}
+ public bool TryGetBoardRect(int slot,out Rect rect){rect=default;if(slot<0||slot>=VisibleSlots)return false;float w=130*cardScale;rect=new Rect(horizontalPadding+slot*(w+slotGap),-cardTop-195*cardScale,w,195*cardScale);return true;}
+ public bool TryPickBoardSlot(Vector2 screen,Camera camera,BattleAction moving,out int slot){
+  slot=-1;if(!RectTransformUtility.ScreenPointToLocalPointInRectangle(hud.actionArea,screen,camera,out var local))return false;
+  for(int i=0;i<VisibleSlots;i++)if(TryGetBoardRect(i,out var r)&&r.Contains(local)){if(!IsSlotAvailable(i,moving))return false;slot=i;return true;}return false;
  }
  private void EnsureSlots(int count){
   var graphics=new List<PokerTableGraphic>(slots);var labels=new List<Text>(emptyLabels);

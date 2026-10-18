@@ -40,5 +40,6 @@ public sealed class GameView : MonoBehaviour {
   if(cardMotion!=null)cardMotion.Observe(g);
   GetComponent<BattleArtView>()?.Refresh();
   GetComponent<NonCombatRoomView>()?.Refresh();
+  GetComponent<AdventureUiArtView>()?.Refresh();
  }
 }}

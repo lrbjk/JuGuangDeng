@@ -14,6 +14,7 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
  public RuntimeEngraving BoundEngraving {get;private set;}
  public Color illustratedInk=new Color(.04f,.1f,.12f);
  public Text topRank,bottomRank,caption;
+ [Header("铭刻效果说明（可绑定预制体文本）")] public Text engravingCaption;
  public Image topSuit,bottomSuit;
  public Image[] pips;
  public Sprite[] suits;
@@ -54,7 +55,7 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
   callback=()=>clicked?.Invoke(); button.onClick.AddListener(callback);button.interactable=enabled;
   selected=active; face.color=enemy?enemyFace:playerFace;
   BoundEffect=effect;
-  topRank.text=bottomRank.text=number.ToString();caption.text=description;
+  topRank.text=bottomRank.text=number.ToString();caption.text=engraved&&description!=null&&description.Contains(" · 铭刻：")?description.Substring(0,description.IndexOf(" · 铭刻：",StringComparison.Ordinal)):description;
   int suit=enemy?3:effect==CardEffect.Strike||effect==CardEffect.IncreasedStrike||effect==CardEffect.InverseStrike?0:effect==CardEffect.Guard||effect==CardEffect.IronWall||effect==CardEffect.Fortify||effect==CardEffect.Parry||effect==CardEffect.Barrier||effect==CardEffect.DamageCap?1:effect==CardEffect.Mend||effect==CardEffect.Regeneration?2:3;
   Color color=suit==1?new Color(.1f,.22f,.28f):new Color(.68f,.12f,.14f);
   topRank.color=bottomRank.color=color;
@@ -77,6 +78,7 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
  }
  public void SetEngraving(bool engraved,RuntimeEngraving engraving){
   BoundEngraving=engraved?engraving:null;
+  RefreshEngravingCaption(engraved,engraving);
   engravingBadge.gameObject.SetActive(engraved);if(!engraved)return;
   var frame=illustrated&&engravingArt!=null?engravingArt.Find(engraving):null;
   if(frame==null)return;
@@ -90,6 +92,24 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
   r.anchoredPosition=new Vector2((area.width-baseRect.width*scale)*.5f+(frame.rect.x-baseRect.x)*scale,
    -(area.height-baseRect.height*scale)*.5f+(frame.rect.yMax-baseRect.yMax)*scale);
   r.sizeDelta=frame.rect.size*scale;r.localScale=Vector3.one;r.localRotation=Quaternion.identity;
+ }
+ private void RefreshEngravingCaption(bool engraved,RuntimeEngraving engraving){
+  if(engravingCaption==null&&engraved&&caption!=null){
+   var panel=new GameObject("EngravingRules",typeof(RectTransform),typeof(Image));panel.transform.SetParent(transform,false);
+   var r=(RectTransform)panel.transform;r.anchorMin=r.anchorMax=r.pivot=new Vector2(0,1);r.anchoredPosition=new Vector2(9,-72);r.sizeDelta=new Vector2(112,77);
+   var image=panel.GetComponent<Image>();image.color=new Color(.02f,.07f,.09f,.9f);image.raycastTarget=false;
+   var text=new GameObject("Text",typeof(RectTransform),typeof(Text));text.transform.SetParent(panel.transform,false);
+   var tr=(RectTransform)text.transform;tr.anchorMin=Vector2.zero;tr.anchorMax=Vector2.one;tr.offsetMin=new Vector2(4,3);tr.offsetMax=new Vector2(-4,-3);
+   engravingCaption=text.GetComponent<Text>();engravingCaption.font=caption.font;engravingCaption.fontSize=11;engravingCaption.color=Color.white;engravingCaption.alignment=TextAnchor.MiddleLeft;
+   engravingCaption.horizontalOverflow=HorizontalWrapMode.Wrap;engravingCaption.verticalOverflow=VerticalWrapMode.Truncate;engravingCaption.supportRichText=false;engravingCaption.raycastTarget=false;
+   engravingCaption.resizeTextForBestFit=true;engravingCaption.resizeTextMinSize=9;engravingCaption.resizeTextMaxSize=11;
+  }
+  if(engravingCaption==null)return;
+  var container=engravingCaption.transform.parent.name=="EngravingRules"?engravingCaption.transform.parent.gameObject:engravingCaption.gameObject;
+  container.SetActive(engraved);
+  if(!engraved)return;
+  engravingCaption.text=engraving==null?"铭刻 · 追击\n触发牌序时，对对方追加伤害。": "铭刻 · "+engraving.Description+"\n"+engraving.RulesText;
+  container.transform.SetAsLastSibling();
  }
  public void OnPointerEnter(PointerEventData e){
   if(!Application.isPlaying||!isActiveAndEnabled||attacking||GetComponent<HandCardDrag>()?.IsDragging==true)return;

@@ -81,16 +81,9 @@ namespace RainbowLi {
   public bool IsCovered(int id){var n=Graph.Find(id);if(n!=null&&n.kind==LevelKind.Boss&&BossUnlockByBattles)return !BossUnlocked;if(n==null||!Graph.Stacked)return false;if(Graph.CardDungeon)return n.floor>PlayerFloor+1;return Graph.Nodes.Any(v=>v.kind!=LevelKind.Boss&&!IsAbandoned(v.id)&&!Completed.Contains(v.id)&&(n.kind==LevelKind.Boss||v.lane==n.lane&&v.floor<n.floor));}
   public bool CanEnter(int id){var n=Graph.Find(id);if(n!=null&&n.kind==LevelKind.Boss&&BossUnlockByBattles)return !Finished&&!Failed&&ActiveId<0&&!Completed.Contains(id)&&BossUnlocked;return n!=null&&!Finished&&!Failed&&ActiveId<0&&!Completed.Contains(id)&&!IsAbandoned(id)&&(Graph.CardDungeon?n.floor==PlayerFloor+1&&(n.kind==LevelKind.Boss||Math.Abs(n.lane-PlayerLane)<=1):Graph.Stacked?!IsCovered(id):(CurrentId<0?n.floor==0:Graph.Find(CurrentId).next.Contains(id)));}
   public bool Enter(int id){if(!CanEnter(id))return false;ActiveId=id;if(Graph.Stacked&&!Graph.CardDungeon&&!Graph.IndependentStacks&&ChosenLane<0&&Graph.Find(id).kind!=LevelKind.Boss)ChosenLane=Graph.Find(id).lane;return true;}
-  public bool Complete(){if(ActiveId<0||Failed)return false;CurrentId=ActiveId;Completed.Add(ActiveId);var n=Graph.Find(ActiveId);if(Graph.CardDungeon){PlayerFloor=n.floor;PlayerLane=n.lane;}Finished=n.kind==LevelKind.Boss;ActiveId=-1;ExtendIndependentStackIfBossLocked(n.lane);ExtendDungeonIfBossLocked();return true;}
+  public bool Complete(){if(ActiveId<0||Failed)return false;CurrentId=ActiveId;Completed.Add(ActiveId);var n=Graph.Find(ActiveId);if(Graph.CardDungeon){PlayerFloor=n.floor;PlayerLane=n.lane;}Finished=n.kind==LevelKind.Boss;ActiveId=-1;ExtendDungeonIfBossLocked();return true;}
   // Each lane is a queue; completed cards are removed only from their own queue.
   public LevelNodeData FrontNode(int lane)=>Graph.Nodes.Where(n=>n.kind!=LevelKind.Boss&&n.lane==lane&&!Completed.Contains(n.id)).OrderBy(n=>n.floor).FirstOrDefault();
-  private void ExtendIndependentStackIfBossLocked(int lane){
-   if(!Graph.IndependentStacks||!BossUnlockByBattles||BossUnlocked||Finished||Failed||FrontNode(lane)!=null)return;
-   var boss=Graph.Nodes.First(n=>n.kind==LevelKind.Boss);
-   int floor=Graph.Nodes.Where(n=>n.kind!=LevelKind.Boss&&n.lane==lane).Max(n=>n.floor)+1;
-   boss.floor=Math.Max(boss.floor,floor+1);
-   Graph.Nodes.Add(new LevelNodeData{id=Graph.Nodes.Max(n=>n.id)+1,floor=floor,lane=lane,kind=LevelKind.Combat});
-  }
   private void ExtendDungeonIfBossLocked(){
    if(!Graph.CardDungeon||!BossUnlockByBattles||BossUnlocked||Finished||Failed)return;
    var boss=Graph.Nodes.First(n=>n.kind==LevelKind.Boss);if(PlayerFloor+1!=boss.floor)return;

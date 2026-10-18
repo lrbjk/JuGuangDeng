@@ -27,6 +27,7 @@ namespace RainbowLi.UnityGame {
   [Header("备用效果列表布局")]
   [Min(48)] public float effectWidth=104,effectHeight=96;
   [Min(0)] public float effectGap=14,effectPadding=8;
+  [Range(1,2)] public int reserveRows=1;
   public Color selectedColor=new Color(.28f,.27f,.105f),normalColor=new Color(.08f,.22f,.18f);
   private bool initialized;
   private int selectedRule;
@@ -75,11 +76,11 @@ namespace RainbowLi.UnityGame {
     row.serviceAction.gameObject.SetActive(!manual);row.serviceAction.interactable=game.Phase==GamePhase.Shop?game.Coins>=price:!game.ServiceUsed;row.serviceAction.GetComponentInChildren<Text>().text=game.Phase==GamePhase.Shop?"购买并装备随机效果 / "+price+" 金币":"随机重构数字 / 本次休息服务";
     row.primaryFrame.color=row.secondarySelected?normalColor:selectedColor;row.secondaryFrame.color=row.secondarySelected?selectedColor:normalColor;
     while(row.choices.Count<pool.Count){int effect=row.choices.Count;int owner=i;var tile=Instantiate(row.effectTemplate,row.reserves.content);tile.name="AvailableEffect_"+effect;tile.onClick.RemoveAllListeners();tile.onClick.AddListener(()=>ChooseEffect(owner,effect));row.choices.Add(tile);}
-    float width=Mathf.Max(row.reserves.viewport.rect.width,effectPadding*2+pool.Count*effectWidth+Mathf.Max(0,pool.Count-1)*effectGap);
+    float width=Mathf.Max(row.reserves.viewport.rect.width,effectPadding*2+((pool.Count+reserveRows-1)/reserveRows)*effectWidth+Mathf.Max(0,(pool.Count+reserveRows-1)/reserveRows-1)*effectGap);
     row.reserves.content.sizeDelta=new Vector2(width,row.reserves.content.sizeDelta.y);
     for(int e=0;e<row.choices.Count;e++){
      var tile=row.choices[e];tile.gameObject.SetActive(e<pool.Count);if(e>=pool.Count)continue;
-     var rect=(RectTransform)tile.transform;rect.anchoredPosition=new Vector2(effectPadding+e*(effectWidth+effectGap),-4);rect.sizeDelta=new Vector2(effectWidth,effectHeight);
+     var rect=(RectTransform)tile.transform;rect.anchoredPosition=new Vector2(effectPadding+(e/reserveRows)*(effectWidth+effectGap),-4-(e%reserveRows)*(effectHeight+4));rect.sizeDelta=new Vector2(effectWidth,effectHeight);
      tile.GetComponentInChildren<Text>().text=Describe(pool[e]);tile.interactable=manual;
     }
    }

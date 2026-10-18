@@ -10,12 +10,13 @@ public sealed class BattlePanelView:MonoBehaviour {
  [Range(.1f,1f)] public float draggedHandOpacity=.35f;
  private Image insertionMarker;
  public bool CanDrag(Card card){var g=view.session.Game;return card!=null&&g!=null&&g.Phase==GamePhase.Planning&&g.Hand.Contains(card)&&g.PlayerActionCount<g.PlayerActionLimit&&!g.Timeline.Any(a=>a.Card==card);}
- public bool CanDragAction(BattleAction action){var g=view.session.Game;return action!=null&&!action.Enemy&&action.Card!=null&&g!=null&&g.Phase==GamePhase.Planning&&g.Timeline.Contains(action);}
+ public bool CanDragAction(BattleAction action)=>view.cards.CanMoveAction(action);
  public bool IsHandDrop(Vector2 screen,Camera camera){var hud=view.battleHud;var area=hud==null?null:hud.handScroll!=null?hud.handScroll.viewport:hud.handArea;return area!=null&&area.gameObject.activeInHierarchy&&RectTransformUtility.RectangleContainsScreenPoint(area,screen,camera);}
  public RectTransform DropArea=>dropArea!=null?dropArea:view.battleHud!=null?(view.battleHud.actionScroll!=null?view.battleHud.actionScroll.viewport:view.battleHud.actionArea):view.actions.Length>0?view.actions[0].transform.parent as RectTransform:null;
- public bool TryGetDropSlot(Vector2 screen,Camera camera,out int slot){
+ public bool TryGetDropSlot(Vector2 screen,Camera camera,out int slot,BattleAction moving=null){
   slot=-1;var area=DropArea;var g=view.session.Game;
   if(area==null||!area.gameObject.activeInHierarchy||g==null||g.Phase!=GamePhase.Planning||!RectTransformUtility.RectangleContainsScreenPoint(area,screen,camera))return false;
+  var grid=view.battleHud?.pokerLayout;if(grid!=null&&grid.fixedGrid)return grid.TryPickBoardSlot(screen,camera,moving,out slot);
   if(!RectTransformUtility.ScreenPointToLocalPointInRectangle(area,screen,camera,out var local))return false;
   slot=g.Timeline.Count;
   for(int i=0;i<g.Timeline.Count&&i<view.actions.Length;i++){var r=(RectTransform)view.actions[i].transform;float center=area.InverseTransformPoint(r.TransformPoint(r.rect.center)).x;if(local.x<center){slot=i;break;}}
@@ -26,7 +27,7 @@ public sealed class BattlePanelView:MonoBehaviour {
   if(insertionMarker==null){var go=new GameObject("DragInsertionMarker",typeof(RectTransform),typeof(Image));insertionMarker=go.GetComponent<Image>();insertionMarker.raycastTarget=false;}
   var rect=insertionMarker.rectTransform;rect.SetParent(area,false);rect.anchorMin=rect.anchorMax=rect.pivot=new Vector2(.5f,.5f);
   var poker=view.battleHud==null?null:view.battleHud.pokerLayout;
-  if(poker!=null&&poker.illustratedSlots&&poker.TryGetInsertionRect(slot,moving,out var target)){
+  if(poker!=null&&poker.illustratedSlots&&(poker.fixedGrid?poker.TryGetBoardRect(slot,out var target):poker.TryGetInsertionRect(slot,moving,out target))){
    var content=view.battleHud.actionArea;
    Vector3 bottom=area.InverseTransformPoint(content.TransformPoint(target.min));
    Vector3 top=area.InverseTransformPoint(content.TransformPoint(target.max));
@@ -57,7 +58,7 @@ public sealed class BattlePanelView:MonoBehaviour {
   view.playerStats.text="玩家 / 攻击 "+g.BaseAttack+"\n生命 "+g.Health+" / "+g.HealthLimit+"   护盾 "+g.Shield+"   增伤 "+g.Power;
   view.enemyStats.text=fighting?g.EnemyName+"\n生命 "+g.EnemyHealth+" / "+g.EnemyMaxHealth+"   护盾 "+g.EnemyShield+"   增伤 "+g.EnemyPower:"完成收容 "+g.Victories+" 次";
   view.roundStats.text="回合 "+g.Round+"   行动 "+g.PlayerActionCount+" / "+g.PlayerActionLimit+"\n金币 "+g.Coins+"   牌组 "+g.Deck.Count;
-  view.feedback.text=g.LastAction+"\n"+g.Message.Replace("点击手牌追加行动，再用箭头调整敌我顺序。","拖牌上桌；桌上玩家牌可拖动排序，拖回手牌区撤回。");
+  view.feedback.text=g.LastAction+"\n"+g.Message.Replace("点击手牌追加行动，再用箭头调整敌我顺序。","拖牌上桌；桌上未锁定的牌可拖动排序，拖回手牌区撤回。");
   if(view.statusSummary!=null)view.statusSummary.text="你："+(g.Player.Statuses.Any?g.Player.Statuses.Brief:"无状态")+"\n敌方："+(g.Enemy.Statuses.Any?g.Enemy.Statuses.Brief:"无状态");
   var predicted=planning?g.Forecast():null;
   view.forecast.text=predicted==null?"数字流："+string.Join(" → ",g.NumberStream.Skip(Mathf.Max(0,g.NumberStream.Count-12))):"预计：你 "+predicted.Health+" / 盾 "+predicted.Shield+"\n敌人 "+predicted.EnemyHealth+" / 盾 "+predicted.EnemyShield+"\n数字："+string.Join("→",predicted.Numbers.Take(6));
@@ -74,13 +75,13 @@ public sealed class BattlePanelView:MonoBehaviour {
   for(int i=0;i<view.actions.Length;i++){
    bool exists=i<g.Timeline.Count;view.actions[i].gameObject.SetActive(exists);view.actionLabels[i].gameObject.SetActive(exists);
    view.leftButtons[i].gameObject.SetActive(false);view.rightButtons[i].gameObject.SetActive(false);view.removeButtons[i].gameObject.SetActive(false);
-   if(!exists)continue;var a=g.Timeline[i];int growth=g.CardEffectGrowthFor(a);int shownValue=CombatResolver.Clamp((long)a.Value+growth);view.actions[i].Bind(a.Number,a.Effect,a.Card==null&&a.OrderedEffects.Count>0?a.OrderedDescription(growth):a.Card==null?(a.EncounterEffects?.Length>0?(a.Special?"特殊 / ":"")+a.SkillName:(a.Special?"特殊 / ":"")+CombatStatuses.Name(a.Effect)+" "+shownValue):a.Card.Description+(growth>0?" · 全局卡效 +"+growth:""),a.Enemy,a.Card!=null&&a.Card.Engraved,false,planning&&!a.Enemy&&a.Card!=null,null,a.Card?.Engraving);
-   var drag=view.actions[i].GetComponent<HandCardDrag>();if(!a.Enemy&&a.Card!=null){if(drag==null)drag=view.actions[i].gameObject.AddComponent<HandCardDrag>();drag.enabled=true;drag.Bind(this,a.Card,a);}else if(drag!=null)drag.enabled=false;
+   if(!exists)continue;var a=g.Timeline[i];int growth=g.CardEffectGrowthFor(a);int shownValue=CombatResolver.Clamp((long)a.Value+growth);view.actions[i].Bind(a.Number,a.Effect,a.Card==null&&a.OrderedEffects.Count>0?a.OrderedDescription(growth):a.Card==null?(a.EncounterEffects?.Length>0?(a.Special?"特殊 / ":"")+a.SkillName:(a.Special?"特殊 / ":"")+CombatStatuses.Name(a.Effect)+" "+shownValue):a.Card.Description+(growth>0?" · 全局卡效 +"+growth:""),a.Enemy,a.Card!=null&&a.Card.Engraved,false,CanDragAction(a),null,a.Card?.Engraving);
+   var drag=view.actions[i].GetComponent<HandCardDrag>();if(a.Enemy||a.Card!=null){if(drag==null)drag=view.actions[i].gameObject.AddComponent<HandCardDrag>();drag.Bind(this,a.Card,a);drag.enabled=CanDragAction(a);}else if(drag!=null)drag.enabled=false;
    view.actions[i].SetDetails(view.tooltip,(a.Enemy?"敌人":"玩家")+" · "+CombatStatuses.Name(a.Effect),(a.Card==null&&a.OrderedEffects.Count>0?a.OrderedRules(growth):a.Card==null?(a.EffectSpec==null?a.Label+(growth>0?"\n当前效果数值："+shownValue:""):a.EffectSpec.Text.Replace("X",shownValue.ToString())):a.Card.RulesText)+(growth>0?"\n全局敌人卡牌效果 +"+growth+"（已计入当前效果）":""));
    view.actionLabels[i].text=(i+1).ToString("00")+" · "+(a.Enemy?"敌方":"玩家");view.actionLabels[i].color=a.Enemy?new Color(.98f,.57f,.46f):new Color(.55f,.88f,.78f);
   }
   for(int i=0;i<view.insertButtons.Length;i++)view.insertButtons[i].gameObject.SetActive(false);
-  foreach(var text in view.battlePanel.GetComponentsInChildren<Text>(true)){if(text.name=="Heading"&&text.text.StartsWith("当前手牌"))text.text="当前手牌 / 拖牌上桌 · 拖回撤回 / 滚轮查看更多";if(text.name=="ActionHeading")text.text="行动牌桌 / 从左到右执行 · 拖动玩家牌排序";}
+  foreach(var text in view.battlePanel.GetComponentsInChildren<Text>(true)){if(text.name=="HandHeading"||text.name=="HandHelp"||text.name=="Heading"&&text.text.StartsWith("当前手牌")){text.text="";text.gameObject.SetActive(false);}if(text.name=="ActionHeading")text.text="行动牌桌 / 从左到右执行 · 拖动未锁定牌排序";}
  }
 }
 }

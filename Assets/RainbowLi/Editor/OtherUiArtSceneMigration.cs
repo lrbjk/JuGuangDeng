@@ -1,0 +1,79 @@
+using System;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.UI;
+using RainbowLi.UnityGame;
+namespace RainbowLi.EditorTools {
+ public static class OtherUiArtSceneMigration {
+  const string Root="Assets/RainbowLi",Art=Root+"/Art/GJ 各种ui/";
+  static readonly Color Cyan=new Color(.47f,.8f,.82f),Rose=new Color(.78f,.72f,.72f),Ink=new Color(.02f,.06f,.08f);
+  static GameView view;static AdventureUiArtView art;
+  static Sprite S(string name){var sprites=AssetDatabase.LoadAllAssetsAtPath(Art+name+".png").OfType<Sprite>().ToArray();return sprites.FirstOrDefault(s=>s.name=="UiButton")??sprites.First();}
+  static void Place(Component c,Transform p,float x,float y,float w,float h){var r=(RectTransform)c.transform;r.SetParent(p,false);r.anchorMin=r.anchorMax=r.pivot=new Vector2(0,1);r.anchoredPosition=new Vector2(x,-y);r.sizeDelta=new Vector2(w,h);r.localScale=Vector3.one;r.localRotation=Quaternion.identity;}
+  static void Clear(Transform t,bool raycast=false){var g=t.GetComponent<Graphic>();if(g!=null){g.color=Color.clear;g.raycastTarget=raycast;}foreach(var o in t.GetComponents<Outline>())o.enabled=false;}
+  static Image Image(string name,Transform p,float x,float y,float w,float h,Sprite sprite){var t=p.Find(name);var go=t==null?new GameObject(name,typeof(RectTransform),typeof(Image)):t.gameObject;var image=go.GetComponent<Image>()??go.AddComponent<Image>();Place(image,p,x,y,w,h);image.sprite=sprite;image.color=Color.white;image.raycastTarget=false;foreach(var o in go.GetComponents<Outline>())o.enabled=false;return image;}
+  static void Style(Text t,int size,Color color){t.font=SourceHanFontMigration.Body;t.fontStyle=FontStyle.Normal;t.fontSize=size;t.color=color;t.alignment=TextAnchor.MiddleCenter;t.raycastTarget=false;t.resizeTextForBestFit=true;t.resizeTextMinSize=10;t.resizeTextMaxSize=size;}
+  static Text Label(string name,Transform p,float x,float y,float w,float h,string value,int size=24){var t=p.Find(name);var go=t==null?new GameObject(name,typeof(RectTransform),typeof(Text)):t.gameObject;var text=go.GetComponent<Text>()??go.AddComponent<Text>();Place(text,p,x,y,w,h);text.text=value;text.gameObject.SetActive(true);Style(text,size,Cyan);return text;}
+  static void SoftGlow(Button b,Sprite sprite){if(sprite==null||sprite.name!="UiButton")return;var original=AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(sprite)).OfType<Sprite>().First(s=>s.name!="UiButton");var r=original.rect;var trim=sprite.rect;var image=Image("ArtSoftGlow",b.transform,-trim.x,-(r.height-trim.yMax),r.width,r.height,original);image.transform.SetAsFirstSibling();b.GetComponent<Image>().color=Color.clear;b.targetGraphic=image;}
+  static Button Button(string name,Transform p,float x,float y,float w,float h,Sprite sprite){var image=Image(name,p,x,y,w,h,sprite);var b=image.GetComponent<Button>()??image.gameObject.AddComponent<Button>();image.raycastTarget=true;b.targetGraphic=image;b.transition=Selectable.Transition.ColorTint;var colors=b.colors;colors.normalColor=Color.white;colors.highlightedColor=new Color(1,1,1);colors.pressedColor=new Color(.7f,.9f,.9f);colors.disabledColor=new Color(.4f,.4f,.4f);b.colors=colors;b.gameObject.SetActive(true);SoftGlow(b,sprite);if(b.GetComponent<AudioUiFeedback>()==null)b.gameObject.AddComponent<AudioUiFeedback>();return b;}
+  static void Skin(Button b,Transform p,float x,float y,float w,float h,Sprite sprite,bool hideText=true){Place(b,p,x,y,w,h);var image=b.GetComponent<Image>();image.sprite=sprite;image.color=Color.white;image.raycastTarget=true;b.targetGraphic=image;foreach(var o in b.GetComponents<Outline>())o.enabled=false;foreach(var text in b.GetComponentsInChildren<Text>(true)){if(hideText)text.gameObject.SetActive(false);else{Place(text,b.transform,10,4,w-20,h-8);Style(text,24,Cyan);}}SoftGlow(b,sprite);}
+  static void Background(Transform panel){Place(panel,panel.parent,0,0,1920,1080);var image=panel.GetComponent<Image>()??panel.gameObject.AddComponent<Image>();image.sprite=S("选关/背景2");image.color=Color.white;image.raycastTarget=true;foreach(var o in panel.GetComponents<Outline>())o.enabled=false;}
+  static void ImportButtons(){foreach(string folder in new[]{"休息","商店","奖励关卡"})foreach(string guid in AssetDatabase.FindAssets("t:Texture2D",new[]{Art+folder})){
+   string path=AssetDatabase.GUIDToAssetPath(guid),name=System.IO.Path.GetFileNameWithoutExtension(path);var importer=(TextureImporter)AssetImporter.GetAtPath(path);var texture=AssetDatabase.LoadAssetAtPath<Texture2D>(path);if(texture.width<600||name.Contains("ui"))continue;
+   float x=100,top=90;if(folder=="奖励关卡"){x=name=="牌序获得"?76:77;top=name=="卡牌铭刻"?67:64;}
+   importer.textureType=TextureImporterType.Sprite;importer.spriteImportMode=SpriteImportMode.Multiple;importer.mipmapEnabled=false;importer.filterMode=FilterMode.Point;importer.textureCompression=TextureImporterCompression.Uncompressed;
+   importer.spritesheet=new[]{new SpriteMetaData{name=name+"_0",rect=new Rect(0,0,texture.width,texture.height),alignment=9,pivot=Vector2.one*.5f},new SpriteMetaData{name="UiButton",rect=new Rect(x,texture.height-top-192,444,192),alignment=9,pivot=Vector2.one*.5f}};importer.SaveAndReimport();
+  }}
+  static AdventureArtSidebar Sidebar(Transform panel){
+   var image=Image("ArtSidebar",panel,0,0,440,1080,null);image.color=Color.clear;var hud=image.GetComponent<AdventureArtSidebar>()??image.gameObject.AddComponent<AdventureArtSidebar>();hud.session=view.session;
+   hud.completed=Label("Completed",image.transform,292,120,100,56,"0",32);hud.elapsed=Label("Elapsed",image.transform,246,195,146,64,"00:00:00",23);hud.growthCount=Label("Growth",image.transform,270,411,50,53,"0",27);hud.growthCount.color=Rose;hud.growthDescription=Label("GrowthDescription",image.transform,120,474,270,146,"",18);hud.growthDescription.color=Rose;hud.growthDescription.alignment=TextAnchor.UpperLeft;
+   hud.coins=Label("Coins",image.transform,150,686,98,48,"0",26);hud.deckCount=Label("DeckCount",image.transform,325,686,78,48,"0",26);hud.health=Label("Health",image.transform,110,288,280,44,"",21);
+   hud.summaries=new SequenceView[3];var mapHud=view.GetComponent<AdventureMapHudView>();for(int i=0;i<3;i++){var found=image.transform.Find("Sequence_"+i);var row=found==null?UnityEngine.Object.Instantiate(mapHud.playerSequences[i],image.transform):found.GetComponent<SequenceView>();row.name="Sequence_"+i;Place(row,image.transform,98,822+i*70,304,66);foreach(var b in row.GetComponentsInChildren<Button>(true)){b.onClick=new Button.ButtonClickedEvent();b.interactable=false;}foreach(var g in row.GetComponentsInChildren<Graphic>(true))g.raycastTarget=false;hud.summaries[i]=row;}
+   return hud;
+  }
+  static Button Settings(Transform root){var sprite=AssetDatabase.LoadAllAssetsAtPath(Root+"/Art/GJ 战斗ui分解/设置按钮.png").OfType<Sprite>().First();return Button("ArtSettings",root,1747,151,92,72,sprite);}
+  static void Deck(){var deck=view.GetComponent<DeckOperationView>();var panel=deck.panel.transform;Background(panel);var old=panel.Find("AdventureSidebar");if(old!=null)old.gameObject.SetActive(false);var sidebar=Sidebar(panel);deck.completedRooms=sidebar.completed;deck.elapsedTime=sidebar.elapsed;deck.growthCount=sidebar.growthCount;deck.growthDescription=sidebar.growthDescription;deck.coins=sidebar.coins;deck.deckCount=sidebar.deckCount;deck.summaries=sidebar.summaries;
+   var heading=Image("ArtHeading",panel,1040,92,365,88,S("界面名称"));Place(deck.title,heading.transform,15,15,335,56);Style(deck.title,35,Cyan);art.deckHeading=deck.title;deck.illustrated=true;
+   Place(deck.scroll,panel,722,190,922,715);Clear(deck.scroll.transform);Place(deck.scroll.viewport,deck.scroll.transform,0,0,900,715);Clear(deck.scroll.viewport,true);Place(deck.content,deck.scroll.viewport,0,0,900,715);deck.columns=6;deck.gap=8;deck.padding=8;deck.maximumCardScale=1.08f;
+   var bar=deck.scroll.verticalScrollbar;Place(bar,panel,1672,274,48,569);Clear(bar.transform,true);Image("ArtTrack",bar.transform,16,0,16,569,S("卡组/滚条")).transform.SetAsFirstSibling();bar.handleRect.GetComponent<Image>().sprite=S("卡组/滑键");bar.handleRect.GetComponent<Image>().color=Color.white;bar.handleRect.GetComponent<Image>().preserveAspect=true;foreach(var o in bar.GetComponentsInChildren<Outline>(true))o.enabled=false;
+   Place(deck.instruction,panel,580,926,760,62);Style(deck.instruction,20,Cyan);Place(deck.result,panel,730,890,850,32);Style(deck.result,20,Cyan);Place(deck.emptyLabel,deck.scroll.viewport,0,100,900,70);Style(deck.emptyLabel,25,Cyan);
+   foreach(var b in deck.operationButtons)b.gameObject.SetActive(false);Skin(deck.exit,panel,1654,888,184,101,S("选关/退出"));Skin(deck.generate,panel,1370,918,240,60,S("公共按钮"),false);
+   var dialog=deck.confirmation.transform.Find("ConfirmationDialog");Place(dialog,deck.confirmation.transform,620,210,930,650);dialog.GetComponent<Image>().sprite=S("大框");dialog.GetComponent<Image>().color=Color.white;foreach(var o in dialog.GetComponents<Outline>())o.enabled=false;
+   Place(deck.confirmationTitle,dialog,40,24,850,60);Style(deck.confirmationTitle,30,Cyan);Place(deck.confirmationCard,dialog,50,150,130,225);deck.confirmationCard.transform.localScale=Vector3.one*1.4f;Place(deck.confirmationBody,dialog,280,110,590,370);Style(deck.confirmationBody,23,Cyan);deck.confirmationBody.alignment=TextAnchor.MiddleLeft;
+   Skin(deck.cancel,dialog,280,530,240,60,S("公共按钮"),false);Skin(deck.confirm,dialog,590,530,240,60,S("公共按钮"),false);
+  }
+  static void Sequence(){var editor=view.GetComponent<SequenceEditorView>();var panel=editor.panel.transform;Background(panel);Sidebar(panel);foreach(string name in new[]{"DigitHeading_0","DigitHeading_1","DigitHeading_2","PrimaryHeading","SecondaryHeading","ReserveHeading"}){var old=panel.Find(name);if(old!=null)old.gameObject.SetActive(false);}
+   Image("ArtHeading",panel,1048,94,365,88,S("牌序调整/牌序调整"));var composition=Image("ArtRows",panel,583,198,1227,661,null);composition.color=Color.clear;composition.transform.SetSiblingIndex(1);foreach(var sprite in AssetDatabase.LoadAllAssetsAtPath(Art+"牌序调整/3个牌序.png").OfType<Sprite>()){var r=sprite.rect;Image(sprite.name,composition.transform,r.x,661-r.yMax,r.width,r.height,sprite);}Place(editor.instruction,panel,600,925,980,74);Style(editor.instruction,18,Cyan);Skin(editor.exitButton,panel,1654,888,184,101,S("选关/退出"));
+   editor.reserveRows=2;editor.effectWidth=201;editor.effectHeight=68;editor.effectGap=12;editor.effectPadding=0;editor.selectedColor=new Color(.65f,1,1);editor.normalColor=Color.white;
+   for(int i=0;i<editor.rows.Length;i++){var row=editor.rows[i];Place(row.root,panel,583,254+i*204,1227,197);Clear(row.root);foreach(string name in new[]{"Numbers","EquippedEffects"}){var t=row.root.Find(name);if(t!=null)Clear(t);}row.title.gameObject.SetActive(false);
+    for(int d=0;d<3;d++){Skin(row.digits[d],row.root,94+d*93,40,74,74,S("牌序调整/数字框"),false);Style(row.numbers[d],44,new Color(0,.8f,.9f));}
+    Image("ArtEquippedFrame",row.root,412,23,205,162,S("牌序调整/效果")).transform.SetAsFirstSibling();Skin(row.primarySlot,row.root,416,27,197,69,S("牌序调整/补充效果"),false);Skin(row.secondarySlot,row.root,416,108,197,69,S("牌序调整/补充效果"),false);Style(row.primaryText,23,Cyan);Style(row.secondaryText,23,Cyan);Skin(row.removeSecondary,row.root,589,104,28,28,S("公共按钮"),false);
+    Place(row.reserves,row.root,712,23,445,162);Clear(row.reserves.transform);Place(row.reserves.viewport,row.reserves.transform,0,0,445,146);Clear(row.reserves.viewport,true);Place(row.reserves.content,row.reserves.viewport,0,0,445,146);
+    Skin(row.effectTemplate,row.reserves.content,0,4,201,68,S("牌序调整/补充效果"),false);Style(row.effectTemplate.GetComponentInChildren<Text>(true),23,new Color(.35f,.65f,.73f));
+    var bar=row.reserves.horizontalScrollbar;Place(bar,row.reserves.transform,0,149,445,17);bar.GetComponent<Image>().sprite=S("牌序调整/滚条");bar.GetComponent<Image>().color=Color.white;foreach(var o in bar.GetComponentsInChildren<Outline>(true))o.enabled=false;bar.handleRect.GetComponent<Image>().sprite=S("牌序调整/滑键");bar.handleRect.GetComponent<Image>().color=Color.white;bar.handleRect.GetComponent<Image>().preserveAspect=true;
+    Skin(row.serviceAction,row.root,62,142,300,36,S("公共按钮"),false);
+   }
+  }
+  static void Service(){var panel=view.servicePanel.transform;Background(panel);foreach(Transform c in panel)c.gameObject.SetActive(false);Sidebar(panel).gameObject.SetActive(true);
+   art.serviceHeading=Image("ArtHeading",panel,1048,94,365,88,S("商店/商店"));art.serviceHeading.gameObject.SetActive(true);art.shopHeading=S("商店/商店");art.restHeading=S("休息/休息");
+   Skin(view.heal,panel,746,370,444,192,S("休息/恢复"));Skin(view.generate,panel,746,606,444,192,S("休息/激发"));Skin(view.serviceView.removeDeck,panel,1266,370,444,192,S("休息/删除"));
+   Skin(view.serviceView.upgradeDeck,panel,1296,366,444,192,S("商店/升级卡牌"));Skin(view.serviceView.engraveDeck,panel,746,606,444,192,S("商店/购买铭刻"));
+   art.shopCards=Button("ArtBuyCards",panel,746,366,444,192,S("商店/生成卡牌"));art.shopRules=Button("ArtBuyRules",panel,1296,606,444,192,S("商店/购买牌序"));art.restRebuild=Button("ArtRebuild",panel,1266,606,444,192,S("休息/重构"));
+   foreach(var b in new[]{view.heal,view.generate,view.serviceView.removeDeck,view.serviceView.upgradeDeck,view.serviceView.engraveDeck,art.shopCards,art.shopRules,art.restRebuild})b.gameObject.SetActive(true);
+   var back=panel.Find("BackToMap").GetComponent<Button>();Skin(back,panel,1654,888,184,101,S("选关/退出"));back.gameObject.SetActive(true);art.roomHint=Label("ArtRoomHint",panel,620,840,1040,40,"",20);
+   art.prices=new[]{art.shopCards,view.serviceView.upgradeDeck,view.serviceView.engraveDeck,art.shopRules}.Select(b=>Label("Price",b.transform,20,128,404,32,"",24)).ToArray();view.serviceView.illustrated=true;
+  }
+  static void Reward(){var panel=view.rewardPanel.transform;Background(panel);foreach(Transform c in panel)c.gameObject.SetActive(false);Sidebar(panel).gameObject.SetActive(true);Image("ArtHeading",panel,1028,92,365,88,S("奖励关卡/奖励关卡")).gameObject.SetActive(true);
+   Skin(view.rewardView.openDeck,panel,980,253,444,192,S("奖励关卡/生成卡牌"));view.rewardView.openDeck.gameObject.SetActive(true);art.rewardEngrave=Button("ArtEngraveReward",panel,980,490,444,192,S("奖励关卡/卡牌铭刻"));art.rewardSequence=Button("ArtSequenceReward",panel,980,728,444,192,S("奖励关卡/牌序获得"));art.rewardExit=Button("ArtSkipReward",panel,1654,888,184,101,S("选关/退出"));Label("ArtRewardHint",panel,650,936,960,38,"三种奖励任选一种，确认后领取；取消不会消耗奖励。",20);view.rewardView.illustrated=true;
+  }
+  [MenuItem("RainbowLi/UI/应用冒险界面美术（奖励卡组牌序商店休息）")]
+  public static void ApplyCurrent(){if(Application.isPlaying)return;var scene=EditorSceneManager.GetActiveScene();if(!scene.path.StartsWith(Root+"/"))throw new InvalidOperationException("请打开 RainbowLi 场景。");Apply();EditorSceneManager.MarkSceneDirty(scene);AssetDatabase.SaveAssets();}
+  static void Apply(){ImportButtons();view=UnityEngine.Object.FindFirstObjectByType<GameView>();art=view.GetComponent<AdventureUiArtView>()??view.gameObject.AddComponent<AdventureUiArtView>();art.view=view;Deck();Sequence();Service();Reward();art.settings=new[]{Settings(view.servicePanel.transform),Settings(view.rewardPanel.transform),Settings(view.GetComponent<DeckOperationView>().panel.transform),Settings(view.GetComponent<SequenceEditorView>().panel.transform)};
+   foreach(var c in view.GetComponentsInChildren<Component>(true)){if(c==null)continue;EditorUtility.SetDirty(c);if(PrefabUtility.IsPartOfPrefabInstance(c))PrefabUtility.RecordPrefabInstancePropertyModifications(c);}
+  }
+  public static void Run(){var scene=EditorSceneManager.OpenScene(Root+"/Scenes/RainbowLiGame.unity");Apply();EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();Debug.Log("PASS: Reward, deck, sequence, shop and rest art saved.");EditorApplication.Exit(0);}
+ }
+}
+

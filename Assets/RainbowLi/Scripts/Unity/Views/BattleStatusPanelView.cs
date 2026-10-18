@@ -38,7 +38,8 @@ public sealed class BattleStatusPanelView:MonoBehaviour {
   }
   if(iconMode){
    float step=iconSize+iconGap;
-   content.sizeDelta=new Vector2(singleRow?Mathf.Max(((RectTransform)content.parent).rect.width,effects.Length*step):content.sizeDelta.x,singleRow?iconSize:Mathf.Max(iconSize,Mathf.CeilToInt(effects.Length/(float)columns)*step));
+   content.sizeDelta=new Vector2(singleRow?Mathf.Max(((RectTransform)content.parent).rect.width,Mathf.Max(0,effects.Length*step-iconGap)):content.sizeDelta.x,singleRow?iconSize:Mathf.Max(iconSize,Mathf.CeilToInt(effects.Length/(float)columns)*step));
+   if(singleRow&&content.sizeDelta.x<=((RectTransform)content.parent).rect.width+.1f)content.anchoredPosition=new Vector2(0,content.anchoredPosition.y);
    for(int i=0;i<effects.Length;i++){var effect=effects[i];var chip=chips[effect];var r=(RectTransform)chip.transform;r.anchoredPosition=new Vector2(i%columns*step,-i/columns*step);r.sizeDelta=Vector2.one*iconSize;var image=chip.GetComponent<Image>();image.sprite=statusIcons.FirstOrDefault(item=>item.effect==effect)?.icon??fallbackIcon;image.type=Image.Type.Simple;image.color=Color.white;var text=chip.GetComponentInChildren<Text>();text.rectTransform.anchorMin=Vector2.zero;text.rectTransform.anchorMax=Vector2.one;text.rectTransform.offsetMin=new Vector2(1,1);text.rectTransform.offsetMax=new Vector2(-1,-1);text.text=value[effect].ToString();text.fontSize=16;text.alignment=TextAnchor.LowerRight;text.color=Color.white;}
   }
   if(selected.HasValue){if(value[selected.Value]<=0)CloseDetails();else UpdateDetails(selected.Value);}
