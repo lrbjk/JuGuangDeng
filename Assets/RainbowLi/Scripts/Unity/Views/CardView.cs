@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 namespace RainbowLi.UnityGame {
 public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPointerMoveHandler {
+ const float EngravingFrameYOffset=8f;
  public Image face, engravingBadge;
  [Header("美术牌面")] public bool illustrated;
  public Sprite illustratedFace,attackIcon,guardIcon,healIcon,otherIcon;
@@ -90,7 +91,7 @@ public sealed class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHa
   float scale=Mathf.Min(area.width/baseRect.width,area.height/baseRect.height);
   var r=engravingBadge.rectTransform;r.SetParent(face.transform,false);r.anchorMin=r.anchorMax=r.pivot=new Vector2(0,1);
   r.anchoredPosition=new Vector2((area.width-baseRect.width*scale)*.5f+(frame.rect.x-baseRect.x)*scale,
-   -(area.height-baseRect.height*scale)*.5f+(frame.rect.yMax-baseRect.yMax)*scale);
+   -(area.height-baseRect.height*scale)*.5f+(frame.rect.yMax-baseRect.yMax)*scale+EngravingFrameYOffset);
   r.sizeDelta=frame.rect.size*scale;r.localScale=Vector3.one;r.localRotation=Quaternion.identity;
  }
  private void RefreshEngravingCaption(bool engraved,RuntimeEngraving engraving){
