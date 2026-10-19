@@ -931,6 +931,7 @@ MonoBehaviour:
   topRank: {fileID: 3723675870603351048}
   bottomRank: {fileID: 7539658610706163193}
   caption: {fileID: 6315562715065919409}
+  engravingCaption: {fileID: 0}
   topSuit: {fileID: 1051078667652804419}
   bottomSuit: {fileID: 2211531351690101681}
   pips:
