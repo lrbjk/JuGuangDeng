@@ -16,7 +16,7 @@ MonoBehaviour:
   - id: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
     sheetName: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1"
     title: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA1\uFF1A\u7535\u8111"
-    portrait: {fileID: 0}
+    portrait: {fileID: 21300000, guid: 2cee4f5ad4db0ec4bb1acbdb34d74fca, type: 3}
     enabled: 1
     configured: 1
     health: 50
@@ -207,7 +207,7 @@ MonoBehaviour:
   - id: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
     sheetName: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2"
     title: "\u673A\u68B0\u7C7B\uFF1A\u666E\u901A\u654C\u4EBA2\uFF1A\u952E\u76D8\u805A\u5408\u4F53"
-    portrait: {fileID: 0}
+    portrait: {fileID: 21300000, guid: a4a9066442ba45d46a4351538f2b15c8, type: 3}
     enabled: 1
     configured: 1
     health: 60
