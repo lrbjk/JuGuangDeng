@@ -311,7 +311,7 @@ MonoBehaviour:
       - slot: "\u724C\u5E8F\u6548\u679C4"
         name: "\u6062\u590D10"
         description: "\u6062\u590D10\u70B9\u8840\u91CF\u3002"
-        numbers: "\u968F\u673A"
+        numbers: "\u6240\u9700\u724C\u5E8F\uFF1A123"
         effects:
         - operation: 3
           target: 0
@@ -486,9 +486,9 @@ MonoBehaviour:
       requiredNumber: 0
       fixedNumbers: 
     - slot: "\u724C\u5E8F\u6548\u679C4"
-      mode: 0
+      mode: 2
       requiredNumber: 0
-      fixedNumbers: 
+      fixedNumbers: 010000000200000003000000
     - slot: "\u724C\u5E8F\u6548\u679C5"
       mode: 1
       requiredNumber: 5
@@ -766,7 +766,7 @@ MonoBehaviour:
       - slot: "\u724C\u5E8F\u6548\u679C3"
         name: "\u63B7\u6BD28"
         description: "\u65BD\u52A08\u5C42\u4E2D\u6BD2\u3002"
-        numbers: "\u968F\u673A"
+        numbers: "\u724C\u5E8F\u9700\u6C42\uFF1A234"
         effects:
         - operation: 11
           target: 1
@@ -952,9 +952,9 @@ MonoBehaviour:
       requiredNumber: 0
       fixedNumbers: 
     - slot: "\u724C\u5E8F\u6548\u679C3"
-      mode: 0
+      mode: 2
       requiredNumber: 0
-      fixedNumbers: 
+      fixedNumbers: 020000000300000004000000
     - slot: "\u724C\u5E8F\u6548\u679C4"
       mode: 0
       requiredNumber: 0

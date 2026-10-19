@@ -1528,15 +1528,15 @@ MonoBehaviour:
         notes: "\u6240\u6709\u6570\u5B57\u586B\u5165\u6539\u4E3A\u968F\u673A\u586B\u5165\uFF1B\u8303\u56F41-6\u3002"
     sequences:
     - slot: "\u724C\u5E8F\u6548\u679C1"
-      name: "\u91CD\u67846"
-      description: "\u6DFB\u52A06\u4E2A\u968F\u673A\u6570\u5B57\u3002"
+      name: "\u91CD\u67844"
+      description: "\u6DFB\u52A04\u4E2A\u968F\u673A\u6570\u5B57\u3002"
       numbers: "\u968F\u673A"
       effects:
       - operation: 14
         target: 2
         amountSource: 0
         multiplier: 1
-        amount: 6
+        amount: 4
         offset: 0
         numberMode: 1
         numberMin: 1
@@ -1558,15 +1558,15 @@ MonoBehaviour:
         numberMax: 6
         notes: 
     - slot: "\u724C\u5E8F\u6548\u679C3"
-      name: "\u6DF7\u4E715"
-      description: "\u89E6\u53D15\u6B21\u968F\u673A\u5361\u724C\u6548\u679C\u3002"
+      name: "\u6DF7\u4E714"
+      description: "\u89E6\u53D14\u6B21\u968F\u673A\u5361\u724C\u6548\u679C\u3002"
       numbers: "\u968F\u673A"
       effects:
       - operation: 20
         target: 0
         amountSource: 0
         multiplier: 1
-        amount: 5
+        amount: 4
         offset: 0
         numberMode: 0
         numberMin: 1
