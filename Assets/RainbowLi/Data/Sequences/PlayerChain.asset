@@ -16,4 +16,23 @@ MonoBehaviour:
   numbers: 020000000200000002000000
   effect: 2
   value: 2
-  insertTwo: 1
+  insertTwo: 0
+  requirement: 0
+  secondEffectEnabled: 0
+  secondEffect:
+    Effect: 0
+    Value: 0
+    InsertsTwo: 0
+    Requirement: 0
+    Code: 
+    BaseX: 0
+    Multiplier: 1
+    FixedValue: 0
+    MinX: 0
+    MaxX: 0
+    RollX: 0
+  effectTable: {fileID: 0}
+  primaryEffectId: 
+  secondaryEffectId: 
+  primaryX: 0
+  secondaryX: 0
