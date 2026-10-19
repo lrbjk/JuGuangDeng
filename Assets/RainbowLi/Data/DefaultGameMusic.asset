@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8381079df34525b40b426808131cea5f, type: 3}
   m_Name: DefaultGameMusic
   m_EditorClassIdentifier: RainbowLi.Runtime::RainbowLi.UnityGame.GameMusicProfile
-  map: {fileID: 8300000, guid: 327adafb8a51a714c8b8cb546309aba5, type: 3}
+  map: {fileID: 8300000, guid: 99ead10de82f17c4a8a5d4a5dbaa5c71, type: 3}
   enemies:
   - idPrefix: "\u673A\u68B0\u7C7B"
-    normal: {fileID: 8300000, guid: a7fe594f34493af4196b6891ccddeff4, type: 3}
+    normal: {fileID: 8300000, guid: b183615470e697d42b6e5e4da7398a28, type: 3}
     boss: {fileID: 8300000, guid: 198318c7b1bb00c4d9bb078eb8708d2f, type: 3}
   - idPrefix: "\u751F\u7269\u7C7B"
-    normal: {fileID: 8300000, guid: fcc6d377b63b79e448ac522646247620, type: 3}
+    normal: {fileID: 8300000, guid: e5c374c6bbd90614c8775c06f38b5282, type: 3}
     boss: {fileID: 8300000, guid: 0815b55eb89017849a67723b32829052, type: 3}
   - idPrefix: "\u62BD\u8C61\u6982\u5FF5\u7C7B"
-    normal: {fileID: 8300000, guid: ddf173af9fdefd34d835a2c860fcf5aa, type: 3}
+    normal: {fileID: 8300000, guid: 7a10c5d56ac30a54a81af9fff9561c2a, type: 3}
     boss: {fileID: 8300000, guid: 1ce38169f1815604b8c6d31ab2509d4c, type: 3}
   volume: 0.65
   fadeSeconds: 0.6
