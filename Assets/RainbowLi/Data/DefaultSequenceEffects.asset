@@ -16,7 +16,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_01"
     name: "\u4F24\u5BB3X"
     description: "\u9020\u6210X\u70B9\u4F24\u5BB3\u3002"
-    range: 5-10
+    range: 5-13
     pools: "\u9ED8\u8BA4\u6C60,\u4F24\u5BB3\u6C60"
     notes: 
     behavior: Damage
@@ -38,7 +38,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_03"
     name: "\u62A4\u76FEX"
     description: "\u83B7\u5F97X\u70B9\u62A4\u76FE\u3002"
-    range: 4-8
+    range: 4-12
     pools: "\u9ED8\u8BA4\u6C60,\u589E\u76CA\u6C60"
     notes: 
     behavior: Shield
@@ -49,7 +49,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_04"
     name: "\u6062\u590DX"
     description: "\u6062\u590DX\u70B9\u8840\u91CF\u3002"
-    range: 2-8
+    range: 3-10
     pools: "\u9ED8\u8BA4\u6C60,\u589E\u76CA\u6C60"
     notes: 
     behavior: Heal
@@ -60,7 +60,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_05"
     name: "\u589E\u5E45X"
     description: "\u540E\u7EED\u7684\u5361\u724C\u6548\u679C\u83B7\u5F97+X\u3002"
-    range: 1-3
+    range: 1-4
     pools: "\u9ED8\u8BA4\u6C60,\u589E\u76CA\u6C60,\u7279\u6B8A\u6548\u679C\u6C60"
     notes: 
     behavior: Boost
@@ -71,7 +71,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_06"
     name: "\u71C3\u70E7X"
     description: "\u65BD\u52A0X\u5C42\u70E7\u4F24\u3002"
-    range: 2-6
+    range: 4-9
     pools: "\u4F24\u5BB3\u6C60,\u51CF\u76CA\u6C60"
     notes: 
     behavior: Burn
@@ -82,7 +82,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_07"
     name: "\u63B7\u6BD2X"
     description: "\u65BD\u52A0X\u5C42\u4E2D\u6BD2\u3002"
-    range: 3-9
+    range: 5-12
     pools: "\u4F24\u5BB3\u6C60,\u51CF\u76CA\u6C60"
     notes: 
     behavior: Poison
@@ -93,7 +93,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_08"
     name: "\u5F3A\u5316X"
     description: "\u83B7\u5F97X\u5C42\u5F3A\u58EE\u3002"
-    range: 2-4
+    range: 3-6
     pools: "\u589E\u76CA\u6C60"
     notes: 
     behavior: Strength
@@ -104,7 +104,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_09"
     name: "\u6495\u88C2X"
     description: "\u65BD\u52A0X\u5C42\u6D41\u8840\u3002"
-    range: 3-7
+    range: 3-10
     pools: "\u589E\u76CA\u6C60"
     notes: 
     behavior: Bleed
@@ -115,7 +115,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_10"
     name: "\u91CD\u6784X"
     description: "\u6DFB\u52A0X\u4E2A\u968F\u673A\u6570\u5B57\u3002"
-    range: 1-3
+    range: 1-4
     pools: "\u7279\u6B8A\u6548\u679C\u6C60,\u6570\u5B57\u6548\u679C\u6C60"
     notes: 
     behavior: RandomNumbers
@@ -137,7 +137,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_12"
     name: "\u6DF7\u4E71X"
     description: "\u89E6\u53D1X\u6B21\u968F\u673A\u5361\u724C\u6548\u679C\u3002"
-    range: 1-4
+    range: 1-5
     pools: "\u7279\u6B8A\u6548\u679C\u6C60"
     notes: 
     behavior: RandomCardEffects
@@ -148,7 +148,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_13"
     name: "\u7834\u7532X"
     description: "\u65BD\u52A0X\u5C42\u6613\u4F24\u3002"
-    range: 2-4
+    range: 4-7
     pools: "\u51CF\u76CA\u6C60"
     notes: 
     behavior: Vulnerable
@@ -159,7 +159,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_14"
     name: "\u65E0\u654CX"
     description: "\u83B7\u5F97X\u5C42\u62DB\u67B6\u3002"
-    range: 1-3
+    range: 2-4
     pools: "\u7279\u6B8A\u6548\u679C\u6C60"
     notes: 
     behavior: Parry
@@ -181,7 +181,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_16"
     name: "\u4F24\u5BB32X"
     description: "\u9020\u62102X\u70B9\u4F24\u5BB3\u3002"
-    range: 5-10
+    range: 5-12
     pools: "\u9ED8\u8BA4\u6C60,\u4F24\u5BB3\u6C60"
     notes: 
     behavior: Damage
@@ -192,7 +192,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_17"
     name: "\u6062\u590D2X"
     description: "\u6062\u590D2X\u70B9\u8840\u91CF\u3002"
-    range: 2-8
+    range: 4-8
     pools: "\u9ED8\u8BA4\u6C60,\u589E\u76CA\u6C60"
     notes: 
     behavior: Heal
@@ -203,7 +203,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_18"
     name: "\u62A4\u76FE2X"
     description: "\u83B7\u5F972X\u70B9\u62A4\u76FE\u3002"
-    range: 4-8
+    range: 4-12
     pools: "\u9ED8\u8BA4\u6C60,\u589E\u76CA\u6C60"
     notes: 
     behavior: Shield
@@ -225,7 +225,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_20"
     name: "\u71C3\u70E72X"
     description: "\u65BD\u52A02X\u5C42\u70E7\u4F24\u3002"
-    range: 1-5
+    range: 3-8
     pools: "\u4F24\u5BB3\u6C60,\u51CF\u76CA\u6C60"
     notes: 
     behavior: Burn
@@ -236,7 +236,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_21"
     name: "\u63B7\u6BD22X"
     description: "\u65BD\u52A02X\u5C42\u4E2D\u6BD2\u3002"
-    range: 2-7
+    range: 3-9
     pools: "\u4F24\u5BB3\u6C60,\u51CF\u76CA\u6C60"
     notes: 
     behavior: Poison
@@ -247,7 +247,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_22"
     name: "\u5F3A\u53162X"
     description: "\u83B7\u5F972X\u5C42\u5F3A\u58EE\u3002"
-    range: 1-4
+    range: 2-4
     pools: "\u589E\u76CA\u6C60"
     notes: 
     behavior: Strength
@@ -258,7 +258,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_23"
     name: "\u6495\u88C22X"
     description: "\u65BD\u52A02X\u5C42\u6D41\u8840\u3002"
-    range: 2-6
+    range: 3-7
     pools: "\u4F24\u5BB3\u6C60,\u51CF\u76CA\u6C60"
     notes: 
     behavior: Bleed
@@ -269,7 +269,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_24"
     name: "\u94C1\u58C1X"
     description: "\u83B7\u5F97X\u5C42\u94C1\u58C1\u3002"
-    range: 1-3
+    range: 3-7
     pools: "\u589E\u76CA\u6C60"
     notes: 
     behavior: IronWall
@@ -280,7 +280,7 @@ MonoBehaviour:
   - id: "\u724C\u5E8F\u6548\u679C_25"
     name: "\u518D\u751FX"
     description: "\u83B7\u5F97X\u5C42\u518D\u751F\u3002"
-    range: 1-5
+    range: 3-6
     pools: "\u589E\u76CA\u6C60"
     notes: 
     behavior: Regeneration
