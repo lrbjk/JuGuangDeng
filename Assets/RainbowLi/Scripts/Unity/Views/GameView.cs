@@ -37,6 +37,7 @@ public sealed class GameView : MonoBehaviour {
   if(!fighting&&tooltip!=null)tooltip.HideAll();
   battleView.Refresh(g);rewardView.Refresh(g);serviceView.Refresh(g);endView.Refresh(g);
   if(battleHud!=null)battleHud.Refresh(g);
+  LowHealthOverlay.Ensure(this).Refresh(g.Health,g.HealthLimit,fighting||holdBattle);
   if(cardMotion!=null)cardMotion.Observe(g);
   GetComponent<BattleArtView>()?.Refresh();
   GetComponent<NonCombatRoomView>()?.Refresh();

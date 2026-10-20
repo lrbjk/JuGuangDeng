@@ -24,7 +24,7 @@ public sealed class BattleEffects : MonoBehaviour {
  [Range(1,20)] public int maxConcurrentBursts=10;
  [Min(0.1f)] public float chainWindow=1.25f;
  [Range(1,4)] public float maxComboGain=2.8f;
- private sealed class Burst {public float started,strength,gain;public bool targetEnemy,aura,arrived;public Vector2 from,target;public RectTransform beam;public Text number;public readonly List<Image> particles=new List<Image>();}
+ private sealed class Burst {public float started,strength,gain;public bool targetEnemy,aura,arrived,hurt;public Vector2 from,target;public RectTransform beam;public Text number;public readonly List<Image> particles=new List<Image>();}
  private readonly List<Burst> bursts=new List<Burst>();
  public int ActiveBursts=>bursts.Count;
  private float Now=>gameView==null||gameView.battle==null?Time.unscaledTime:gameView.battle.PresentationTime;
@@ -36,11 +36,23 @@ public sealed class BattleEffects : MonoBehaviour {
  private Color playerColor,enemyColor;
  private ContainmentGame observedGame;
  private AudioClip generatedHit;
+ private Image hitPortrait;
+ private Color portraitColor;
+ private Vector3 portraitRestPosition;
+ private void UpdateEnemyPortrait(float flash,Vector2 shake){
+  var portrait=gameView==null||gameView.battleHud==null?null:gameView.battleHud.enemyPortrait;
+  if(hitPortrait!=portrait){RestoreEnemyPortrait();hitPortrait=portrait;if(portrait!=null){portraitColor=portrait.color;portraitRestPosition=portrait.rectTransform.localPosition;}}
+  if(hitPortrait==null)return;
+  hitPortrait.color=Color.Lerp(portraitColor,new Color(1,.08f,.08f,portraitColor.a),Mathf.Clamp01(flash));
+  var offset=playerScreenShake?Vector2.ClampMagnitude(shake,maxShake):Vector2.zero;
+  hitPortrait.rectTransform.localPosition=portraitRestPosition+new Vector3(offset.x,offset.y,0);
+ }
+ private void RestoreEnemyPortrait(){if(hitPortrait!=null){hitPortrait.color=portraitColor;hitPortrait.rectTransform.localPosition=portraitRestPosition;}hitPortrait=null;}
  private void Awake(){restPosition=shakeRoot.localPosition;playerColor=playerFill.color;enemyColor=enemyFill.color;}
  private void OnEnable(){session.Resolved+=OnResolution;session.Changed+=CheckReset;}
  private void OnDisable(){session.Resolved-=OnResolution;session.Changed-=CheckReset;Clear();}
  private void CheckReset(){if(observedGame!=session.Game){observedGame=session.Game;Clear();}}
- private void Clear(){if(actionViews!=null)foreach(var card in actionViews)card?.ClearAttack();if(audioSource!=null)audioSource.Stop();foreach(var b in bursts)DestroyBurst(b);bursts.Clear();combo=0;lastEffect=-10;if(shakeRoot!=null)shakeRoot.localPosition=restPosition;if(comboLabel!=null)comboLabel.text="";if(playerFill!=null)playerFill.color=playerColor;if(enemyFill!=null)enemyFill.color=enemyColor;}
+ private void Clear(){RestoreEnemyPortrait();if(actionViews!=null)foreach(var card in actionViews)card?.ClearAttack();if(audioSource!=null)audioSource.Stop();foreach(var b in bursts)DestroyBurst(b);bursts.Clear();combo=0;lastEffect=-10;if(shakeRoot!=null)shakeRoot.localPosition=restPosition;if(comboLabel!=null)comboLabel.text="";if(playerFill!=null)playerFill.color=playerColor;if(enemyFill!=null)enemyFill.color=enemyColor;}
  private Vector2 Point(RectTransform rect){return overlay.InverseTransformPoint(rect.TransformPoint(rect.rect.center));}
  private void OnResolution(ResolutionEvent e){if(cardMotion==null||!cardMotion.isActiveAndEnabled||!cardMotion.enableMotion)PlayResolution(e);}
  public void PlayResolution(ResolutionEvent e,bool arrived=false){
@@ -65,7 +77,7 @@ public sealed class BattleEffects : MonoBehaviour {
  private void SpawnBurst(Vector2 from,Vector2 target,int strengthDamage,int healthDamage,bool aura,bool toEnemy,bool arrived,string caption=null){
   if(bursts.Count>=maxConcurrentBursts){DestroyBurst(bursts[0]);bursts.RemoveAt(0);}
   float strength=profile==null?1-Mathf.Exp(-strengthDamage/18f):profile.DamageStrength(strengthDamage),gain=1+(maxComboGain-1)*(1-Mathf.Exp(-Mathf.Max(0,combo-1)/(profile==null?3.5f:Mathf.Max(.1f,profile.comboRiseActions))));
-  var b=new Burst{started=Now-(arrived?(profile==null?.14f:profile.fallbackTravelDuration):0),strength=strength,gain=gain,from=from,target=target,targetEnemy=toEnemy,aura=aura,arrived=arrived};
+  var b=new Burst{started=Now-(arrived?(profile==null?.14f:profile.fallbackTravelDuration):0),strength=strength,gain=gain,from=from,target=target,targetEnemy=toEnemy,aura=aura,arrived=arrived,hurt=healthDamage>0};
   var beam=Instantiate(particlePrefab,overlay);b.beam=(RectTransform)beam.transform;beam.color=aura?new Color(.92f,.75f,.4f):new Color(1,.48f,.43f);
   b.number=Instantiate(numberPrefab,overlay);b.number.text=caption??(aura?"牌序叠加":healthDamage==0?"格挡":"伤害 "+healthDamage);b.number.fontSize=Mathf.RoundToInt(((profile==null?24:profile.damageTextBaseSize)+strength*(profile==null?24:profile.damageTextGrowth))*Mathf.Sqrt(gain));
   int count=Mathf.Min(maxParticles,Mathf.RoundToInt((8+strength*36)*gain));
@@ -76,7 +88,7 @@ public sealed class BattleEffects : MonoBehaviour {
  private void LateUpdate(){
   if(audioSource!=null){if(gameView!=null&&gameView.battle!=null&&gameView.battle.IsPresentationPaused)audioSource.Pause();else audioSource.UnPause();}
   ApplyProfile();float travel=profile==null?.14f:Mathf.Max(.01f,profile.fallbackTravelDuration),duration=profile==null?1.15f:Mathf.Max(.1f,profile.burstDuration),flashTime=profile==null?.3f:Mathf.Max(.01f,profile.flashDuration),shakeTime=profile==null?.45f:Mathf.Max(.01f,profile.shakeDuration);
-  Vector2 shake=Vector2.zero;float playerFlash=0,enemyFlash=0;
+  Vector2 shake=Vector2.zero,enemyShake=Vector2.zero;float playerFlash=0,enemyFlash=0,portraitFlash=0;
   for(int n=bursts.Count-1;n>=0;n--){var b=bursts[n];float age=Now-b.started;
    if(age>duration){DestroyBurst(b);bursts.RemoveAt(n);continue;}
    float hit=Mathf.Max(0,age-travel),fade=Mathf.Clamp01(1-hit/Mathf.Max(.01f,duration-travel)),radius=(25+hit*(profile==null?160:profile.particleSpread))*(0.5f+b.strength)*b.gain;
@@ -84,10 +96,11 @@ public sealed class BattleEffects : MonoBehaviour {
    b.beam.anchoredPosition=(head+tail)/2;b.beam.sizeDelta=new Vector2(Vector2.Distance(head,tail),3+12*b.strength*b.gain);b.beam.localRotation=Quaternion.Euler(0,0,Mathf.Atan2(head.y-tail.y,head.x-tail.x)*Mathf.Rad2Deg);b.beam.gameObject.SetActive(!b.arrived&&age<.2f);
    b.number.rectTransform.anchoredPosition=b.target+Vector2.up*(38+hit*(profile==null?65:profile.damageTextRise));var nc=b.number.color;nc.a=fade;b.number.color=nc;
    for(int i=0;i<b.particles.Count;i++){var image=b.particles[i];var r=(RectTransform)image.transform;float angle=i*2.39996f;Vector2 dir=new Vector2(Mathf.Cos(angle),Mathf.Sin(angle));r.anchoredPosition=b.target+dir*radius*(.55f+i%7*.1f)+Vector2.down*85*hit*hit;r.sizeDelta=Vector2.one*(3+b.strength*(profile==null?6:profile.particleSize))*Mathf.Sqrt(b.gain)*fade;var c=image.color;c.a=fade*fade;image.color=c;image.gameObject.SetActive(age>=travel);}
-   if(!b.aura&&age>=travel&&hit<flashTime&&(profile==null||profile.hitFlash)){float flash=(1-hit/flashTime)*(.4f+b.strength*.6f)*(profile==null?1:profile.flashStrength);if(b.targetEnemy)enemyFlash=Mathf.Max(enemyFlash,flash);else playerFlash=Mathf.Max(playerFlash,flash);}
-   if(age>=travel&&hit<shakeTime)shake+=new Vector2(Mathf.Sin(hit*93),Mathf.Sin(hit*71+1.8f))*(1.5f+9.5f*b.strength)*b.gain*Mathf.Exp(-hit*9)*(profile==null?1:profile.shakeStrength);
+   if(!b.aura&&age>=travel&&hit<flashTime&&(profile==null||profile.hitFlash)){float flash=(1-hit/flashTime)*(.4f+b.strength*.6f)*(profile==null?1:profile.flashStrength);if(b.targetEnemy){enemyFlash=Mathf.Max(enemyFlash,flash);if(b.hurt)portraitFlash=Mathf.Max(portraitFlash,flash);}else playerFlash=Mathf.Max(playerFlash,flash);}
+   if(age>=travel&&hit<shakeTime){var offset=new Vector2(Mathf.Sin(hit*93),Mathf.Sin(hit*71+1.8f))*(1.5f+9.5f*b.strength)*b.gain*Mathf.Exp(-hit*9)*(profile==null?1:profile.shakeStrength);if(b.targetEnemy&&!b.aura)enemyShake+=offset;else shake+=offset;}
   }
   playerFill.color=Color.Lerp(playerColor,Color.white,playerFlash);enemyFill.color=Color.Lerp(enemyColor,Color.white,enemyFlash);
+  UpdateEnemyPortrait(portraitFlash,enemyShake);
   shake=playerScreenShake?Vector2.ClampMagnitude(shake,maxShake):Vector2.zero;shakeRoot.localPosition=restPosition+new Vector3(shake.x,shake.y,0);
   float comboAge=Now-lastEffect;if(comboAge>1.1f)comboLabel.text="";else{comboLabel.fontSize=Mathf.RoundToInt(30+Mathf.Min(combo,8)*3+Mathf.Sin(Mathf.Clamp01(comboAge/.28f)*Mathf.PI)*10);var c=comboLabel.color;c.a=Mathf.Clamp01((1.1f-comboAge)/.4f);comboLabel.color=c;}
  }
