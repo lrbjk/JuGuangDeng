@@ -5,7 +5,7 @@ namespace RainbowLi.UnityGame {
  public sealed class StartMenuView : MonoBehaviour {
   public GameView view;
   public GameObject panel,settingsPanel,tutorialPanel;
-  [Header("文案直接编辑对应 Text，不会被运行时代码覆盖")]
+  [Header("主界面文案直接编辑 Text；教学手册正文由 TutorialManual 文本资源载入")]
   public Text introduction,credits,flavor,tutorial;
   public ScrollRect introductionScroll;
   public Button start,quit,settings,manual,closeSettings,closeManual,speed;
@@ -18,7 +18,8 @@ namespace RainbowLi.UnityGame {
   public bool IsOpen=>panel!=null&&panel.activeSelf;
   void Awake(){
    start.onClick.AddListener(StartGame);quit.onClick.AddListener(QuitGame);
-   settings.onClick.AddListener(()=>settingsPanel.SetActive(true));manual.onClick.AddListener(()=>tutorialPanel.SetActive(true));
+   var handbook=TutorialManualView.Ensure(this);
+   settings.onClick.AddListener(()=>settingsPanel.SetActive(true));manual.onClick.AddListener(handbook.Open);
    closeManual.onClick.AddListener(()=>tutorialPanel.SetActive(false));
    if(continueGame!=null)continueGame.onClick.AddListener(()=>RequestReplacement(2));
    if(resume!=null)resume.onClick.AddListener(ResumeGame);
