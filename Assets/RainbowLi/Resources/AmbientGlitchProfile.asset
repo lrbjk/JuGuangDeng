@@ -15,8 +15,8 @@ MonoBehaviour:
   effectEnabled: 1
   minIntervalSeconds: 120
   maxIntervalSeconds: 240
-  duration: 0.65
-  intensity: 0.9
-  horizontalShift: 0.14
-  noiseOpacity: 0.75
-  changesPerSecond: 24
+  duration: 0.35
+  intensity: 0.5
+  horizontalShift: 0.12
+  noiseOpacity: 0.8
+  changesPerSecond: 12
