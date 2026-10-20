@@ -26,7 +26,7 @@ public sealed class GameView : MonoBehaviour {
  private void Start(){
   battleView.Initialize();rewardView.Initialize();serviceView.Initialize();
   for(int i=0;i<ruleViews.Length;i++)ruleViews[i].Initialize(sequences,i);
-  initialized=true;Refresh();
+  AmbientScreenFlicker.Ensure(this);initialized=true;Refresh();
  }
  public void Refresh(){
   if(!initialized||session.Game==null)return; var g=session.Game;battleView.EnsureCapacity(g);if(cardMotion!=null)cardMotion.PrepareRefresh(g);
