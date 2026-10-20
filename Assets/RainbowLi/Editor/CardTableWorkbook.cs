@@ -12,7 +12,7 @@ using RainbowLi.UnityGame;
 namespace RainbowLi.EditorTools {
  // Small Open XML reader/writer: no Excel installation or runtime dependency required.
  public static class CardTableWorkbook {
-  public static readonly string[] Headers={"效果编号","效果名称","效果类型","效果类型","具体效果","基础取值范围（存在X时）","备注","启用","数字","权重","起始牌","特殊技能","触发条件","阈值","特殊权重比","结算效果","卡效所属池"};
+  public static readonly string[] Headers={"效果编号","效果名称","效果类型","效果类型","具体效果","基础取值范围（存在X时）","备注","启用","数字","权重","起始牌","特殊技能","触发条件","阈值","特殊权重比","结算效果","卡效所属池","具体数值"};
   public static readonly string[] Lifetimes={"其他类型效果","临时性效果","持续性效果"};
   public static readonly string[] Polarities={"正面效果","负面效果","特殊效果"};
   static readonly XNamespace S="http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -20,7 +20,7 @@ namespace RainbowLi.EditorTools {
   static int Int(string s,int fallback){if(string.IsNullOrWhiteSpace(s))return fallback;if(double.TryParse(s,NumberStyles.Float,CultureInfo.InvariantCulture,out var d)&&d==Math.Truncate(d)&&d>=int.MinValue&&d<=int.MaxValue)return (int)d;throw new FormatException("不是整数："+s);}
   static float Float(string s,float fallback)=>string.IsNullOrWhiteSpace(s)?fallback:float.Parse(s,CultureInfo.InvariantCulture);
   static bool Bool(string s,bool fallback){if(string.IsNullOrWhiteSpace(s))return fallback;if(s=="1"||s=="是"||s.Equals("true",StringComparison.OrdinalIgnoreCase))return true;if(s=="0"||s=="否"||s.Equals("false",StringComparison.OrdinalIgnoreCase))return false;throw new FormatException("开关须为 1/0 或 是/否："+s);}
-  public static void SetRange(CardTableRow row,string text){CardTableRange.Parse(text,out row.usesNumber,out row.min,out row.max);row.range=row.usesNumber?"为卡牌对应数字":text.Trim();}
+  public static void SetRange(CardTableRow row,string text){row.range=(text??"").Trim();row.NormalizeRange();if(row.usesNumber)row.range="为卡牌对应数字";}
   static T Field<T>(string name,Func<T> read){try{return read();}catch(FormatException e){throw new FormatException(name+"："+e.Message,e);}catch(OverflowException e){throw new FormatException(name+"：数字太大。",e);}}
   // The source design sheet has nine columns; editor exports retain the legacy
   // configuration columns and append membership so old exports still import.
@@ -28,7 +28,8 @@ namespace RainbowLi.EditorTools {
    var rows=source.ToArray();var header=rows.FirstOrDefault(r=>Cell(r,0)=="效果编号");
    if(header==null||Cell(header,6)!="卡效所属池")return rows;
    if(Cell(header,4)!="具体效果"||Cell(header,7)!="权重"||Cell(header,8)!="备注")throw new FormatException("卡效设计表缺少具体效果、权重或备注列。");
-   return rows.Select(r=>{if(Cell(r,0)=="效果编号")return Headers;if(r.All(string.IsNullOrWhiteSpace))return r;var c=new string[Headers.Length];for(int i=0;i<6;i++)c[i]=Cell(r,i);c[6]=Cell(r,8);c[9]=Cell(r,7);c[16]=Cell(r,6);return c;}).ToArray();
+   int fixedColumn=Array.IndexOf(header,"具体数值");
+   return rows.Select(r=>{if(Cell(r,0)=="效果编号")return Headers;if(r.All(string.IsNullOrWhiteSpace))return r;var c=new string[Headers.Length];for(int i=0;i<6;i++)c[i]=Cell(r,i);c[6]=Cell(r,8);c[9]=Cell(r,7);c[16]=Cell(r,6);if(fixedColumn>=0)c[17]=Cell(r,fixedColumn);return c;}).ToArray();
   }
   public static CardTableRow[] Parse(IEnumerable<string[]> source,IEnumerable<CardTableRow> known){
    var lookup=(known??Array.Empty<CardTableRow>()).Where(r=>r!=null).GroupBy(r=>r.id).ToDictionary(g=>g.Key,g=>g.First());
@@ -38,6 +39,7 @@ namespace RainbowLi.EditorTools {
      if(cells.Length<7)throw new FormatException("至少需要原表的七列。");
      var id=Cell(cells,0).Trim();lookup.TryGetValue(id,out var previous);var row=previous?.Copy()??new CardTableRow();row.id=id;row.name=Cell(cells,1);row.description=Cell(cells,4);row.notes=Cell(cells,6);
      row.pools=Cell(cells,16,previous?.pools);
+     row.fixedValue=Field("具体数值",()=>Int(Cell(cells,17),previous?.fixedValue??0));
      int life=Array.IndexOf(Lifetimes,Cell(cells,2)),polarity=Array.IndexOf(Polarities,Cell(cells,3));if(life<0||polarity<0)throw new FormatException("效果类型须使用原表中的类型名称。");row.lifetime=(EffectLifetime)life;row.polarity=(EffectPolarity)polarity;SetRange(row,Cell(cells,5));
      row.enabled=Field("启用",()=>Bool(Cell(cells,7),previous?.enabled??true));row.number=Field("数字",()=>Int(Cell(cells,8),previous?.number??1));row.weight=Field("权重",()=>Float(Cell(cells,9),previous?.weight??10));row.starting=Field("起始牌",()=>Bool(Cell(cells,10),previous?.starting??true));row.special=Field("特殊技能",()=>Bool(Cell(cells,11),previous?.special??false));
      string condition=Cell(cells,12);row.condition=string.IsNullOrWhiteSpace(condition)?previous?.condition??ActivationCondition.RoundAtLeast:condition=="生命百分比"||condition=="HealthPercentAtMost"?ActivationCondition.HealthPercentAtMost:condition=="回合"||condition=="RoundAtLeast"?ActivationCondition.RoundAtLeast:throw new FormatException("触发条件须为 回合 或 生命百分比。");
@@ -48,11 +50,11 @@ namespace RainbowLi.EditorTools {
    }
    return result.ToArray();
   }
-  public static string[] Cells(CardTableRow r)=>new[]{r.id,r.name,Lifetimes[(int)r.lifetime],Polarities[(int)r.polarity],r.description,r.range,r.notes,r.enabled?"1":"0",r.number.ToString(),r.weight.ToString(CultureInfo.InvariantCulture),r.starting?"1":"0",r.special?"1":"0",r.condition==ActivationCondition.RoundAtLeast?"回合":"生命百分比",r.threshold.ToString(),r.specialWeightRatio.ToString(CultureInfo.InvariantCulture),r.effect.ToString(),r.pools};
+  public static string[] Cells(CardTableRow r)=>new[]{r.id,r.name,Lifetimes[(int)r.lifetime],Polarities[(int)r.polarity],r.description,r.range,r.notes,r.enabled?"1":"0",r.number.ToString(),r.weight.ToString(CultureInfo.InvariantCulture),r.starting?"1":"0",r.special?"1":"0",r.condition==ActivationCondition.RoundAtLeast?"回合":"生命百分比",r.threshold.ToString(),r.specialWeightRatio.ToString(CultureInfo.InvariantCulture),r.effect.ToString(),r.pools,r.fixedValue.ToString(CultureInfo.InvariantCulture)};
   static XDocument Document(ZipArchive zip,string name){var entry=zip.GetEntry(name)??throw new FormatException("缺少 XLSX 内容："+name);using(var stream=entry.Open())using(var reader=XmlReader.Create(stream,new XmlReaderSettings {DtdProcessing=DtdProcessing.Prohibit,XmlResolver=null,MaxCharactersInDocument=20000000}))return XDocument.Load(reader);}
   static int Column(string address){int n=0;foreach(char c in address){if(!char.IsLetter(c))break;n=n*26+char.ToUpperInvariant(c)-'A'+1;}return n-1;}
-  public static string[][] Read(string path,int columnCount=17)=>ReadSheet(path,null,columnCount);
-  public static string[][] ReadSheet(string path,string sheetName,int columnCount=17){
+  public static string[][] Read(string path,int columnCount=18)=>ReadSheet(path,null,columnCount);
+  public static string[][] ReadSheet(string path,string sheetName,int columnCount=18){
    using(var zip=ZipFile.OpenRead(path)){
     var book=Document(zip,"xl/workbook.xml");var sheets=book.Descendants(S+"sheet").ToArray();var sheet=sheetName==null?sheets.FirstOrDefault(e=>(string)e.Attribute("name")=="Sheet1")??sheets.FirstOrDefault():sheets.FirstOrDefault(e=>(string)e.Attribute("name")==sheetName);
     if(sheet==null){if(sheetName!=null)return null;throw new FormatException("工作簿没有工作表。");}

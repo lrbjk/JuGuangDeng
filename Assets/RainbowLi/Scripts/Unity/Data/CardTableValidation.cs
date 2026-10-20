@@ -31,7 +31,7 @@ namespace RainbowLi.UnityGame {
     if(string.IsNullOrWhiteSpace(r.name))error("效果名称","不能为空。");
     if(r.number<1||r.number>6)error("数字","须为 1–6。");
     if(!FinitePositive(r.weight))error("权重","须是大于零的有限数值。");
-    CheckEffect(r.effect,r.lifetime,r.polarity,r.range,error);
+    CheckEffect(r.effect,r.lifetime,r.polarity,r.range,error,r.fixedValue);
     if(!Enum.IsDefined(typeof(ActivationCondition),r.condition))error("触发条件","未知条件。");
     if(r.special){
      if(float.IsNaN(r.specialWeightRatio)||float.IsInfinity(r.specialWeightRatio)||r.specialWeightRatio<.3f||r.specialWeightRatio>.7f)error("特殊权重比","须为 0.3–0.7 的有限数值。");
@@ -47,10 +47,11 @@ namespace RainbowLi.UnityGame {
    return errors.ToArray();
   }
   static bool FinitePositive(float f)=>f>0&&!float.IsNaN(f)&&!float.IsInfinity(f);
-  static void CheckEffect(CardEffect effect,EffectLifetime life,EffectPolarity polarity,string range,Action<string,string> error){
+  static void CheckEffect(CardEffect effect,EffectLifetime life,EffectPolarity polarity,string range,Action<string,string> error,int fixedValue=0){
    if(!Enum.IsDefined(typeof(CardEffect),effect))error("结算效果","未知效果。");
    if(!Enum.IsDefined(typeof(EffectLifetime),life))error("持续方式","未知类型。");
    if(!Enum.IsDefined(typeof(EffectPolarity),polarity))error("性质","未知类型。");
+   if(fixedValue!=0){if(fixedValue<1||fixedValue>10000)error("具体数值","须为 0–10000；0 沿用基础取值范围。");return;}
    try{CardTableRange.Parse(range,out _,out int min,out int max);if(min<1||max<min||max>10000)error("基础取值范围","须为 1–10000，且上限不小于下限。");}catch(FormatException e){error("基础取值范围",e.Message);}
   }
  }

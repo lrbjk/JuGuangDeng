@@ -58,8 +58,9 @@ namespace RainbowLi.EditorTools {
    if(table.rows.Any(r=>r!=null&&r.enabled&&r.HasCompoundEffects))EditorGUILayout.HelpBox("已启用复合效果：每行生成一张完整卡牌，追加效果按列表顺序执行；随机卡池、起始牌组和敌人技能均已接入。",MessageType.Warning);
    EditorGUILayout.LabelField("共 "+table.rows.Length+" 行，启用 "+table.rows.Count(r=>r!=null&&r.enabled)+" 行"+(EditorUtility.IsDirty(table)?" · 有未保存修改":""));
    DrawBulk();
+   EditorGUILayout.HelpBox("具体数值：主效果的固定 X，填 1–10000 覆盖取值范围和卡牌数字；填 0 沿用原配置。不会修改追加效果的数值。",MessageType.Info);
    scroll=EditorGUILayout.BeginScrollView(scroll);
-   EditorGUILayout.BeginHorizontal();GUILayout.Label("行",EditorStyles.boldLabel,GUILayout.Width(35));for(int c=0;c<Widths.Length;c++)if(Enemy||c<11||c==15)GUILayout.Label(c==2?"效果类型（持续）":c==3?"效果类型（性质）":CardTableWorkbook.Headers[c],EditorStyles.boldLabel,GUILayout.Width(Widths[c]));GUILayout.Label("卡效所属池",EditorStyles.boldLabel,GUILayout.Width(240));EditorGUILayout.EndHorizontal();
+   EditorGUILayout.BeginHorizontal();GUILayout.Label("行",EditorStyles.boldLabel,GUILayout.Width(35));for(int c=0;c<Widths.Length;c++)if(Enemy||c<11||c==15){GUILayout.Label(c==2?"效果类型（持续）":c==3?"效果类型（性质）":CardTableWorkbook.Headers[c],EditorStyles.boldLabel,GUILayout.Width(Widths[c]));if(c==5)GUILayout.Label("具体数值",EditorStyles.boldLabel,GUILayout.Width(90));}GUILayout.Label("卡效所属池",EditorStyles.boldLabel,GUILayout.Width(240));EditorGUILayout.EndHorizontal();
    Undo.RecordObject(table,"编辑卡牌配表");EditorGUI.BeginChangeCheck();
    for(int i=0;i<table.rows.Length;i++){
     var r=table.rows[i];if(r==null){EditorGUILayout.HelpBox("第 "+(i+1)+" 行对象为空，请在 Inspector 删除或补齐。",MessageType.Error);continue;}if(enabledOnly&&!r.enabled||!string.IsNullOrEmpty(search)&&!((r.id??"")+" "+r.name+" "+r.description).Contains(search))continue;
@@ -70,6 +71,7 @@ namespace RainbowLi.EditorTools {
     r.lifetime=(EffectLifetime)EditorGUILayout.Popup((int)r.lifetime,Life,GUILayout.Width(Widths[2]));r.polarity=(EffectPolarity)EditorGUILayout.Popup((int)r.polarity,Polarity,GUILayout.Width(Widths[3]));
     r.description=EditorGUILayout.TextArea(r.description,GUILayout.Width(Widths[4]),GUILayout.Height(48));
     string range=EditorGUILayout.TextField(r.range,GUILayout.Width(Widths[5]));if(range!=r.range){r.range=range;try{CardTableWorkbook.SetRange(r,range);}catch(FormatException){}}
+    r.fixedValue=EditorGUILayout.IntField(r.fixedValue,GUILayout.Width(90));
     r.notes=EditorGUILayout.TextArea(r.notes,GUILayout.Width(Widths[6]),GUILayout.Height(48));r.enabled=EditorGUILayout.Toggle(r.enabled,GUILayout.Width(Widths[7]));r.number=EditorGUILayout.IntField(r.number,GUILayout.Width(Widths[8]));r.weight=EditorGUILayout.FloatField(r.weight,GUILayout.Width(Widths[9]));r.starting=EditorGUILayout.Toggle(r.starting,GUILayout.Width(Widths[10]));
     if(Enemy){r.special=EditorGUILayout.Toggle(r.special,GUILayout.Width(Widths[11]));r.condition=(ActivationCondition)EditorGUILayout.Popup((int)r.condition,new[]{"回合","生命百分比"},GUILayout.Width(Widths[12]));r.threshold=EditorGUILayout.IntField(r.threshold,GUILayout.Width(Widths[13]));r.specialWeightRatio=EditorGUILayout.FloatField(r.specialWeightRatio,GUILayout.Width(Widths[14]));}
     r.effect=(CardEffect)EditorGUILayout.Popup((int)r.effect,Effects,GUILayout.Width(Widths[15]));r.pools=EditorGUILayout.TextField(r.pools,GUILayout.Width(240));EditorGUILayout.EndHorizontal();GUI.backgroundColor=color;
