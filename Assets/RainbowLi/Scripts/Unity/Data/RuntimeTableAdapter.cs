@@ -6,6 +6,6 @@ namespace RainbowLi.UnityGame {
    var e=Entry(r);e.Sequence=effect;return e;
   }
   public static EffectPoolEntry Engraving(EffectTableRow r){var e=Entry(r);e.Engraving=(EngravingEffect)Enum.Parse(typeof(EngravingEffect),r.behavior);return e;}
-  private static EffectPoolEntry Entry(EffectTableRow r){if(!r.TryRange(out int min,out int max))min=max=r.fixedValue;return new EffectPoolEntry {Code=r.id,Pools=r.pools,Enabled=r.enabled,Weight=r.weight,Min=min,Max=max,Multiplier=r.multiplier,FixedValue=r.fixedValue};}
+  private static EffectPoolEntry Entry(EffectTableRow r){if(!r.TryRange(out int min,out int max))min=max=r.fixedValue;return new EffectPoolEntry {Code=r.id,Pools=r.pools,Enabled=r.enabled,Weight=r.weight,Min=min,Max=max,Multiplier=r.multiplier,FixedValue=r.fixedValue,ShieldBonusPercent=r.shieldBonusPercent};}
  }
 }

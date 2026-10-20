@@ -49,11 +49,11 @@ public sealed class BattleStatusPanelView:MonoBehaviour {
  void UpdateDetails(CardEffect effect){
   string owner=enemy?"敌人":"玩家",other=enemy?"玩家":"敌人";
   detailTitle.text=owner+" · "+CombatStatuses.Name(effect)+"  "+statuses[effect]+"层";
-  detailBody.text="类型："+CategoryName(effect)+"   |   持有者："+owner+"\n\n"+Explain(effect,statuses[effect],owner,other)+"\n\n持续："+(statuses.LifetimeOf(effect)==EffectLifetime.Persistent?"本场战斗内保留，按下述效果消耗或衰减。":"本回合有效，回合结束清除。")+Decay(effect);
+  detailBody.text="类型："+CategoryName(effect)+"   |   持有者："+owner+"\n\n"+Explain(effect,statuses[effect],owner,other,statuses.IronWallBonusPercent,statuses.ReductionPercentOf(effect))+"\n\n持续："+(statuses.LifetimeOf(effect)==EffectLifetime.Persistent?"本场战斗内保留，按下述效果消耗或衰减。":"本回合有效，回合结束清除。")+Decay(effect);
  }
  public static int Category(CardEffect e)=>CardEffectTargeting.TargetsOpponent(e)?1:e==CardEffect.RandomNumbers||e==CardEffect.Chant||e==CardEffect.Reciprocity||e==CardEffect.Mutation||e==CardEffect.AddNumber||e==CardEffect.SubtractNumber?2:0;
  public static string CategoryName(CardEffect e)=>Category(e)==0?"增益":Category(e)==1?"负面状态":"特殊效果";
- public static string Explain(CardEffect e,int x,string owner,string other){switch(e){
+ public static string Explain(CardEffect e,int x,string owner,string other,int shieldBonusPercent=25,int reductionPercent=25){switch(e){
   case CardEffect.Ignite:return owner+"每次行动后，对"+other+"施加 "+x+" 层烧伤。\n这是自身增益，不会因这个增益烧伤自己。";
   case CardEffect.Envenom:return owner+"每次行动后，对"+other+"施加 "+x+" 层中毒。";
   case CardEffect.Burn:return owner+"回合开始时受到 "+x+" 点伤害（可被护盾抵挡）。";
@@ -61,10 +61,10 @@ public sealed class BattleStatusPanelView:MonoBehaviour {
   case CardEffect.Bleed:return owner+"每次行动前失去 "+x+" 点生命，无视护盾。";
   case CardEffect.Strength:return owner+"造成的伤害增加 "+x+" 点。";
   case CardEffect.Vulnerable:return owner+"每次受到的伤害增加 "+x+" 点。";
-  case CardEffect.Weaken:return owner+"造成的伤害减少 25%，向下取整；层数表示剩余衰减次数，不叠加比例。";
-  case CardEffect.Fortify:return owner+"受到的伤害减少 25%，向下取整；不叠加比例。";
+  case CardEffect.Weaken:return owner+"造成的伤害减少 "+reductionPercent+"%，向下取整；层数不叠加比例，重新施加时使用最新减幅。";
+  case CardEffect.Fortify:return owner+"受到的伤害减少 "+reductionPercent+"%，向下取整；层数不叠加比例，重新施加时使用最新减幅。";
   case CardEffect.Regeneration:return owner+"回合开始恢复 "+x+" 点生命。";
-  case CardEffect.IronWall:return owner+"获得的护盾增加 25%，向下取整；不叠加比例。";
+  case CardEffect.IronWall:return owner+"获得的护盾增加 "+shieldBonusPercent+"%，向下取整；层数不叠加比例，重新施加时使用最新的增幅。";
   case CardEffect.Parry:return owner+"抵挡接下来 "+x+" 次非零伤害。";
   case CardEffect.Barrier:return owner+"回合开始获得 "+x+" 点护盾。";
   case CardEffect.DamageCap:return owner+"每次受到的伤害最多为 "+x+" 点；数值越小效果越强。";

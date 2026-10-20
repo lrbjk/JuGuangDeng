@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 namespace RainbowLi.UnityGame {
  public enum EnemyContentOperation { 未配置,伤害,护盾,治疗,强壮,烧伤,坚固,铁壁,招架,流血,易伤,中毒,再生,弱化,填入数字,卡牌效果加成,行动后随机数字,后续自身行动重复,后续数字随机变化,全部数字随机填入,随机卡牌效果,触发自身随机牌序,直接扣血,随机一种负面层数减半,触发基础技能效果,触发任意技能效果,本回合免伤,抽取数字 }
@@ -12,11 +12,11 @@ namespace RainbowLi.UnityGame {
   public EnemyContentTarget target;
   public EnemyContentAmount amountSource;
   public float multiplier=1;
-  public int amount=1,offset;
+  public int amount=1,offset;[UnityEngine.Tooltip("铁壁护盾增幅，0–10000，默认25%") ]public int shieldBonusPercent=25;[UnityEngine.Tooltip("弱化/坚固减幅，0–100，默认25%") ]public int reductionPercent=25;
   public EnemyContentNumber numberMode;
   public int numberMin=1,numberMax=6;
   [UnityEngine.TextArea] public string notes;
-  // No rounding policy is invented here: 1.5 * base attack remains a decimal for the resolver.
+  public string ConfiguredDescription(string text){if(operation!=EnemyContentOperation.铁壁&&operation!=EnemyContentOperation.弱化&&operation!=EnemyContentOperation.坚固)return text;return new CardEffectSpec{Effect=operation==EnemyContentOperation.铁壁?CardEffect.IronWall:operation==EnemyContentOperation.弱化?CardEffect.Weaken:CardEffect.Fortify,Text=text,ShieldBonusPercent=shieldBonusPercent,ReductionPercent=reductionPercent}.ConfiguredText();} // No rounding policy is invented here: 1.5 * base attack remains a decimal for the resolver.
   public double EvaluateAmount(int baseAttack)=>Math.Max(0,(amountSource==EnemyContentAmount.基础攻击?baseAttack:amount)*(double)multiplier+offset);
  }
  public static class EnemyConfiguredContent {
@@ -37,7 +37,7 @@ namespace RainbowLi.UnityGame {
    foreach(var e in effects){
     if(e==null||e.operation==EnemyContentOperation.未配置){issues.Add(name+"：效果类型未配置。");continue;}
     if(float.IsNaN(e.multiplier)||float.IsInfinity(e.multiplier)||e.multiplier<=0||e.amount<0)issues.Add(name+"：数值倍率或数量无效。");
-    if(e.numberMode!=EnemyContentNumber.无&&(e.numberMin<1||e.numberMax<e.numberMin||e.numberMax==int.MaxValue))issues.Add(name+"：数字生成范围无效。");
+    if(e.operation==EnemyContentOperation.铁壁&&(e.shieldBonusPercent<0||e.shieldBonusPercent>10000))issues.Add(name+"：护盾增幅(%)须为0–10000。");if((e.operation==EnemyContentOperation.弱化||e.operation==EnemyContentOperation.坚固)&&(e.reductionPercent<0||e.reductionPercent>100))issues.Add(name+"：减幅(%)须为0–100。");if(e.numberMode!=EnemyContentNumber.无&&(e.numberMin<1||e.numberMax<e.numberMin||e.numberMax==int.MaxValue))issues.Add(name+"：数字生成范围无效。");
    }
   }
  }

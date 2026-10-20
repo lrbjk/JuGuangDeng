@@ -26,7 +26,7 @@ namespace RainbowLi {
    else if(effect==CardEffect.Mend)SettleHealing(enemy,enemy,value,code,source);
    else{
     bool targetEnemy=CardEffectTargeting.TargetsOpponent(effect)?!enemy:enemy;
-    ApplyStatus(enemy,targetEnemy,effect,value,code,source,spec?.Lifetime);
+    ApplyStatus(enemy,targetEnemy,effect,value,code,source,spec?.Lifetime,spec?.ShieldBonusPercent,spec?.ReductionPercent);
    }
   }
   private bool BleedBefore(BattleAction action){var owner=Actor(action.Enemy);int amount=owner.Statuses[CardEffect.Bleed];if(amount>0){settlingTiming=BattleEventTiming.BeforeAction;SettleHealthLoss(action.Enemy,amount,"Bleed",BattleEventSource.Status);ChangeStatus(action.Enemy,CardEffect.Bleed,amount-1,"Bleed");Log((action.Enemy?"敌方":"玩家")+"流血，失去 "+amount+" 生命。");}settlingTiming=BattleEventTiming.Action;return owner.Health>0;}

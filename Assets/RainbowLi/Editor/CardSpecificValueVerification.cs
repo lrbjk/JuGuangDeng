@@ -30,7 +30,7 @@ namespace RainbowLi.EditorTools {
     Check(definition.CreateCard().Effects[0].BaseX==10,"Table-bound cards must use fixed values.");
     var serialized=JsonUtility.ToJson(row);Check(JsonUtility.FromJson<CardTableRow>(serialized).fixedValue==10&&row.Copy().fixedValue==10,"Copy and serialization must preserve specific values.");
     if(File.Exists(path))File.Delete(path);CardTableWorkbook.Write(path,new[]{row});
-    var cells=CardTableWorkbook.Read(path);Check(cells[0].Last()=="具体数值"&&cells[1][17]=="10","XLSX must export the new column.");
+    var cells=CardTableWorkbook.Read(path);Check(cells[0][17]=="具体数值"&&cells[1][17]=="10","XLSX must export the new column.");
     var imported=CardTableWorkbook.Parse(cells,Array.Empty<CardTableRow>()).Single();
     Check(imported.fixedValue==10&&imported.EffectSpecs()[0].Min==10,"XLSX round trip must preserve fixed-only rows.");
     row.range="2-8";var oldCells=CardTableWorkbook.Cells(row).Take(17).ToArray();

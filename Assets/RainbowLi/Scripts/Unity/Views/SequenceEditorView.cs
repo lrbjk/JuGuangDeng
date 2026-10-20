@@ -69,7 +69,7 @@ namespace RainbowLi.UnityGame {
     var row=rows[i];bool present=i<game.PlayerRules.Count;row.root.gameObject.SetActive(present);if(!present)continue;
     var rule=game.PlayerRules[i];row.title.text="牌序 "+(i+1)+" · "+rule.Name;
     for(int d=0;d<row.numbers.Length;d++){row.numbers[d].text=rule.Numbers[d]==0?"未设置":rule.Numbers[d].ToString();row.digits[d].interactable=manual;}
-    row.primaryText.text=Describe(new SequenceEffect{Effect=rule.Effect,Value=rule.Value,InsertsTwo=rule.InsertsTwo,Requirement=rule.Requirement})+ActiveHint(rule,rule.Requirement);
+    row.primaryText.text=Describe(new SequenceEffect{Effect=rule.Effect,ShieldBonusPercent=rule.ShieldBonusPercent,Value=rule.Value,InsertsTwo=rule.InsertsTwo,Requirement=rule.Requirement})+ActiveHint(rule,rule.Requirement);
     row.secondaryText.text=rule.AdditionalEffect==null?"空槽\n点击选择":Describe(rule.AdditionalEffect)+ActiveHint(rule,rule.AdditionalEffect.Requirement);
     row.removeSecondary.gameObject.SetActive(manual&&rule.AdditionalEffect!=null);row.primarySlot.interactable=row.secondarySlot.interactable=manual;
     int price=session.definition==null?18:session.definition.rulePrice;
@@ -87,6 +87,6 @@ namespace RainbowLi.UnityGame {
   }
   private static string ActiveHint(SequenceRule rule,PatternRequirement requirement)=>rule.Accepts(requirement)?"":"\n当前数字不满足条件";
   private static bool AllowedPhase(GamePhase phase)=>phase==GamePhase.Map||phase==GamePhase.Rest||phase==GamePhase.Shop;
-  public static string Describe(SequenceEffect effect)=>new SequenceRule{Effect=effect.Effect,Value=effect.Value,InsertsTwo=effect.InsertsTwo,Requirement=effect.Requirement}.Description;
+  public static string Describe(SequenceEffect effect)=>new SequenceRule{Effect=effect.Effect,ShieldBonusPercent=effect.ShieldBonusPercent,Value=effect.Value,InsertsTwo=effect.InsertsTwo,Requirement=effect.Requirement}.Description;
  }
 }

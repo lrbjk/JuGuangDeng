@@ -32,6 +32,8 @@ namespace RainbowLi.UnityGame {
     if(r.number<1||r.number>6)error("数字","须为 1–6。");
     if(!FinitePositive(r.weight))error("权重","须是大于零的有限数值。");
     CheckEffect(r.effect,r.lifetime,r.polarity,r.range,error,r.fixedValue);
+    if(r.effect==CardEffect.IronWall&&(r.shieldBonusPercent<0||r.shieldBonusPercent>10000))error("护盾增幅(%)","须为 0–10000；25 表示护盾增加 25%。");
+    if((r.effect==CardEffect.Weaken||r.effect==CardEffect.Fortify)&&(r.reductionPercent<0||r.reductionPercent>100))error("减幅(%)","须为 0–100；50 表示伤害减少 50%。");
     if(!Enum.IsDefined(typeof(ActivationCondition),r.condition))error("触发条件","未知条件。");
     if(r.special){
      if(float.IsNaN(r.specialWeightRatio)||float.IsInfinity(r.specialWeightRatio)||r.specialWeightRatio<.3f||r.specialWeightRatio>.7f)error("特殊权重比","须为 0.3–0.7 的有限数值。");
@@ -39,7 +41,7 @@ namespace RainbowLi.UnityGame {
     }
     var extra=r.additionalEffects??Array.Empty<CardTableEffect>();
     if(extra.Length>99)error("追加效果","最多 99 个；包含主效果共 100 个。");
-    for(int j=0;j<extra.Length;j++){int ordinal=j+2;var e=extra[j];if(e==null){error("效果 "+ordinal,"不能为空。");continue;}CheckEffect(e.effect,e.lifetime,e.polarity,e.range,(field,message)=>error("效果 "+ordinal+" / "+field,message));}
+    for(int j=0;j<extra.Length;j++){int ordinal=j+2;var e=extra[j];if(e==null){error("效果 "+ordinal,"不能为空。");continue;}if(e.effect==CardEffect.IronWall&&(e.shieldBonusPercent<0||e.shieldBonusPercent>10000))error("效果 "+ordinal+" / 护盾增幅(%)","须为 0–10000。");if((e.effect==CardEffect.Weaken||e.effect==CardEffect.Fortify)&&(e.reductionPercent<0||e.reductionPercent>100))error("效果 "+ordinal+" / 减幅(%)","须为 0–100。");CheckEffect(e.effect,e.lifetime,e.polarity,e.range,(field,message)=>error("效果 "+ordinal+" / "+field,message));}
    }
    if(!rows.Any(r=>r!=null&&r.enabled))errors.Add(new CardTableIssue{Field="配表",Message="至少启用一行卡牌。"});
    else if(enemy&&!rows.Any(r=>r!=null&&r.enabled&&!r.special))errors.Add(new CardTableIssue{Field="敌人卡牌池",Message="至少启用一种基础卡牌。"});

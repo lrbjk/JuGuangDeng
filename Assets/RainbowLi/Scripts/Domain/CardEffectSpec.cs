@@ -23,9 +23,21 @@ namespace RainbowLi {
   public EffectPolarity Polarity;
   public bool UsesNumber,StartingEnabled=true;
   public int Min=1,Max=1;
+  public int ShieldBonusPercent=25;
+  public int ReductionPercent=25;
+  public string ConfiguredText(){
+   if(Effect==CardEffect.Weaken||Effect==CardEffect.Fortify){
+    string reductionText=Text??"";string reductionPattern=Effect==CardEffect.Weaken?@"(造成的伤害减少\s*)\d+\s*[%％]":@"(受到的伤害减少\s*)\d+\s*[%％]";
+    return System.Text.RegularExpressions.Regex.IsMatch(reductionText,reductionPattern)?System.Text.RegularExpressions.Regex.Replace(reductionText,reductionPattern,m=>m.Groups[1].Value+ReductionPercent+"%"):reductionText+"（伤害减幅 "+ReductionPercent+"%）";
+   }
+   if(Effect!=CardEffect.IronWall)return Text;
+   string text=Text??"";
+   const string pattern=@"(护盾(?:量)?(?:增加|提高)\s*)\d+\s*[%％]";
+   return System.Text.RegularExpressions.Regex.IsMatch(text,pattern)?System.Text.RegularExpressions.Regex.Replace(text,pattern,m=>m.Groups[1].Value+ShieldBonusPercent+"%"):text+"（护盾增幅 "+ShieldBonusPercent+"%）";
+  }
   public float Weight=10;
   public bool InPool(string pool)=>EffectPoolNames.Contains(Pools,pool);
-  public CardEffectSpec Copy()=>new CardEffectSpec {Code=Code,Name=Name,Text=Text,Pools=Pools,Effect=Effect,Lifetime=Lifetime,Polarity=Polarity,UsesNumber=UsesNumber,StartingEnabled=StartingEnabled,Min=Min,Max=Max,Weight=Weight};
+  public CardEffectSpec Copy()=>new CardEffectSpec {Code=Code,Name=Name,Text=Text,Pools=Pools,Effect=Effect,Lifetime=Lifetime,Polarity=Polarity,UsesNumber=UsesNumber,StartingEnabled=StartingEnabled,Min=Min,Max=Max,Weight=Weight,ShieldBonusPercent=ShieldBonusPercent,ReductionPercent=ReductionPercent};
  }
 
  // A generated effect stores its rolled X; execution and preview never reroll it.

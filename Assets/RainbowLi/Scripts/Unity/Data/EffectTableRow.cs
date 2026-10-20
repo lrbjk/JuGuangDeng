@@ -8,7 +8,7 @@ namespace RainbowLi.UnityGame {
   public string id,name,description,range,pools,notes,behavior;
   public bool enabled=true;
   public float weight=10;
-  public int multiplier=1,fixedValue;
+  public int multiplier=1,fixedValue;public int shieldBonusPercent=25;
   public EffectTableRow Copy()=>(EffectTableRow)MemberwiseClone();
   public bool TryRange(out int min,out int max){
    min=max=0;if(string.IsNullOrWhiteSpace(range))return false;

@@ -121,14 +121,14 @@ namespace RainbowLi {
      case EncounterOperation.Heal:SettleHealing(action.Enemy,target,value,code,source);break;
      case EncounterOperation.Strength:ApplyStatus(action.Enemy,target,CardEffect.Strength,value,code,source,EffectLifetime.Persistent);break;
      case EncounterOperation.Burn:ApplyStatus(action.Enemy,target,CardEffect.Burn,value,code,source);break;
-     case EncounterOperation.Fortify:ApplyStatus(action.Enemy,target,CardEffect.Fortify,value,code,source);break;
-     case EncounterOperation.IronWall:ApplyStatus(action.Enemy,target,CardEffect.IronWall,value,code,source);break;
+     case EncounterOperation.Fortify:ApplyStatus(action.Enemy,target,CardEffect.Fortify,value,code,source,reductionPercent:effect.ReductionPercent);break;
+     case EncounterOperation.IronWall:ApplyStatus(action.Enemy,target,CardEffect.IronWall,value,code,source,shieldBonusPercent:effect.ShieldBonusPercent);break;
      case EncounterOperation.Parry:ApplyStatus(action.Enemy,target,CardEffect.Parry,value,code,source);break;
      case EncounterOperation.Bleed:ApplyStatus(action.Enemy,target,CardEffect.Bleed,value,code,source);break;
      case EncounterOperation.Vulnerable:ApplyStatus(action.Enemy,target,CardEffect.Vulnerable,value,code,source);break;
      case EncounterOperation.Poison:ApplyStatus(action.Enemy,target,CardEffect.Poison,value,code,source);break;
      case EncounterOperation.Regeneration:ApplyStatus(action.Enemy,target,CardEffect.Regeneration,value,code,source);break;
-     case EncounterOperation.Weaken:ApplyStatus(action.Enemy,target,CardEffect.Weaken,value,code,source);break;
+     case EncounterOperation.Weaken:ApplyStatus(action.Enemy,target,CardEffect.Weaken,value,code,source,reductionPercent:effect.ReductionPercent);break;
      case EncounterOperation.Power:SettlePower(target,value,code,source);break;
      case EncounterOperation.FillNumber:case EncounterOperation.DrawNumbers:insertions.AddRange(ContentNumbers(action,effect,value));break;
      case EncounterOperation.RandomAfterAction:state.RandomAfterAction=CombatResolver.Clamp((long)state.RandomAfterAction+value);break;

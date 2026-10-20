@@ -78,11 +78,11 @@ namespace RainbowLi
             Emit(BattleEventKind.PowerChanged,enemy,enemy,code,source,value,actor.Power-before,Math.Abs(actor.Power-before),before,actor.Power,actor.Health,actor.Shield);
         }
         private void ApplyStatus(bool sourceEnemy,bool targetEnemy,CardEffect effect,int value,string code,
-            BattleEventSource source,EffectLifetime? lifetime=null)
+            BattleEventSource source,EffectLifetime? lifetime=null,int? shieldBonusPercent=null,int? reductionPercent=null)
         {
             if(value<=0)return;
             var actor=Actor(targetEnemy); int before=actor.Statuses[effect];
-            actor.Statuses.Add(effect,value,lifetime);
+            actor.Statuses.Add(effect,value,lifetime,shieldBonusPercent,reductionPercent);
             Emit(BattleEventKind.StatusApplied,sourceEnemy,targetEnemy,code,source,value,actor.Statuses[effect]-before,
                 Math.Abs(actor.Statuses[effect]-before),before,actor.Statuses[effect],actor.Health,actor.Shield,
                 status:effect,lifetime:actor.Statuses.LifetimeOf(effect));

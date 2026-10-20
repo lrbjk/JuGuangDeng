@@ -21,7 +21,7 @@ namespace RainbowLi
         {
             if(amount<=0)return 0;
             long value=(long)amount+source.Statuses[CardEffect.Strength];
-            if(source.Statuses[CardEffect.Weaken]>0)value=value*3/4;
+            if(source.Statuses[CardEffect.Weaken]>0)value=value*(100L-source.Statuses.WeakenReductionPercent)/100;
             return Clamp(value);
         }
         public static DamageResult Damage(CombatantState source, CombatantState target, int amount)
@@ -31,7 +31,7 @@ namespace RainbowLi
             int outgoing=source==null?Math.Max(0,amount):OutgoingDamage(source,amount);
             if(outgoing==0||hp<=0)return new DamageResult(amount,0,hp,hp,shield,shield,false);
             long value=(long)outgoing+target.Statuses[CardEffect.Vulnerable];
-            if(target.Statuses[CardEffect.Fortify]>0)value=value*3/4;
+            if(target.Statuses[CardEffect.Fortify]>0)value=value*(100L-target.Statuses.FortifyReductionPercent)/100;
             if(target.Statuses[CardEffect.DamageCap]>0)value=Math.Min(value,target.Statuses[CardEffect.DamageCap]);
             int incoming=Clamp(value);
             if(incoming==0)return new DamageResult(amount,0,hp,hp,shield,shield,false);
@@ -50,7 +50,7 @@ namespace RainbowLi
         public static int GainShield(CombatantState target, int amount)
         {
             long value=Math.Max(0,amount);
-            if(target.Statuses[CardEffect.IronWall]>0)value=value*5/4;
+            if(target.Statuses[CardEffect.IronWall]>0)value=value*(100L+target.Statuses.IronWallBonusPercent)/100;
             int before=target.Shield; target.Shield=Clamp((long)before+value); return target.Shield-before;
         }
     }

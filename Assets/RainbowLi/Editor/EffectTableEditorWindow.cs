@@ -23,7 +23,7 @@ namespace RainbowLi.EditorTools {
   void Action(System.Action action){try{action();message="完成。";}catch(Exception e){message=e.Message;}Repaint();}
   protected void OnGUI(){
    EditorGUILayout.LabelField(Sequence?"牌序效果配表":"铭刻效果配表",EditorStyles.boldLabel);
-   EditorGUILayout.HelpBox("前 "+(Sequence?6:5)+" 列与原 Excel 一致。配表可保存全部效果；“待核心程序”行保留配置，不能绑定到当前战斗。X倍率仅影响数值，不改变原文和范围。",MessageType.Info);
+   EditorGUILayout.HelpBox("前 "+(Sequence?6:5)+" 列与原 Excel 一致。配表可保存全部效果；“待核心程序”行保留配置，不能绑定到当前战斗。X倍率仅影响数值，不改变原文和范围。牌序铁壁可单独配置护盾增幅(%)，X仍为层数。铭刻当前没有铁壁、弱化或坚固效果。",MessageType.Info);
    EditorGUILayout.BeginHorizontal();var next=(EffectTableDefinition)EditorGUILayout.ObjectField("配表资产",table,Sequence?typeof(SequenceEffectTable):typeof(EngravingEffectTable),false);if(next!=table)SetTable(next);if(GUILayout.Button("新建配表",GUILayout.Width(90)))Action(CreateTable);EditorGUILayout.EndHorizontal();
    using(new EditorGUI.DisabledScope(table==null)){
     EditorGUILayout.BeginHorizontal();
@@ -40,14 +40,14 @@ namespace RainbowLi.EditorTools {
    if(message!="")EditorGUILayout.HelpBox(message,MessageType.Info);
    DrawRows();DrawBinding();
   }
-  float[] Widths=>Sequence?new float[]{130,135,360,160,240,190,50,70,185,65,80}:new float[]{130,135,360,160,190,50,70,185,65,80};
+  float[] Widths=>Sequence?new float[]{130,135,360,160,240,190,50,70,185,65,80,100}:new float[]{130,135,360,160,190,50,70,185,65,80};
   void DrawRows(){var widths=Widths;scroll=EditorGUILayout.BeginScrollView(scroll);EditorGUILayout.BeginHorizontal();GUILayout.Label("选择",GUILayout.Width(42));var headers=EffectTableWorkbook.Headers(Sequence);for(int i=0;i<headers.Length;i++)GUILayout.Label(headers[i],EditorStyles.boldLabel,GUILayout.Width(widths[i]));GUILayout.Label("运行状态",GUILayout.Width(110));EditorGUILayout.EndHorizontal();
    Undo.RecordObject(table,"编辑效果配表");EditorGUI.BeginChangeCheck();
    for(int i=0;i<table.rows.Length;i++){
     var r=table.rows[i];if(r==null)continue;if(enabledOnly&&!r.enabled)continue;if(search!=""&&!string.Join(" ",r.id,r.name,r.description,r.notes,r.behavior).Contains(search))continue;if(Sequence&&pool!=""&&!table.GetPool(pool).Contains(r))continue;
     Color old=GUI.backgroundColor;if(i==selected)GUI.backgroundColor=new Color(.7f,.9f,1);EditorGUILayout.BeginHorizontal();if(GUILayout.Toggle(selected==i,(i+1).ToString(),"Button",GUILayout.Width(42)))selected=i;
     int c=0;r.id=EditorGUILayout.TextField(r.id,GUILayout.Width(widths[c++]));r.name=EditorGUILayout.TextField(r.name,GUILayout.Width(widths[c++]));r.description=EditorGUILayout.TextArea(r.description,GUILayout.Width(widths[c++]),GUILayout.Height(50));r.range=EditorGUILayout.TextField(r.range,GUILayout.Width(widths[c++]));if(Sequence)r.pools=EditorGUILayout.TextField(r.pools,GUILayout.Width(widths[c++]));r.notes=EditorGUILayout.TextArea(r.notes,GUILayout.Width(widths[c++]),GUILayout.Height(50));r.enabled=EditorGUILayout.Toggle(r.enabled,GUILayout.Width(widths[c++]));r.weight=EditorGUILayout.FloatField(r.weight,GUILayout.Width(widths[c++]));
-    var names=Enum.GetNames(Sequence?typeof(SequenceBehavior):typeof(EngravingBehavior));int current=Array.IndexOf(names,r.behavior);int choice=EditorGUILayout.Popup(current,names,GUILayout.Width(widths[c++]));if(choice>=0)r.behavior=names[choice];r.multiplier=EditorGUILayout.IntField(r.multiplier,GUILayout.Width(widths[c++]));r.fixedValue=EditorGUILayout.IntField(r.fixedValue,GUILayout.Width(widths[c++]));GUILayout.Label(table.IsRuntimeSupported(r)?"可接入现有结算":"待核心程序",GUILayout.Width(110));EditorGUILayout.EndHorizontal();GUI.backgroundColor=old;
+    var names=Enum.GetNames(Sequence?typeof(SequenceBehavior):typeof(EngravingBehavior));int current=Array.IndexOf(names,r.behavior);int choice=EditorGUILayout.Popup(current,names,GUILayout.Width(widths[c++]));if(choice>=0)r.behavior=names[choice];r.multiplier=EditorGUILayout.IntField(r.multiplier,GUILayout.Width(widths[c++]));r.fixedValue=EditorGUILayout.IntField(r.fixedValue,GUILayout.Width(widths[c++]));if(Sequence){using(new EditorGUI.DisabledScope(r.behavior!="IronWall"))r.shieldBonusPercent=EditorGUILayout.IntField(r.shieldBonusPercent,GUILayout.Width(widths[c++]));}GUILayout.Label(table.IsRuntimeSupported(r)?"可接入现有结算":"待核心程序",GUILayout.Width(110));EditorGUILayout.EndHorizontal();GUI.backgroundColor=old;
    }
    if(EditorGUI.EndChangeCheck())EditorUtility.SetDirty(table);EditorGUILayout.EndScrollView();
   }

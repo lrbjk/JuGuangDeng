@@ -10,6 +10,10 @@ namespace RainbowLi.UnityGame {
   public int number=1, min=1, max=1;
   [UnityEngine.Tooltip("主效果的固定 X 值，1–10000；0 沿用基础取值范围或卡牌对应数字。")]
   public int fixedValue;
+  [UnityEngine.Tooltip("铁壁的护盾增幅百分比。默认 25；只对铁壁生效。层数仍由具体数值或范围控制。")]
+  public int shieldBonusPercent=25;
+  [UnityEngine.Tooltip("弱化/坚固的伤害减幅百分比，0–100；默认 25。层数仍由具体数值或范围控制。")]
+  public int reductionPercent=25;
   public float weight=10;
   public bool special;
   public ActivationCondition condition;
@@ -19,8 +23,8 @@ namespace RainbowLi.UnityGame {
   public bool HasCompoundEffects=>(additionalEffects??Array.Empty<CardTableEffect>()).Any(e=>e!=null&&e.enabled);
   public CardTableRow Copy(){var copy=(CardTableRow)MemberwiseClone();copy.additionalEffects=(additionalEffects??Array.Empty<CardTableEffect>()).Select(e=>e?.Copy()).ToArray();return copy;}
   public void NormalizeRange(){if(fixedValue!=0){if(fixedValue<1||fixedValue>10000)throw new FormatException("具体数值须为 0–10000；0 沿用范围。");usesNumber=false;min=max=fixedValue;}else CardTableRange.Parse(range,out usesNumber,out min,out max);}
-  public CardEffectSpec[] EffectSpecs(){var copy=Copy();copy.NormalizeRange();var primary=new CardEffectSpec {Code=id,Name=name,Text=description,Pools=pools,Effect=effect,Lifetime=lifetime,Polarity=polarity,UsesNumber=copy.usesNumber,StartingEnabled=starting,Min=copy.min,Max=copy.max,Weight=weight};return new[]{primary}.Concat((additionalEffects??Array.Empty<CardTableEffect>()).Select((e,i)=>new{e,i}).Where(p=>p.e!=null&&p.e.enabled).Select(p=>p.e.Spec(id+"/"+(p.i+2),name,weight))).ToArray();}
+  public CardEffectSpec[] EffectSpecs(){var copy=Copy();copy.NormalizeRange();var primary=new CardEffectSpec {Code=id,Name=name,Text=description,Pools=pools,Effect=effect,Lifetime=lifetime,Polarity=polarity,UsesNumber=copy.usesNumber,StartingEnabled=starting,Min=copy.min,Max=copy.max,Weight=weight,ShieldBonusPercent=shieldBonusPercent,ReductionPercent=reductionPercent};primary.Text=primary.ConfiguredText();return new[]{primary}.Concat((additionalEffects??Array.Empty<CardTableEffect>()).Select((e,i)=>new{e,i}).Where(p=>p.e!=null&&p.e.enabled).Select(p=>p.e.Spec(id+"/"+(p.i+2),name,weight))).ToArray();}
   public CardEffectSpec Spec(){if(HasCompoundEffects)throw new NotSupportedException(id+"：包含复合效果，玩法尚未接入 EffectSpecs() 多效果结算。请先禁用追加效果，不能只执行第一个效果。");return EffectSpecs()[0];}
-  public static CardTableRow From(CardEffectDefinition d) => new CardTableRow {id=d.effectId,name=d.displayName,description=d.description,range=d.sourceRange,pools=d.pools,effect=d.effect,lifetime=d.lifetime,polarity=d.polarity,usesNumber=d.usesCardNumber,min=d.minValue,max=d.maxValue,weight=d.weight,starting=d.includeInStartingDeck};
+  public static CardTableRow From(CardEffectDefinition d) => new CardTableRow {id=d.effectId,name=d.displayName,description=d.description,range=d.sourceRange,pools=d.pools,effect=d.effect,lifetime=d.lifetime,polarity=d.polarity,usesNumber=d.usesCardNumber,min=d.minValue,max=d.maxValue,weight=d.weight,starting=d.includeInStartingDeck,shieldBonusPercent=d.shieldBonusPercent,reductionPercent=d.reductionPercent};
  }
 }

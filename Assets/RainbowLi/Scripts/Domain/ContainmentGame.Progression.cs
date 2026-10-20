@@ -82,7 +82,7 @@ namespace RainbowLi
             rule.Effect = (RuleEffect)(((int)rule.Effect + 1) % 3);
             rule.Value = rule.Effect == RuleEffect.Power ? 2 : 10;
             rule.InsertsTwo = rule.Effect == RuleEffect.Power;
-            AddAvailableEffect(new SequenceEffect {Effect=rule.Effect,Value=rule.Value,InsertsTwo=rule.InsertsTwo,Requirement=rule.Requirement});Message = "牌序效果已替换并加入可选效果池。"; return true;
+            AddAvailableEffect(new SequenceEffect {Effect=rule.Effect,ShieldBonusPercent=rule.ShieldBonusPercent,Value=rule.Value,InsertsTwo=rule.InsertsTwo,Requirement=rule.Requirement});Message = "牌序效果已替换并加入可选效果池。"; return true;
         }
     }
 }

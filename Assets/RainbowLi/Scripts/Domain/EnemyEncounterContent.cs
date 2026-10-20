@@ -9,7 +9,7 @@ namespace RainbowLi {
  public enum EncounterTrigger { None,HealthThreshold,UsedSkill,SequenceCount,RoundInterval,PhaseInterval }
  public enum EncounterTiming { RoundStart,FirstOwnActionAfter,EveryOwnActionAfter,Appearance }
  [Serializable] public sealed class EncounterEffect {
-  public EncounterOperation Operation;public EncounterTarget Target;public bool UsesAttack;
+  public int ShieldBonusPercent=25,ReductionPercent=25;public EncounterOperation Operation;public EncounterTarget Target;public bool UsesAttack;
   public float Multiplier=1;public int Amount=1,Offset,NumberMin=1,NumberMax=6;public EncounterNumber NumberMode;
   public int Resolve(int attack){double value=Math.Floor(Math.Max(0,(UsesAttack?attack:Amount)*(double)Multiplier+Offset));return (int)Math.Min(int.MaxValue,value);}
   public EncounterEffect Copy()=>(EncounterEffect)MemberwiseClone();

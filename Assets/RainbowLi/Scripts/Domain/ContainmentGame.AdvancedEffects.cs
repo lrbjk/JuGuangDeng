@@ -42,7 +42,7 @@ namespace RainbowLi {
     case RuleEffect.Burn:ApplyStatus(enemy,!enemy,CardEffect.Burn,value,code,BattleEventSource.Sequence);break;
     case RuleEffect.Poison:ApplyStatus(enemy,!enemy,CardEffect.Poison,value,code,BattleEventSource.Sequence);break;
     case RuleEffect.Strength:ApplyStatus(enemy,enemy,CardEffect.Strength,value,code,BattleEventSource.Sequence);break;
-    case RuleEffect.IronWall:ApplyStatus(enemy,enemy,CardEffect.IronWall,value,code,BattleEventSource.Sequence);break;
+    case RuleEffect.IronWall:ApplyStatus(enemy,enemy,CardEffect.IronWall,value,code,BattleEventSource.Sequence,shieldBonusPercent:rule.ShieldBonusPercent);break;
     case RuleEffect.Regeneration:ApplyStatus(enemy,enemy,CardEffect.Regeneration,value,code,BattleEventSource.Sequence);break;
     case RuleEffect.Bleed:ApplyStatus(enemy,!enemy,CardEffect.Bleed,value,code,BattleEventSource.Sequence);break;
     case RuleEffect.Vulnerable:ApplyStatus(enemy,!enemy,CardEffect.Vulnerable,value,code,BattleEventSource.Sequence);break;
@@ -66,7 +66,7 @@ namespace RainbowLi {
   public SequenceEffect DrawSequenceEffect(string pool=null){
    if(setup==null||setup.SequencePool.Count==0)return CopyEffect(Player.AvailableEffects[random.Next(Player.AvailableEffects.Count)]);
    // An explicit pool is an intentional restriction; otherwise draw the pool first.
-   var e=DrawEffect(setup.SequencePool,string.IsNullOrWhiteSpace(pool)?DrawPool(setup.SequenceEffectPools):pool);int x=random.Next(e.Min,e.Max+1);return new SequenceEffect {Code=e.Code,Effect=e.Sequence,BaseX=x,Multiplier=e.Multiplier,FixedValue=e.FixedValue,Value=CombatResolver.Clamp((long)x*e.Multiplier)};
+   var e=DrawEffect(setup.SequencePool,string.IsNullOrWhiteSpace(pool)?DrawPool(setup.SequenceEffectPools):pool);int x=random.Next(e.Min,e.Max+1);return new SequenceEffect {Code=e.Code,ShieldBonusPercent=e.ShieldBonusPercent,Effect=e.Sequence,BaseX=x,Multiplier=e.Multiplier,FixedValue=e.FixedValue,Value=CombatResolver.Clamp((long)x*e.Multiplier)};
   }
   public RuntimeEngraving DrawEngraving(string pool=null){
    if(setup==null||setup.EngravingPool.Count==0)return new RuntimeEngraving {Code="LegacyEngraving",Effect=EngravingEffect.FollowUpDamage,BaseX=5};

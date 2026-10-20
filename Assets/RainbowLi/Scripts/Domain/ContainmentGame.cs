@@ -99,7 +99,7 @@ namespace RainbowLi
                 if (setup.PlayerRules.Count > 0) { PlayerRules.Clear(); PlayerRules.AddRange(setup.PlayerRules.Select(r=>RollRule(CloneRule(r)))); }
             }
             if(setup?.RandomPlayerSequenceEffects==true)foreach(var rule in PlayerRules)SetRuleEffect(rule,DrawSequenceEffect(setup.PlayerSequencePool));
-            foreach(var rule in PlayerRules){AddAvailableEffect(new SequenceEffect {Effect=rule.Effect,Value=rule.Value,InsertsTwo=rule.InsertsTwo,Requirement=rule.Requirement});if(rule.AdditionalEffect!=null)AddAvailableEffect(rule.AdditionalEffect);}
+            foreach(var rule in PlayerRules){AddAvailableEffect(new SequenceEffect {Effect=rule.Effect,ShieldBonusPercent=rule.ShieldBonusPercent,Value=rule.Value,InsertsTwo=rule.InsertsTwo,Requirement=rule.Requirement});if(rule.AdditionalEffect!=null)AddAvailableEffect(rule.AdditionalEffect);}
             if(setup!=null)foreach(var effect in setup.AvailablePlayerEffects)AddAvailableEffect(effect);
             Phase = GamePhase.Map;
         }
@@ -133,7 +133,7 @@ namespace RainbowLi
             return copy;
         }
         private static SequenceRule CloneRule(SequenceRule rule) => rule == null ? null : new SequenceRule
-        { Name = rule.Name, EncounterEffects=EncounterEffect.Copies(rule.EncounterEffects),EncounterDescription=rule.EncounterDescription,Code=rule.Code, BaseX=rule.BaseX, Multiplier=rule.Multiplier, FixedValue=rule.FixedValue,MinX=rule.MinX,MaxX=rule.MaxX,RollX=rule.RollX, Numbers = (int[])rule.Numbers.Clone(), Effect = rule.Effect,
+        { Name = rule.Name, ShieldBonusPercent=rule.ShieldBonusPercent, EncounterEffects=EncounterEffect.Copies(rule.EncounterEffects),EncounterDescription=rule.EncounterDescription,Code=rule.Code, BaseX=rule.BaseX, Multiplier=rule.Multiplier, FixedValue=rule.FixedValue,MinX=rule.MinX,MaxX=rule.MaxX,RollX=rule.RollX, Numbers = (int[])rule.Numbers.Clone(), Effect = rule.Effect,
             Value = rule.Value, InsertsTwo = rule.InsertsTwo, Triggers = rule.Triggers, Requirement=rule.Requirement, AdditionalEffect=rule.AdditionalEffect==null?null:CopyEffect(rule.AdditionalEffect) };
     }
 }

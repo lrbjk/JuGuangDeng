@@ -37,7 +37,7 @@ namespace RainbowLi {
  }
  [Serializable] public sealed class EffectPoolEntry {
   public string Code,Pools; public bool Enabled=true; public float Weight=10;
-  public int Min,Max,Multiplier=1,FixedValue; public RuleEffect Sequence; public EngravingEffect Engraving;
+  public int ShieldBonusPercent=25;public int Min,Max,Multiplier=1,FixedValue; public RuleEffect Sequence; public EngravingEffect Engraving;
   public bool InPool(string pool)=>EffectPoolNames.Contains(Pools,pool);
  }
  [Serializable] public sealed class EffectPoolWeight {

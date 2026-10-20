@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 namespace RainbowLi {
- [Serializable] public sealed class SavedStatus {public CardEffect Effect;public int Value;public EffectLifetime Lifetime;}
+ [Serializable] public sealed class SavedStatus {public CardEffect Effect;public int Value;public EffectLifetime Lifetime;public int ShieldBonusPercent=25,ReductionPercent=25;}
  [Serializable] public sealed class SavedActor {public int Health,MaxHealth,Shield,Power;public List<SavedStatus> Statuses=new List<SavedStatus>();}
  [Serializable] public sealed class SavedCard {public string InstanceId;public Card Card;public bool HasSpec,HasEngraving;}
  [Serializable] public sealed class SavedAction {
@@ -55,8 +55,8 @@ namespace RainbowLi {
    if(Route!=null){result.RouteBossUnlockByBattles=Route.BossUnlockByBattles;result.RouteAdventureLayer=Route.AdventureLayer;result.RouteIndependentStacks=Route.Graph.IndependentStacks;result.RouteStacked=Route.Graph.Stacked;result.RouteCardDungeon=Route.Graph.CardDungeon;result.RouteStartLane=Route.Graph.StartLane;result.RouteNodes=Route.Graph.Nodes.Select(n=>n.Copy()).ToList();result.RouteCurrent=Route.CurrentId;result.RouteActive=Route.ActiveId;result.RouteFinished=Route.Finished;result.RouteFailed=Route.Failed;result.Completed=Route.Completed.ToArray();}
    return result;
   }
-  private static SavedActor SaveActor(CombatantState a)=>new SavedActor {Health=a.Health,MaxHealth=a.MaxHealth,Shield=a.Shield,Power=a.Power,Statuses=a.Statuses.Snapshot().Select(s=>new SavedStatus {Effect=s.Key,Value=s.Value,Lifetime=a.Statuses.LifetimeOf(s.Key)??EffectLifetime.Persistent}).ToList()};
-  private static void RestoreActor(CombatantState a,SavedActor s,bool allowEmpty=false){if(s==null||(s.MaxHealth<0||s.MaxHealth==0&&!allowEmpty)||s.Health<0||s.Health>s.MaxHealth||s.Shield<0||s.Power<0)throw new ArgumentException("Invalid saved actor");a.Health=s.Health;a.MaxHealth=s.MaxHealth;a.Shield=s.Shield;a.Power=s.Power;a.Statuses.Clear();if(s.Statuses==null)throw new ArgumentException("Missing saved statuses");foreach(var status in s.Statuses)a.Statuses.Add(status.Effect,status.Value,status.Lifetime);}
+  private static SavedActor SaveActor(CombatantState a)=>new SavedActor {Health=a.Health,MaxHealth=a.MaxHealth,Shield=a.Shield,Power=a.Power,Statuses=a.Statuses.Snapshot().Select(s=>new SavedStatus {Effect=s.Key,Value=s.Value,Lifetime=a.Statuses.LifetimeOf(s.Key)??EffectLifetime.Persistent,ShieldBonusPercent=a.Statuses.IronWallBonusPercent,ReductionPercent=a.Statuses.ReductionPercentOf(s.Key)}).ToList()};
+  private static void RestoreActor(CombatantState a,SavedActor s,bool allowEmpty=false){if(s==null||(s.MaxHealth<0||s.MaxHealth==0&&!allowEmpty)||s.Health<0||s.Health>s.MaxHealth||s.Shield<0||s.Power<0)throw new ArgumentException("Invalid saved actor");a.Health=s.Health;a.MaxHealth=s.MaxHealth;a.Shield=s.Shield;a.Power=s.Power;a.Statuses.Clear();if(s.Statuses==null)throw new ArgumentException("Missing saved statuses");foreach(var status in s.Statuses)a.Statuses.Add(status.Effect,status.Value,status.Lifetime,status.ShieldBonusPercent,status.ReductionPercent);}
   public static ContainmentGame RestoreSave(RunSave s,GameSetup setup=null){
    if(s==null||s.Version<0||s.Version>3||!Enum.IsDefined(typeof(GamePhase),s.Phase))throw new ArgumentException("Unsupported save version or phase");
    if(s.Cards==null||s.Cards.Count>10000||s.Actions==null||s.Actions.Count>20000||s.Rules==null||s.Conditions==null||s.AvailableEffects==null||s.Numbers==null||s.History==null||s.PositionBonuses==null||s.RouteNodes==null)throw new ArgumentException("Invalid save collections");

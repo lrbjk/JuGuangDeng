@@ -37,7 +37,7 @@ namespace RainbowLi.EditorTools {
    if(replace)foreach(var old in before.Where(r=>r!=null&&!unique.Any(n=>n.id==r.id)))Changes.Add(new CardTableDiff{Id=old.id,Kind="删除",Before=old.Copy(),Selected=false,Details="源表缺少此行；默认保留，勾选才删除。"});
   }
   void ReadCompound(List<CardTableRow> rows,string[][] cells){
-   foreach(var row in rows)row.additionalEffects=Array.Empty<CardTableEffect>();
+   var previousExtras=rows.GroupBy(row=>row.id).ToDictionary(group=>group.Key,group=>group.First().additionalEffects??Array.Empty<CardTableEffect>());foreach(var row in rows)row.additionalEffects=Array.Empty<CardTableEffect>();
    var groups=new Dictionary<string,SortedDictionary<int,CardTableEffect>>(StringComparer.Ordinal);
    for(int i=0;i<cells.Length;i++){
     var c=cells[i];if(c==null||c.All(string.IsNullOrWhiteSpace)||c.FirstOrDefault()=="卡牌编号")continue;
@@ -46,7 +46,7 @@ namespace RainbowLi.EditorTools {
      if(!int.TryParse(c[1],out int order)||order<2||order>100)throw new FormatException("执行序号须为 2–100，主效果固定为 1。");
      if(!Enum.TryParse(c[2],out CardEffect effect)||!Enum.IsDefined(typeof(CardEffect),effect))throw new FormatException("结算效果未知："+c[2]);
      int life=Array.IndexOf(CardTableWorkbook.Lifetimes,c[3]),polarity=Array.IndexOf(CardTableWorkbook.Polarities,c[4]);if(life<0||polarity<0)throw new FormatException("持续方式或性质未知。");
-     var e=new CardTableEffect{effect=effect,lifetime=(EffectLifetime)life,polarity=(EffectPolarity)polarity,description=c[5],range=c[6]};
+     var e=new CardTableEffect{effect=effect,lifetime=(EffectLifetime)life,polarity=(EffectPolarity)polarity,description=c[5],range=c[6]};if(previousExtras.TryGetValue(id,out var prior)&&order-2<prior.Length&&prior[order-2]!=null&&prior[order-2].effect==effect){e.shieldBonusPercent=prior[order-2].shieldBonusPercent;e.reductionPercent=prior[order-2].reductionPercent;}if(c.Length>8&&!string.IsNullOrWhiteSpace(c[8])){if(!int.TryParse(c[8],out e.shieldBonusPercent))throw new FormatException("护盾增幅(%)须为整数。");}if(c.Length>9&&!string.IsNullOrWhiteSpace(c[9])){if(!int.TryParse(c[9],out e.reductionPercent))throw new FormatException("减幅(%)须为整数。");}if(e.effect==CardEffect.IronWall&&(e.shieldBonusPercent<0||e.shieldBonusPercent>10000)||((e.effect==CardEffect.Weaken||e.effect==CardEffect.Fortify)&&(e.reductionPercent<0||e.reductionPercent>100)))throw new FormatException("百分比超出范围。");
      string enabled=c[7]??"";if(enabled=="0"||enabled=="否"||enabled.Equals("false",StringComparison.OrdinalIgnoreCase))e.enabled=false;else if(enabled!="1"&&enabled!="是"&&!enabled.Equals("true",StringComparison.OrdinalIgnoreCase))throw new FormatException("启用须为 1/0 或 是/否。");
      CardTableRange.Parse(e.range,out _,out int min,out int max);if(min<1||max<min||max>10000)throw new FormatException("基础取值范围须为 1–10000，且上限不小于下限。");
      if(!groups.TryGetValue(id,out var group))groups[id]=group=new SortedDictionary<int,CardTableEffect>();if(group.ContainsKey(order))throw new FormatException("同卡牌执行序号重复："+order);group[order]=e;

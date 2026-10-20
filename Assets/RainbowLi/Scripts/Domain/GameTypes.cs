@@ -38,7 +38,7 @@ namespace RainbowLi
             }
         }
         private int ResolvedEffectValue(CardEffectInstance e)=>CombatResolver.Clamp((long)e.ResolveValue(Number,Upgrade)+PermanentGrowth+BattleCharge);
-        private string EffectDescription(CardEffectInstance e)=>CombatStatuses.Name(e.Spec.Effect)+" "+ResolvedEffectValue(e)+(e.Spec.Effect==CardEffect.Ignite?" · 自身增益":"");
+        private string EffectDescription(CardEffectInstance e)=>CombatStatuses.Name(e.Spec.Effect)+" "+ResolvedEffectValue(e)+(e.Spec.Effect==CardEffect.Ignite?" · 自身增益":e.Spec.Effect==CardEffect.IronWall?" · 护盾增幅 "+e.Spec.ShieldBonusPercent+"%":e.Spec.Effect==CardEffect.Weaken||e.Spec.Effect==CardEffect.Fortify?" · 减幅 "+e.Spec.ReductionPercent+"%":"");
         private static string IgniteRules(int value,EffectLifetime lifetime)=>"自身获得 "+value+" 层点燃增益；自身每次行动后，对对方施加 "+value+" 层烧伤。点燃增益不会使自身受到烧伤。"+(lifetime==EffectLifetime.Temporary?"增益在本回合结束时消失。":"增益在本场战斗内保留，按效果规则消耗。");
         public int BaseBonus = 3, UpgradeBonus = 2, EngravingDamage = 5;
         public int Value => CombatResolver.Clamp((long)UnmodifiedValue+PermanentGrowth+BattleCharge);
@@ -67,13 +67,13 @@ namespace RainbowLi
     public enum PatternRequirement { Any, Straight, Triple }
 
     [Serializable]
-    public sealed class SequenceEffect { public RuleEffect Effect; public int Value; public bool InsertsTwo; public PatternRequirement Requirement; public string Code; public int BaseX, Multiplier=1, FixedValue, MinX,MaxX; public bool RollX; }
+    public sealed class SequenceEffect { public RuleEffect Effect; public int Value; public bool InsertsTwo; public PatternRequirement Requirement; public int ShieldBonusPercent=25;public string Code; public int BaseX, Multiplier=1, FixedValue, MinX,MaxX; public bool RollX; }
 
     [Serializable] public sealed class SequenceRule
     {
         public EncounterEffect[] EncounterEffects=Array.Empty<EncounterEffect>();public string EncounterDescription;
         public string Name;
-        public string Code; public int BaseX, Multiplier=1, FixedValue, MinX,MaxX; public bool RollX;
+        public int ShieldBonusPercent=25;public string Code; public int BaseX, Multiplier=1, FixedValue, MinX,MaxX; public bool RollX;
         public int[] Numbers;
         public RuleEffect Effect;
         public int Value;
@@ -83,11 +83,11 @@ namespace RainbowLi
         public SequenceEffect AdditionalEffect;
         public bool Accepts(PatternRequirement requirement) => Numbers!=null && Numbers.Length==3 && Numbers.All(n=>n>=1&&n<=6) && (requirement==PatternRequirement.Any || requirement==PatternRequirement.Triple && Numbers[0]==Numbers[1] && Numbers[1]==Numbers[2] || requirement==PatternRequirement.Straight && Math.Abs(Numbers[1]-Numbers[0])==1 && Numbers[2]-Numbers[1]==Numbers[1]-Numbers[0]);
         public string Pattern => string.Join(" → ", Numbers.Select(n => n.ToString()).ToArray());
-        public string Description => EncounterEffects!=null&&EncounterEffects.Length>0?EncounterDescription:Describe(Effect,Value,InsertsTwo)+(AdditionalEffect==null?"":" / "+Describe(AdditionalEffect.Effect,AdditionalEffect.Value,AdditionalEffect.InsertsTwo))+(Requirement==PatternRequirement.Any?"":" · "+RequirementName(Requirement))+(AdditionalEffect==null||AdditionalEffect.Requirement==PatternRequirement.Any?"":" · 效果2 "+RequirementName(AdditionalEffect.Requirement));
+        public string Description => EncounterEffects!=null&&EncounterEffects.Length>0?EncounterDescription:Describe(Effect,Value,InsertsTwo,ShieldBonusPercent)+(AdditionalEffect==null?"":" / "+Describe(AdditionalEffect.Effect,AdditionalEffect.Value,AdditionalEffect.InsertsTwo,AdditionalEffect.ShieldBonusPercent))+(Requirement==PatternRequirement.Any?"":" · "+RequirementName(Requirement))+(AdditionalEffect==null||AdditionalEffect.Requirement==PatternRequirement.Any?"":" · 效果2 "+RequirementName(AdditionalEffect.Requirement));
         private static string RequirementName(PatternRequirement requirement)=>requirement==PatternRequirement.Straight?"顺子":"三同号";
-        private static string Describe(RuleEffect effect,int value,bool insertsTwo) {
+        private static string Describe(RuleEffect effect,int value,bool insertsTwo,int shieldBonusPercent) {
             string[] names={"伤害","护盾","后续卡效 +","插入数字","恢复","烧伤","中毒","力量","流血","随机数字","生命降至百分比","随机卡效次数","易伤","招架","参与卡牌重放次数","铁壁","再生"};
-            return names[(int)effect]+" "+value+(insertsTwo?"，插入数字 2":"");
+            return names[(int)effect]+" "+value+(effect==RuleEffect.IronWall?" · 护盾增幅 "+shieldBonusPercent+"%":"")+(insertsTwo?"，插入数字 2":"");
         }
     }
 
